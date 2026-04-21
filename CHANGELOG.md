@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-04-21
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/integration/test_rpi_hardware_pipeline.py
+- Update tests/unit/test_diagnostics.py
+- Update tests/unit/test_rpi_diagnostics.py
+
+### Other
+- Update VERSION
+
 ## [0.1.9] - 2026-04-21
 
 ### Docs

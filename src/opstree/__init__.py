@@ -13,8 +13,9 @@ from opstree.scanner.linear import LinearScanner, scan_device
 from opstree.scanner.build import build_layer_tree, build_scanner
 from opstree.formats import FormatRegistry, register_format
 from opstree.drift.detector import DriftDetector, DriftReport
+from opstree.diagnostics import Diagnostic, Rule, RuleEngine, Severity
 
-__version__ = "0.1.9"
+__version__ = "0.1.11"
 
 __all__ = [
     # Layers
@@ -34,4 +35,6 @@ __all__ = [
     "FormatRegistry", "register_format",
     # Drift
     "DriftDetector", "DriftReport",
+    # Diagnostics
+    "Diagnostic", "Rule", "RuleEngine", "Severity",
 ]
