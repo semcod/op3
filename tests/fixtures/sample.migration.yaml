@@ -1,0 +1,81 @@
+name: kiosk-vps
+description: "Deploy kiosk to VPS — Podman Quadlet (rootless systemd)"
+
+# ── Source: obecny stan lokalny (Docker Compose dev) ─────────────────────────
+source:
+  strategy: docker_full
+  host: local
+  app: kiosk
+  version: "0.1.123"
+  compose_files:
+    - docker-compose.yml
+
+# ── Target: produkcja VPS (Podman Quadlet rootless) ──────────────────────────
+target:
+  strategy: podman_quadlet
+  host: pi@192.168.188.109
+  app: kiosk
+  version: "0.1.123"
+  remote_dir: ~/.config/kiosk
+  domain: kiosk.semcod.com
+  verify_url: http://localhost:4000/health
+  verify_version: "0.1"
+
+# ── Kroki dodatkowe ───────────────────────────────────────────────────────────
+extra_steps:
+  - id: build_kiosk_image
+    action: ssh_cmd
+    description: "Build kiosk image from source"
+    command: "cd ~/kiosk && podman build -t localhost/kiosk-browser:latest ."
+    risk: low
+
+  - id: install_quadlet_files
+    action: ssh_cmd
+    description: "Install Quadlet unit files to ~/.config/containers/systemd/"
+    command: >
+      mkdir -p ~/.config/containers/systemd
+      && cp ~/kiosk/quadlet/*.container
+             ~/kiosk/quadlet/*.network
+             ~/.config/containers/systemd/
+    risk: low
+    rollback_command: "systemctl --user stop kiosk-browser redis || true"
+
+  - id: copy_env
+    action: scp
+    description: "Copy .env to ~/.config/kiosk/.env"
+    src: ".env"
+    dst: "~/.config/kiosk/.env"
+    risk: medium
+
+  - id: systemd_user_daemon_reload
+    action: ssh_cmd
+    description: "Reload systemd user session for Quadlet"
+    command: "systemctl --user daemon-reload"
+    risk: low
+    insert_before: http_health_check
+
+  - id: start_kiosk_network
+    action: ssh_cmd
+    description: "Start kiosk network"
+    command: "systemctl --user start kiosk-network.service"
+    risk: low
+    insert_before: http_health_check
+
+  - id: start_redis
+    action: ssh_cmd
+    description: "Start Redis service"
+    command: "systemctl --user start redis.service"
+    risk: low
+    insert_before: http_health_check
+
+  - id: start_kiosk_browser
+    action: ssh_cmd
+    description: "Start kiosk browser"
+    command: "systemctl --user start kiosk-browser.service"
+    risk: low
+    insert_before: http_health_check
+
+notes:
+  - "Przed uruchomieniem: ustaw host na 'pi@VPS_IP' (source.host i target.host)"
+  - "Rootless Podman — nie wymaga sudo. Upewnij się że 'loginctl enable-linger $USER' jest aktywne"
+  - "Repo musi być sklonowane na VPS: git clone ... ~/kiosk"

@@ -1,0 +1,42 @@
+target: unknown
+scanned_at: '2026-04-21T15:08:44.381141+00:00'
+scanner_version: 0.1.2
+layers:
+  business.health:
+    layer_id: business.health
+    probed_at: '2026-04-21T15:08:44.380730+00:00'
+    probed_by: less_parser
+    data:
+      app_name: doql
+      app_version: 0.1.2
+      overall_health: unknown
+      alerts: []
+    raw_evidence: {}
+  physical.display:
+    layer_id: physical.display
+    probed_at: '2026-04-21T15:08:44.380875+00:00'
+    probed_by: less_parser
+    data:
+      interface_type: cli
+      config:
+        framework: click
+    raw_evidence: {}
+  runtime.container:
+    layer_id: runtime.container
+    probed_at: '2026-04-21T15:08:44.381053+00:00'
+    probed_by: less_parser
+    data:
+      environment_name: local
+      runtime: docker-compose
+      env_file: .env
+    raw_evidence: {}
+  endpoint.http:
+    layer_id: endpoint.http
+    probed_at: '2026-04-21T15:08:44.381126+00:00'
+    probed_by: less_parser
+    data:
+      endpoints:
+      - url: http://localhost
+        target: docker
+    raw_evidence: {}
+anomalies: []

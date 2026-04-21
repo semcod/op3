@@ -1,0 +1,41 @@
+target: unknown
+scanned_at: '2026-04-21T15:08:46.256460+00:00'
+scanner_version: 0.1.2
+layers:
+  business.health:
+    layer_id: business.health
+    probed_at: '2026-04-21T15:08:46.255877+00:00'
+    probed_by: less_parser
+    data:
+      app_name: fraq
+      app_version: 0.2.14
+      overall_health: unknown
+      alerts: []
+    raw_evidence: {}
+  physical.display:
+    layer_id: physical.display
+    probed_at: '2026-04-21T15:08:46.256075+00:00'
+    probed_by: less_parser
+    data:
+      interface_type: cli
+      config:
+        framework: click
+    raw_evidence: {}
+  runtime.container:
+    layer_id: runtime.container
+    probed_at: '2026-04-21T15:08:46.256324+00:00'
+    probed_by: less_parser
+    data:
+      environment_name: local
+      runtime: python
+    raw_evidence: {}
+  endpoint.http:
+    layer_id: endpoint.http
+    probed_at: '2026-04-21T15:08:46.256436+00:00'
+    probed_by: less_parser
+    data:
+      endpoints:
+      - url: http://localhost
+        target: pip
+    raw_evidence: {}
+anomalies: []

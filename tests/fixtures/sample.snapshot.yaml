@@ -1,0 +1,132 @@
+# Synthetic snapshot fixture for op3 testing
+# Based on real migration.yaml files from redeploy projects
+
+target: pi@192.168.188.109
+scanned_at: "2026-04-21T15:00:00Z"
+scanner_version: "0.1.0"
+layers:
+  physical.display:
+    probed_at: "2026-04-21T15:00:00Z"
+    probed_by: "rpi_physical_display"
+    data:
+      board_model: "Raspberry Pi 5 Model B Rev 1.0"
+      drm_outputs:
+        - name: card0-DSI-1
+          connector: DSI-1
+          status: connected
+          enabled: enabled
+          edid_bytes: 0
+          dpms: On
+        - name: card1-HDMI-A-1
+          connector: HDMI-A-1
+          status: connected
+          enabled: enabled
+          edid_bytes: 128
+          dpms: On
+      backlights:
+        - name: raspberrypi-touchscreen
+          brightness: 255
+          max_brightness: 255
+      kms_enabled: true
+      kms_driver: vc4-kms-v3d
+    raw_evidence:
+      config_txt_path: /boot/firmware/config.txt
+
+  os.kernel:
+    probed_at: "2026-04-21T15:00:01Z"
+    probed_by: "os_linux"
+    data:
+      version: "6.6.20+rpt-rpi-v8"
+      arch: aarch64
+      hostname: "pi5-kiosk"
+      uptime_seconds: 345678
+    raw_evidence: {}
+
+  os.config:
+    probed_at: "2026-04-21T15:00:01Z"
+    probed_by: "os_linux"
+    data:
+      config_txt: |
+        # Enable DRM VC4 V3D driver
+        dtoverlay=vc4-kms-v3d
+        max_framebuffers=2
+        dtparam=i2c_vc=on
+      cmdline: |
+        console=serial0,115200 console=tty1 root=PARTUUID=...
+    raw_evidence: {}
+
+  runtime.container:
+    probed_at: "2026-04-21T15:00:02Z"
+    probed_by: "runtime_container"
+    data:
+      runtime: podman
+      version: "4.4.4"
+      containers:
+        - name: kiosk-browser
+          image: localhost/kiosk-browser:latest
+          state: running
+          restart_policy: always
+        - name: redis
+          image: docker.io/library/redis:7-alpine
+          state: running
+          restart_policy: always
+    raw_evidence: {}
+
+  runtime.compositor:
+    probed_at: "2026-04-21T15:00:02Z"
+    probed_by: "runtime_compositor"
+    data:
+      compositor: labwc
+      version: "0.6.5"
+      kanshi_enabled: true
+      kanshi_profiles:
+        - name: dsi-only
+          outputs:
+            - name: DSI-1
+              enable: true
+            - name: HDMI-A-1
+              enable: false
+      active_profile: dsi-only
+    raw_evidence: {}
+
+  service.containers:
+    probed_at: "2026-04-21T15:00:03Z"
+    probed_by: "service_containers"
+    data:
+      systemd_services:
+        - name: kiosk-browser.service
+          state: active
+          enabled: true
+        - name: redis.service
+          state: active
+          enabled: true
+    raw_evidence: {}
+
+  endpoint.http:
+    probed_at: "2026-04-21T15:00:04Z"
+    probed_by: "endpoint_http"
+    data:
+      endpoints:
+        - url: http://localhost:4000/health
+          method: GET
+          status_code: 200
+          response_time_ms: 45
+          healthy: true
+        - url: http://localhost:6379
+          method: PING
+          status_code: null
+          response_time_ms: 2
+          healthy: true
+    raw_evidence: {}
+
+  business.health:
+    probed_at: "2026-04-21T15:00:05Z"
+    probed_by: "business_health"
+    data:
+      app_name: kiosk
+      app_version: "0.1.123"
+      overall_health: healthy
+      alerts: []
+    raw_evidence: {}
+
+anomalies: []

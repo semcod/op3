@@ -1,0 +1,109 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: doql;
+  version: 0.1.2;
+}
+
+interface[type="cli"] {
+  framework: click;
+}
+interface[type="cli"] page[name="doql"] {
+
+}
+
+workflow[name="install"] {
+  trigger: manual;
+  step-1: run cmd=pip install -e .[dev];
+}
+
+workflow[name="quality"] {
+  trigger: manual;
+  step-1: run cmd=pyqual run;
+}
+
+workflow[name="quality:fix"] {
+  trigger: manual;
+  step-1: run cmd=pyqual run --fix;
+}
+
+workflow[name="quality:report"] {
+  trigger: manual;
+  step-1: run cmd=pyqual report;
+}
+
+workflow[name="build"] {
+  trigger: manual;
+  step-1: run cmd=python -m build;
+}
+
+workflow[name="clean"] {
+  trigger: manual;
+  step-1: run cmd=rm -rf build/ dist/ *.egg-info;
+}
+
+workflow[name="structure"] {
+  trigger: manual;
+  step-1: run cmd=echo "📁 Analyzing project structure..."
+python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force
+echo "🎨 Exporting to LESS format..."
+doql export --format less -o {{.DOQL_OUTPUT}}
+echo "✅ Structure generated: app.doql.css + {{.DOQL_OUTPUT}}";
+}
+
+workflow[name="doql:adopt"] {
+  trigger: manual;
+  step-1: run cmd=python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force;
+  step-2: run cmd=echo "✅ Captured in app.doql.css";
+}
+
+workflow[name="doql:export"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -f "app.doql.css" ]; then
+  echo "❌ app.doql.css not found. Run: task structure"
+  exit 1
+fi;
+  step-2: run cmd=doql export --format less -o {{.DOQL_OUTPUT}};
+  step-3: run cmd=echo "✅ Exported to {{.DOQL_OUTPUT}}";
+}
+
+workflow[name="doql:validate"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -f "{{.DOQL_OUTPUT}}" ]; then
+  echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
+  exit 1
+fi;
+  step-2: run cmd=python3 -m doql.cli validate;
+}
+
+workflow[name="doql:doctor"] {
+  trigger: manual;
+  step-1: run cmd=python3 -m doql.cli doctor {{.PWD}};
+}
+
+workflow[name="doql:build"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -f "{{.DOQL_OUTPUT}}" ]; then
+  echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
+  exit 1
+fi;
+  step-2: run cmd=# Regenerate LESS from CSS if CSS exists
+if [ -f "app.doql.css" ]; then
+  doql export --format less -o {{.DOQL_OUTPUT}}
+fi;
+  step-3: run cmd=python3 -m doql.cli build app.doql.css --out build/;
+}
+
+workflow[name="help"] {
+  trigger: manual;
+  step-1: run cmd=task --list;
+}
+
+deploy {
+  target: docker;
+}
+
+environment[name="local"] {
+  runtime: docker-compose;
+  env_file: .env;
+}
