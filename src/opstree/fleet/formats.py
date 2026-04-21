@@ -11,10 +11,11 @@ def _unflatten(paths: dict[str, Any]) -> dict[str, Any]:
     layers: dict[str, Any] = {}
     for path, value in paths.items():
         parts = path.split(".")
-        if len(parts) < 2:
+        if len(parts) < 3:
             continue
-        layer_id, *_ = parts
-        rest = parts[2:]
+        # Paths from _flatten_snapshot are "<layer_id>.data.<...>"
+        layer_id = f"{parts[0]}.{parts[1]}"
+        rest = parts[3:]
         node = layers.setdefault(layer_id, {})
         for key in rest[:-1]:
             node = node.setdefault(key, {})

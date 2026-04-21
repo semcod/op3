@@ -36,11 +36,7 @@ literal.
 ## Layers
 
 ```python
-from opstree import (
-    LayerTree,
-    PhysicalLayer, OsLayer, RuntimeLayer,
-    ServiceLayer, EndpointLayer, BusinessLayer,
-)
+from opstree import LayerTree, PhysicalLayer, OsLayer, RuntimeLayer, ServiceLayer, EndpointLayer, BusinessLayer
 ```
 
 ### `LayerTree`
@@ -126,10 +122,7 @@ Fields: `layer_id`, `path`, `type` (`"added" | "removed" | "modified"`),
 ## Probes
 
 ```python
-from opstree import (
-    Probe, ProbeContext, ProbeResult,
-    ProbeRegistry, register_probe,
-)
+from opstree import Probe, ProbeContext, ProbeResult, ProbeRegistry, register_probe
 ```
 
 ### `Probe` (protocol)
@@ -175,7 +168,7 @@ default registry. Application code should usually create its own
 ## Scanner
 
 ```python
-from opstree import LinearScanner, scan_device, build_layer_tree, build_scanner
+from opstree import LinearScanner, AdaptiveScanner, scan_device, build_layer_tree, build_scanner
 ```
 
 ### `LinearScanner`
@@ -190,6 +183,30 @@ snapshot = scanner.scan(target="pi@host", execute=ssh_exec_fn)
 
 `scanner.scan` stamps the returned `Snapshot.scanner_version` with
 `opstree.__version__`.
+
+### `AdaptiveScanner`
+
+Extends `LinearScanner` with follow-up probe capability. When a primary
+probe reports anomalies, registered follow-up probes for that layer are
+executed conditionally.
+
+```python
+scanner = AdaptiveScanner(layer_tree)
+scanner.probe_registry = my_registry
+scanner.register_followup("physical.display", kanshi_reconcile_probe)
+snapshot = scanner.scan(target="pi@host", execute=ssh_exec_fn)
+```
+
+Methods:
+- `register_followup(trigger_layer: str, probe: Probe) -> None` — register
+  a follow-up probe to run when `trigger_layer` reports anomalies
+
+Follow-up probes are only invoked when:
+1. The trigger layer reports at least one anomaly
+2. The follow-up probe's `can_probe(ctx)` returns `True`
+
+This pattern keeps lightweight anomaly detection in the primary probe (same
+pass) and heavy reconciliation logic in follow-ups (run only when needed).
 
 ### `scan_device(target, execute, layer_tree) -> Snapshot`
 
@@ -215,7 +232,7 @@ custom probes; pass `include_default_probes=False` to skip builtins.
 ## Fleet
 
 ```python
-from opstree import FleetSnapshot, FleetVariance, compute_variance, scan_fleet
+from opstree import FleetSnapshot, FleetVariance, compute_variance, scan_fleet, render_common_as_snapshot, render_variant_matrix
 ```
 
 Added in 0.2.0. Groups N :class:`Snapshot` results together with a

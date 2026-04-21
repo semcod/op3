@@ -11,11 +11,15 @@ from opstree.snapshot.diff import snapshot_diff, Change
 from opstree.probes.base import Probe, ProbeContext, ProbeResult
 from opstree.probes.registry import ProbeRegistry, register_probe
 from opstree.scanner.linear import LinearScanner, scan_device
+from opstree.scanner.adaptive import AdaptiveScanner
 from opstree.scanner.build import build_layer_tree, build_scanner
 from opstree.formats import FormatRegistry, register_format
 from opstree.drift.detector import DriftDetector, DriftReport
 from opstree.diagnostics import Diagnostic, Rule, RuleEngine, Severity
-from opstree.fleet import FleetSnapshot, FleetVariance, compute_variance, scan_fleet
+from opstree.fleet import (
+    FleetSnapshot, FleetVariance, compute_variance, scan_fleet,
+    render_common_as_snapshot, render_variant_matrix,
+)
 
 __all__ = [
     "__version__",
@@ -31,10 +35,12 @@ __all__ = [
     "ProbeRegistry", "register_probe",
     # Scanner
     "LinearScanner", "scan_device",
+    "AdaptiveScanner",
     "build_layer_tree", "build_scanner",
     # Fleet
     "FleetSnapshot", "FleetVariance",
     "compute_variance", "scan_fleet",
+    "render_common_as_snapshot", "render_variant_matrix",
     # Formats
     "FormatRegistry", "register_format",
     # Drift

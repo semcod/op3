@@ -13,10 +13,13 @@ and ``redeploy drift --fleet`` (check a whole tag cohort at once).
 """
 from opstree.fleet.model import FleetSnapshot, FleetVariance
 from opstree.fleet.scanner import compute_variance, scan_fleet
+from opstree.fleet.formats import render_common_as_snapshot, render_variant_matrix
 
 __all__ = [
     "FleetSnapshot",
     "FleetVariance",
     "compute_variance",
     "scan_fleet",
+    "render_common_as_snapshot",
+    "render_variant_matrix",
 ]

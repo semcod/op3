@@ -1,0 +1,9 @@
+# op3 quality gates (A3)
+# Enforced in CI; any violation fails the build.
+metrics:
+  cc_max: 15
+  critical_max: 0
+  fanout_max: 20
+
+# compute_variance fan=12 is grandfathered — any *new* function
+# exceeding fanout_max will block the PR.

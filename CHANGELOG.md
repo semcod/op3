@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Sprint 4: AdaptiveScanner + follow-up probes
+- `AdaptiveScanner` (`opstree.scanner.adaptive`) extends `LinearScanner` with a
+  `followup_registry`: after a primary probe reports anomalies, every
+  follow-up probe registered for that layer is asked `can_probe` and, if
+  eligible, scanned.  Results are added as new layers (`runtime.compositor`,
+  `runtime.compositor.kanshi`, etc.).  Keeps primary probes lightweight
+  while allowing heavy reconciliation logic to run only when needed.
+- `CompositorProbe` (`runtime.compositor`) detects Wayland compositor
+  (labwc / sway / weston / wayfire) and kanshi state (profiles, active
+  profile).  Flags anomaly when kanshi is installed but no profile is active.
+- `KanshiReconcileProbe` (`runtime.compositor.kanshi`) follow-up probe that
+  suggests a dual-output kanshi profile when both DSI and HDMI connectors
+  are present.  Concrete benchmark from `c2004/pi109` — the scanner now
+  detects "HDMI + DSI enabled simultaneously" and proposes a `kanshi`
+  reconciliation profile instead of leaving output routing ambiguous.
+- 10 new tests in `tests/unit/test_adaptive_scanner.py` covering
+  follow-up trigger / skip / anomaly propagation, `CompositorProbe`
+  can_probe / scan / anomalies, and `KanshiReconcileProbe` profile suggestion.
+- `opstree.__init__` re-exports `AdaptiveScanner`.
+
+### Fixed
+- `opstree.fleet.formats._unflatten` now correctly reconstructs two-segment
+  layer ids (e.g. `os.kernel`, `physical.display`) from flattened variance
+  paths.  Previously it took only the first segment (`os`) producing nested
+  `data` dicts and failing `test_fleet_formats.py` assertions.
+
 ### Added — Sprint 3: LessAdapter feature extensions
 - `LessAdapter` now supports **inline comments** (`// ...` stripped
   from any line before key/value extraction), **multi-line values**
@@ -43,6 +69,22 @@ adapter-of-adapters for `FraqNode` — it does not provide snapshot
 merging semantics. A native implementation based on
 `opstree.snapshot` primitives is simpler, transport-agnostic, and keeps
 `fraq` as a dependency for what it actually does well.
+
+## [0.2.4] - 2026-04-21
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/API.md
+- Update project/integration-roadmap.md
+
+### Test
+- Update tests/contract/test_public_api.py
+- Update tests/unit/test_adaptive_scanner.py
+- Update tests/unit/test_fleet_formats.py
+
+### Other
+- Update pyqual.yaml
 
 ## [0.2.3] - 2026-04-21
 

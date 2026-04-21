@@ -128,16 +128,26 @@ Explicitly **out of scope for op3's LessAdapter** (stay in doql):
 
 ---
 
-## Sprint 4 — AdaptiveScanner with anomaly → follow-up
+## Sprint 4 — AdaptiveScanner with anomaly → follow-up (DONE, shipped in [Unreleased])
 
 Prerequisite: Sprints 1–3 complete and stable.
 
-Scanner backtracking & anomaly-driven follow-up probes. Concrete
-benchmark from session 109 on `c2004/pi109`: scanner must detect
-"HDMI + DSI enabled simultaneously" and suggest a `kanshi` profile
-reconciliation probe.
+Delivered:
 
-Deferred spec — lock after Sprint 3.
+- `AdaptiveScanner` extends `LinearScanner` with `followup_registry`:
+  mapping trigger layer → list of follow-up `Probe` objects. After a
+  primary probe reports anomalies, every registered follow-up is asked
+  `can_probe`; if eligible it is scanned and its layer added to the
+  snapshot. This keeps primary probes lightweight (single pass) and
+  reconciliation / deep-dive logic in follow-ups (run only when needed).
+- `CompositorProbe` (`runtime.compositor`) detects Wayland compositor
+  (labwc / sway / weston / wayfire) and kanshi state. Flags anomaly when
+  kanshi is installed but no active profile exists.
+- `KanshiReconcileProbe` (`runtime.compositor.kanshi`) follow-up probe
+  registered against `physical.display`. When both DSI and HDMI
+  connectors are present it suggests a dual-output kanshi profile,
+  satisfying the concrete benchmark from `c2004/pi109`.
+- 10 new tests covering trigger / skip / anomaly propagation.
 
 ---
 
