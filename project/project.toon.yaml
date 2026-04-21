@@ -1,54 +1,56 @@
-# op3 | 352 func | 29f | 10371L | python | 2026-04-21
+# op3 | 432 func | 32f | 12578L | python | 2026-04-21
 
 HEALTH:
-  CC̄=1.3  critical=10 (limit:10)  dup=1  cycles=0
+  CC̄=1.1  critical=11 (limit:10)  dup=1  cycles=1
 
-ALERTS[15]:
+ALERTS[17]:
   !!! high_fan_out     scan = 26 (limit:10)
   !!! high_fan_out     RpiPhysicalDisplayProbe.scan = 21 (limit:10)
   !!  cc_exceeded      LessAdapter.render = 22 (limit:15)
   !!  high_fan_out     convert = 17 (limit:10)
+  !!  high_fan_out     compute_variance = 16 (limit:10)
   !   cc_exceeded      RuntimeContainerProbe._list_containers = 18 (limit:15)
   !   cc_exceeded      RpiPhysicalDisplayProbe._probe_wlr_randr = 17 (limit:15)
   !   cc_exceeded      MigrationYamlAdapter.render = 16 (limit:15)
   !   cc_exceeded      scan = 16 (limit:15)
   !   high_fan_out     make_compat_helpers = 14 (limit:10)
-  !   high_fan_out     drift = 13 (limit:10)
 
-MODULES[65] (top by size):
-  M[SUMD.md] 590L C:0 F:114 CC↑0 D:1 (md)
+MODULES[70] (top by size):
+  M[SUMD.md] 668L C:0 F:150 CC↑0 D:0 (md)
+  M[project/calls.yaml] 589L C:0 F:0 CC↑0 D:0 (yaml)
+  M[SUMR.md] 586L C:0 F:0 CC↑0 D:0 (md)
+  M[project/context.md] 570L C:0 F:0 CC↑0 D:0 (md)
+  M[docs/README.md] 556L C:0 F:1 CC↑0 D:0 (md)
   M[src/opstree/probes/builtin/rpi_diagnostics.py] 528L C:0 F:12 CC↑10 D:0 (python)
-  M[project/context.md] 526L C:0 F:0 CC↑0 D:0 (md)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
-  M[SUMR.md] 509L C:0 F:0 CC↑0 D:0 (md)
+  M[docs/API.md] 431L C:0 F:1 CC↑0 D:0 (md)
   M[src/opstree/probes/builtin/physical_rpi.py] 401L C:2 F:22 CC↑17 D:0 (python)
+  M[project/map.toon.yaml] 376L C:0 F:150 CC↑0 D:0 (yaml)
   M[op3_poc.md] 363L C:0 F:0 CC↑0 D:0 (md)
   M[project/README.md] 339L C:0 F:0 CC↑0 D:0 (md)
-  M[project/map.toon.yaml] 318L C:0 F:114 CC↑0 D:0 (yaml)
-  M[project/calls.yaml] 276L C:0 F:0 CC↑0 D:0 (yaml)
-  M[docs/README.md] 264L C:0 F:1 CC↑0 D:0 (md)
+  M[CHANGELOG.md] 245L C:0 F:0 CC↑0 D:0 (md)
+  M[src/opstree/fleet/scanner.py] 222L C:0 F:6 CC↑11 D:0 (python)
   M[src/opstree/formats/less.py] 192L C:1 F:3 CC↑22 D:0 (python)
-  M[src/opstree/layers/builtin.py] 179L C:14 F:0 CC↑0 D:0 (python)
-  M[src/opstree/probes/builtin/runtime_container.py] 173L C:1 F:6 CC↑18 D:0 (python)
-  M[CHANGELOG.md] 171L C:0 F:0 CC↑0 D:0 (md)
-  LANGS: python:41/yaml:12/md:8/shell:1/txt:1/toml:1/json:1
+  LANGS: python:44/yaml:12/md:10/shell:1/txt:1/toml:1/json:1
 
 HOTSPOTS[10]:
   ★ scan fan=26  // Scan a device and output snapshot.
   ★ RpiPhysicalDisplayProbe.scan fan=21  // Orchestrates 21 calls
   ★ convert fan=17  // Convert between configuration formats.
+  ★ compute_variance fan=16  // Compute cross-host variance over a mapping of ``{target: Snapshot}``.
+
+A path is
   ★ make_compat_helpers fan=14  // Build a :class:`CompatHelpers` bundle for a downstream project.
 
 Parameters
 ----
-  ★ drift fan=13  // Detect drift between intended and actual state.
 
-REFACTOR[13]:
+REFACTOR[15]:
   [1] H/H Split god module src/opstree/probes/builtin/rpi_diagnostics.py (528L, 0 classes)
-  [2] H/H Split god module SUMD.md (590L, 0 classes)
-  [3] H/H Split god module SUMR.md (509L, 0 classes)
-  [4] H/H Split god module goal.yaml (512L, 0 classes)
-  [5] H/H Split god module project/context.md (526L, 0 classes)
+  [2] H/H Split god module SUMD.md (668L, 0 classes)
+  [3] H/H Split god module SUMR.md (586L, 0 classes)
+  [4] H/H Split god module docs/README.md (556L, 0 classes)
+  [5] H/H Split god module goal.yaml (512L, 0 classes)
 
 EVOLUTION:
-  2026-04-21 CC̄=1.3 crit=10 10371L // Automated analysis
+  2026-04-21 CC̄=1.1 crit=11 12578L // Automated analysis

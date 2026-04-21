@@ -5,21 +5,21 @@ flowchart TD
 
     subgraph Core
         README__execute["execute"]
-        docs__README__generate_readme["generate_readme"]
-        SUMD__convert["convert"]
-        SUMD__drift["drift"]
-        SUMD__scan["scan"]
-        SUMD__cli["cli"]
-        SUMD__register_format["register_format"]
-        SUMD___dsi_outputs["_dsi_outputs"]
-        SUMD___has_dsi_overlay["_has_dsi_overlay"]
-        SUMD___dsi_connected["_dsi_connected"]
-        SUMD___backlights["_backlights"]
-        SUMD___i2c_buses["_i2c_buses"]
-        SUMD___kernel_modules["_kernel_modules"]
-        SUMD___backlight_chip_addr["_backlight_chip_addr"]
-        SUMD___all_ok["_all_ok"]
-        ...["+319 more"]
+        docs__API__print["print"]
+        src__opstree__drift__detector__DriftDetector__detect["detect"]
+        src__opstree__drift__detector__DriftDetector___summarize_changes["_summarize_changes"]
+        src__opstree__diagnostics__rules__Diagnostic__to_dict["to_dict"]
+        src__opstree__diagnostics__rules__Rule____post_init__["__post_init__"]
+        src__opstree__diagnostics__rules__Rule__evaluate["evaluate"]
+        src__opstree__diagnostics__rules__RuleEngine__evaluate["evaluate"]
+        src__opstree__diagnostics__rules__RuleEngine__any_error["any_error"]
+        src__opstree__probes__base__ProbeContext____post_init__["__post_init__"]
+        src__opstree__probes__base__Probe__can_probe["can_probe"]
+        src__opstree__probes__base__Probe__scan["scan"]
+        src__opstree__probes__base__Probe__anomalies["anomalies"]
+        src__opstree__probes__registry__ProbeRegistry__register["register"]
+        src__opstree__probes__registry__ProbeRegistry__get["get"]
+        ...["+394 more"]
     end
 
-    class README__execute,docs__README__generate_readme,SUMD__convert,SUMD__drift,SUMD__scan,SUMD__cli,SUMD__register_format,SUMD___dsi_outputs,SUMD___has_dsi_overlay,SUMD___dsi_connected entry
+    class README__execute,docs__API__print,src__opstree__drift__detector__DriftDetector__detect,src__opstree__drift__detector__DriftDetector___summarize_changes,src__opstree__diagnostics__rules__Diagnostic__to_dict,src__opstree__diagnostics__rules__Rule____post_init__,src__opstree__diagnostics__rules__Rule__evaluate,src__opstree__diagnostics__rules__RuleEngine__evaluate,src__opstree__diagnostics__rules__RuleEngine__any_error,src__opstree__probes__base__ProbeContext____post_init__ entry

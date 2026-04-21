@@ -4,21 +4,21 @@
 
 - **Project**: /home/tom/github/semcod/op3
 - **Primary Language**: python
-- **Languages**: python: 41, yaml: 12, md: 8, toml: 1, shell: 1
+- **Languages**: python: 44, yaml: 12, md: 10, toml: 1, shell: 1
 - **Analysis Mode**: static
-- **Total Functions**: 352
-- **Total Classes**: 48
-- **Modules**: 65
-- **Entry Points**: 342
+- **Total Functions**: 432
+- **Total Classes**: 50
+- **Modules**: 70
+- **Entry Points**: 417
 
 ## Architecture by Module
 
 ### SUMD
-- **Functions**: 114
+- **Functions**: 150
 - **File**: `SUMD.md`
 
 ### project.map.toon
-- **Functions**: 114
+- **Functions**: 150
 - **File**: `map.toon.yaml`
 
 ### src.opstree.probes.builtin.physical_rpi
@@ -26,44 +26,38 @@
 - **Classes**: 2
 - **File**: `physical_rpi.py`
 
-### src.opstree.probes.builtin.rpi_diagnostics
-- **Functions**: 12
-- **File**: `rpi_diagnostics.py`
-
 ### src.opstree.probes.builtin.os_linux
 - **Functions**: 12
 - **Classes**: 2
 - **File**: `os_linux.py`
+
+### src.opstree.probes.builtin.rpi_diagnostics
+- **Functions**: 12
+- **File**: `rpi_diagnostics.py`
 
 ### src.opstree.probes.registry
 - **Functions**: 7
 - **Classes**: 1
 - **File**: `registry.py`
 
-### src.opstree.probes.builtin.runtime_container
-- **Functions**: 6
-- **Classes**: 1
-- **File**: `runtime_container.py`
-
 ### src.opstree.diagnostics.rules
 - **Functions**: 6
 - **Classes**: 3
 - **File**: `rules.py`
 
+### src.opstree.probes.builtin.runtime_container
+- **Functions**: 6
+- **Classes**: 1
+- **File**: `runtime_container.py`
+
+### src.opstree.fleet.scanner
+- **Functions**: 6
+- **File**: `scanner.py`
+
 ### src.opstree.layers.tree
 - **Functions**: 6
 - **Classes**: 2
 - **File**: `tree.py`
-
-### src.opstree.formats.registry
-- **Functions**: 5
-- **Classes**: 1
-- **File**: `registry.py`
-
-### src.opstree.probes.builtin.service_containers
-- **Functions**: 5
-- **Classes**: 1
-- **File**: `service_containers.py`
 
 ### src.opstree.probes.builtin.business_health
 - **Functions**: 5
@@ -75,40 +69,45 @@
 - **Classes**: 1
 - **File**: `endpoint_http.py`
 
-### src.opstree.probes.context
-- **Functions**: 4
-- **Classes**: 5
-- **File**: `context.py`
+### src.opstree.probes.builtin.service_containers
+- **Functions**: 5
+- **Classes**: 1
+- **File**: `service_containers.py`
+
+### src.opstree.formats.registry
+- **Functions**: 5
+- **Classes**: 1
+- **File**: `registry.py`
 
 ### src.opstree.probes.base
 - **Functions**: 4
 - **Classes**: 3
 - **File**: `base.py`
 
+### src.opstree.probes.context
+- **Functions**: 4
+- **Classes**: 5
+- **File**: `context.py`
+
 ### src.opstree.snapshot.model
 - **Functions**: 4
 - **Classes**: 3
 - **File**: `model.py`
-
-### src.opstree.scanner.linear
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `linear.py`
 
 ### src.opstree.formats.less
 - **Functions**: 3
 - **Classes**: 1
 - **File**: `less.py`
 
-### src.opstree.formats.migration_yaml
-- **Functions**: 2
+### src.opstree.scanner.linear
+- **Functions**: 3
 - **Classes**: 1
-- **File**: `migration_yaml.py`
+- **File**: `linear.py`
 
-### src.opstree.formats.snapshot_yaml
+### src.opstree.drift.detector
 - **Functions**: 2
-- **Classes**: 1
-- **File**: `snapshot_yaml.py`
+- **Classes**: 2
+- **File**: `detector.py`
 
 ## Key Entry Points
 
@@ -118,13 +117,13 @@ Main execution flows into the system:
 > Renderuj Snapshot → LESS.
 - **Calls**: snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, None.join, business_layer.data.get, business_layer.data.get
 
-### src.opstree.cli.commands.scan.scan
-> Scan a device and output snapshot.
-- **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, LayerTree, ProbeRegistry
-
 ### src.opstree.formats.less.LessAdapter.parse
 > Parsuj LESS → PartialSnapshot.
 - **Calls**: re.search, re.finditer, re.finditer, re.finditer, re.search, PartialSnapshot, None.strip, None.strip
+
+### src.opstree.cli.commands.scan.scan
+> Scan a device and output snapshot.
+- **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, LayerTree, ProbeRegistry
 
 ### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers
 > Lista kontenerów.
@@ -178,35 +177,22 @@ env_var:
 ### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights
 - **Calls**: _Exec.run, listing.lines, None.int_, None.int_, None.int_, out.append, listing.stdout.strip, None.text
 
-### src.opstree.probes.builtin.os_linux.OsKernelProbe._get_uptime
-- **Calls**: ctx.execute, hasattr, float, int, float, int, None.split, None.split
+### src.opstree.fleet.scanner.scan_fleet
+> Scan every target in ``target_execute`` concurrently.
+
+Parameters
+----------
+scanner:
+    A wired :class:`LinearScanner` (typically from
+    :func:`op
+- **Calls**: list, src.opstree.fleet.scanner.compute_variance, FleetSnapshot, target_execute.keys, FleetSnapshot, min, ThreadPoolExecutor, as_completed
 
 ### src.opstree.diagnostics.rules.Rule.evaluate
 > Return zero or more diagnostics produced by this rule.
 - **Calls**: list, self.predicate, callable, self.message, callable, self.fix, self.evidence, Diagnostic
 
-### src.opstree.snapshot.diff.snapshot_diff
-> Compare two snapshots and return a list of changes.
-
-Args:
-    a: First snapshot (old state)
-    b: Second snapshot (new state)
-
-Returns:
-    List of 
-- **Calls**: set, set, a.layers.keys, b.layers.keys, changes.append, changes.append, src.opstree.snapshot.diff._diff_layer_data, changes.extend
-
-### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render
-> Renderuj Snapshot → snapshot.yaml.
-- **Calls**: snapshot.layers.items, hasattr, yaml.dump, hasattr, snapshot.scanned_at.isoformat, None.isoformat, hasattr, layer_data.probed_at.isoformat
-
-### src.opstree.scanner.linear.LinearScanner.scan
-> Scan all layers and return a complete snapshot.
-- **Calls**: ProbeContext, self.layer_tree.topological_order, Snapshot, self.probe_registry.get, probe.can_probe, datetime.now, probe.scan, probe.anomalies
-
-### src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services
-> Lista systemd services.
-- **Calls**: _exec, ctx.execute, hasattr, None.splitlines, line.split, stdout.strip, len, services.append
+### src.opstree.probes.builtin.os_linux.OsKernelProbe._get_uptime
+- **Calls**: ctx.execute, hasattr, float, int, float, int, None.split, None.split
 
 ### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe._check_endpoint
 > Sprawdź pojedynczy endpoint.
@@ -215,6 +201,18 @@ Returns:
 ### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies
 > Wykryj anomalie w endpointach.
 - **Calls**: data.data.get, ep.get, anomalies.append, ep.get, anomalies.append, ep.get, ep.get, ep.get
+
+### src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services
+> Lista systemd services.
+- **Calls**: _exec, ctx.execute, hasattr, None.splitlines, line.split, stdout.strip, len, services.append
+
+### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render
+> Renderuj Snapshot → snapshot.yaml.
+- **Calls**: snapshot.layers.items, hasattr, yaml.dump, hasattr, snapshot.scanned_at.isoformat, None.isoformat, hasattr, layer_data.probed_at.isoformat
+
+### src.opstree.scanner.linear.LinearScanner.scan
+> Scan all layers and return a complete snapshot.
+- **Calls**: ProbeContext, self.layer_tree.topological_order, Snapshot, self.probe_registry.get, probe.can_probe, datetime.now, probe.scan, probe.anomalies
 
 ### src.opstree.layers.tree.LayerTree.topological_order
 > Zwróć warstwy w kolejności do skanowania (DAG).
@@ -227,15 +225,16 @@ Returns:
 > Parse a LESS block into key-value pairs.
 - **Calls**: body.split, line.strip, line.split, None.strip, line.startswith, key.strip, None.rstrip, value.strip
 
-### src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
-- **Calls**: src.opstree.probes.builtin.rpi_diagnostics._backlights, bl.get, bl.get, bl.get, Diagnostic, Diagnostic, bl.get
-
 ### src.opstree.probes.builtin.os_linux.OsKernelProbe.scan
 > Zeskanuj warstwę.
 - **Calls**: ProbeResult, self._get_kernel_version, self._get_arch, self._get_hostname, self._get_uptime, LayerData, datetime.now
 
-### src.opstree.probes.builtin.physical_rpi._Exec.run
-- **Calls**: ctx.execute, hasattr, cls, cls, cls, bool, getattr
+### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan
+> Zeskanuj warstwę.
+- **Calls**: ProbeResult, endpoint.get, endpoint.get, self._check_endpoint, results.append, LayerData, datetime.now
+
+### src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+- **Calls**: src.opstree.probes.builtin.rpi_diagnostics._backlights, bl.get, bl.get, bl.get, Diagnostic, Diagnostic, bl.get
 
 ## Process Flows
 
@@ -246,14 +245,14 @@ Key execution flows identified:
 render [src.opstree.formats.less.LessAdapter]
 ```
 
-### Flow 2: scan
-```
-scan [src.opstree.cli.commands.scan]
-```
-
-### Flow 3: parse
+### Flow 2: parse
 ```
 parse [src.opstree.formats.less.LessAdapter]
+```
+
+### Flow 3: scan
+```
+scan [src.opstree.cli.commands.scan]
 ```
 
 ### Flow 4: _list_containers
@@ -308,21 +307,6 @@ _scan_drm [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe]
 - **Methods**: 6
 - **Key Methods**: src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.__init__, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies
 
-### src.opstree.probes.builtin.os_linux.OsConfigProbe
-> Skanuje konfigurację systemu.
-- **Methods**: 5
-- **Key Methods**: src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe, src.opstree.probes.builtin.os_linux.OsConfigProbe.scan, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline, src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies
-
-### src.opstree.probes.builtin.service_containers.ServiceContainersProbe
-> Skanuje systemd services.
-- **Methods**: 5
-- **Key Methods**: src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe, src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan, src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services, src.opstree.probes.builtin.service_containers.ServiceContainersProbe._is_service_enabled, src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies
-
-### src.opstree.probes.builtin.business_health.BusinessHealthProbe
-> Skanuje zdrowie aplikacji.
-- **Methods**: 5
-- **Key Methods**: src.opstree.probes.builtin.business_health.BusinessHealthProbe.__init__, src.opstree.probes.builtin.business_health.BusinessHealthProbe.can_probe, src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan, src.opstree.probes.builtin.business_health.BusinessHealthProbe._check_health_endpoint, src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies
-
 ### src.opstree.probes.registry.ProbeRegistry
 > Registry for probes keyed by ``layer_id``.
 
@@ -330,27 +314,30 @@ Each instance owns its own probe dict — create a fresh r
 - **Methods**: 5
 - **Key Methods**: src.opstree.probes.registry.ProbeRegistry.__init__, src.opstree.probes.registry.ProbeRegistry.register, src.opstree.probes.registry.ProbeRegistry.get, src.opstree.probes.registry.ProbeRegistry.all, src.opstree.probes.registry.ProbeRegistry.clear
 
+### src.opstree.probes.builtin.business_health.BusinessHealthProbe
+> Skanuje zdrowie aplikacji.
+- **Methods**: 5
+- **Key Methods**: src.opstree.probes.builtin.business_health.BusinessHealthProbe.__init__, src.opstree.probes.builtin.business_health.BusinessHealthProbe.can_probe, src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan, src.opstree.probes.builtin.business_health.BusinessHealthProbe._check_health_endpoint, src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies
+
+### src.opstree.probes.builtin.os_linux.OsConfigProbe
+> Skanuje konfigurację systemu.
+- **Methods**: 5
+- **Key Methods**: src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe, src.opstree.probes.builtin.os_linux.OsConfigProbe.scan, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline, src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies
+
 ### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe
 > Skanuje HTTP endpoints.
 - **Methods**: 5
 - **Key Methods**: src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.__init__, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.can_probe, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe._check_endpoint, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies
 
+### src.opstree.probes.builtin.service_containers.ServiceContainersProbe
+> Skanuje systemd services.
+- **Methods**: 5
+- **Key Methods**: src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe, src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan, src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services, src.opstree.probes.builtin.service_containers.ServiceContainersProbe._is_service_enabled, src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies
+
 ### src.opstree.layers.tree.LayerTree
 > Drzewo warstw — topological ordering, dependency resolution.
 - **Methods**: 5
 - **Key Methods**: src.opstree.layers.tree.LayerTree.__init__, src.opstree.layers.tree.LayerTree.register, src.opstree.layers.tree.LayerTree.get, src.opstree.layers.tree.LayerTree.topological_order, src.opstree.layers.tree.LayerTree.to_fraq_node
-
-### src.opstree.formats.registry.FormatRegistry
-> Registry for format adapters (wraps fraq's FormatRegistry).
-- **Methods**: 4
-- **Key Methods**: src.opstree.formats.registry.FormatRegistry.register, src.opstree.formats.registry.FormatRegistry.get, src.opstree.formats.registry.FormatRegistry.available, src.opstree.formats.registry.FormatRegistry.serialize
-
-### src.opstree.probes.builtin.physical_rpi._Exec
-> Uniform adapter over the two shapes ``ProbeContext.execute`` returns.
-
-Historically some probes retu
-- **Methods**: 4
-- **Key Methods**: src.opstree.probes.builtin.physical_rpi._Exec.run, src.opstree.probes.builtin.physical_rpi._Exec.lines, src.opstree.probes.builtin.physical_rpi._Exec.text, src.opstree.probes.builtin.physical_rpi._Exec.int_
 
 ### src.opstree.diagnostics.rules.RuleEngine
 > Runs a list of :class:`Rule` objects against a subject.
@@ -360,22 +347,47 @@ Stateless and reusable; keep one per rule-s
 - **Key Methods**: src.opstree.diagnostics.rules.RuleEngine.__init__, src.opstree.diagnostics.rules.RuleEngine.rules, src.opstree.diagnostics.rules.RuleEngine.evaluate, src.opstree.diagnostics.rules.RuleEngine.any_error
 - **Inherits**: <ast.Subscript object at 0x75d29502d310>
 
+### src.opstree.probes.builtin.physical_rpi._Exec
+> Uniform adapter over the two shapes ``ProbeContext.execute`` returns.
+
+Historically some probes retu
+- **Methods**: 4
+- **Key Methods**: src.opstree.probes.builtin.physical_rpi._Exec.run, src.opstree.probes.builtin.physical_rpi._Exec.lines, src.opstree.probes.builtin.physical_rpi._Exec.text, src.opstree.probes.builtin.physical_rpi._Exec.int_
+
+### src.opstree.formats.registry.FormatRegistry
+> Registry for format adapters (wraps fraq's FormatRegistry).
+- **Methods**: 4
+- **Key Methods**: src.opstree.formats.registry.FormatRegistry.register, src.opstree.formats.registry.FormatRegistry.get, src.opstree.formats.registry.FormatRegistry.available, src.opstree.formats.registry.FormatRegistry.serialize
+
 ### src.opstree.snapshot.model.Snapshot
 > Pełna migawka urządzenia/systemu.
 - **Methods**: 4
 - **Key Methods**: src.opstree.snapshot.model.Snapshot.layer, src.opstree.snapshot.model.Snapshot.query, src.opstree.snapshot.model.Snapshot.to_yaml, src.opstree.snapshot.model.Snapshot.load
 - **Inherits**: BaseModel
 
-### src.opstree.formats.less.LessAdapter
-> Parsuj i emituj .doql.less.
-- **Methods**: 3
-- **Key Methods**: src.opstree.formats.less.LessAdapter.parse, src.opstree.formats.less.LessAdapter.render, src.opstree.formats.less.LessAdapter._parse_block
-
 ### src.opstree.probes.base.Probe
 > Kontrakt probe'a.
 - **Methods**: 3
 - **Key Methods**: src.opstree.probes.base.Probe.can_probe, src.opstree.probes.base.Probe.scan, src.opstree.probes.base.Probe.anomalies
 - **Inherits**: Protocol
+
+### src.opstree.formats.less.LessAdapter
+> Parsuj i emituj .doql.less.
+- **Methods**: 3
+- **Key Methods**: src.opstree.formats.less.LessAdapter.parse, src.opstree.formats.less.LessAdapter.render, src.opstree.formats.less.LessAdapter._parse_block
+
+### src.opstree.drift.detector.DriftDetector
+> Detect drift between intended state (from config) and actual state (from scan).
+- **Methods**: 2
+- **Key Methods**: src.opstree.drift.detector.DriftDetector.detect, src.opstree.drift.detector.DriftDetector._summarize_changes
+
+### src.opstree.diagnostics.rules.Rule
+> Declarative diagnostic rule over subject ``T``.
+
+Exactly one of ``predicate`` (single-shot) or ``dyn
+- **Methods**: 2
+- **Key Methods**: src.opstree.diagnostics.rules.Rule.__post_init__, src.opstree.diagnostics.rules.Rule.evaluate
+- **Inherits**: <ast.Subscript object at 0x75d295020f90>
 
 ### src.opstree.formats.migration_yaml.MigrationYamlAdapter
 > Parsuj i emituj migration.yaml (redeploy-compatible).
@@ -392,40 +404,24 @@ Stateless and reusable; keep one per rule-s
 - **Methods**: 2
 - **Key Methods**: src.opstree.scanner.linear.LinearScanner.__init__, src.opstree.scanner.linear.LinearScanner.scan
 
-### src.opstree.drift.detector.DriftDetector
-> Detect drift between intended state (from config) and actual state (from scan).
-- **Methods**: 2
-- **Key Methods**: src.opstree.drift.detector.DriftDetector.detect, src.opstree.drift.detector.DriftDetector._summarize_changes
-
-### src.opstree.diagnostics.rules.Rule
-> Declarative diagnostic rule over subject ``T``.
-
-Exactly one of ``predicate`` (single-shot) or ``dyn
-- **Methods**: 2
-- **Key Methods**: src.opstree.diagnostics.rules.Rule.__post_init__, src.opstree.diagnostics.rules.Rule.evaluate
-- **Inherits**: <ast.Subscript object at 0x75d295020f90>
-
 ## Data Transformation Functions
 
 Key functions that process and transform data:
 
-### SUMD.convert
-
-### SUMD.register_format
-
-### SUMD.test_cli_convert_help
-
-### SUMD.test_cli_convert_less_to_snapshot_yaml
-
-### SUMD.test_cli_convert_less_to_migration_yaml
-
-### SUMD.test_cli_convert_less_to_less
-
-### SUMD.test_less_adapter_parse
+### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_compositor_processes
+- **Output to**: _Exec.run, r.stdout.strip, int, None.split, x.strip
 
 ### src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse
 > Parsuj migration.yaml → PartialSnapshot.
 - **Output to**: yaml.safe_load, data.get, data.get, PartialSnapshot, LayerData
+
+### src.opstree.formats.less.LessAdapter.parse
+> Parsuj LESS → PartialSnapshot.
+- **Output to**: re.search, re.finditer, re.finditer, re.finditer, re.search
+
+### src.opstree.formats.less.LessAdapter._parse_block
+> Parse a LESS block into key-value pairs.
+- **Output to**: body.split, line.strip, line.split, None.strip, line.startswith
 
 ### src.opstree.formats.registry.FormatRegistry.serialize
 > Serialize data using the specified format.
@@ -443,6 +439,20 @@ Key functions that process and transform data:
 > Convert between configuration formats.
 - **Output to**: click.command, click.argument, click.argument, click.option, Path
 
+### SUMD.convert
+
+### SUMD.register_format
+
+### SUMD.test_cli_convert_help
+
+### SUMD.test_cli_convert_less_to_snapshot_yaml
+
+### SUMD.test_cli_convert_less_to_migration_yaml
+
+### SUMD.test_cli_convert_less_to_less
+
+### SUMD.test_less_adapter_parse
+
 ### project.map.toon.convert
 
 ### project.map.toon.register_format
@@ -457,61 +467,57 @@ Key functions that process and transform data:
 
 ### project.map.toon.test_less_adapter_parse
 
-### src.opstree.formats.less.LessAdapter.parse
-> Parsuj LESS → PartialSnapshot.
-- **Output to**: re.search, re.finditer, re.finditer, re.finditer, re.search
+## Behavioral Patterns
 
-### src.opstree.formats.less.LessAdapter._parse_block
-> Parse a LESS block into key-value pairs.
-- **Output to**: body.split, line.strip, line.split, None.strip, line.startswith
-
-### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_compositor_processes
-- **Output to**: _Exec.run, r.stdout.strip, int, None.split, x.strip
+### recursion__flatten
+- **Type**: recursion
+- **Confidence**: 0.90
+- **Functions**: src.opstree.fleet.scanner._flatten
 
 ## Public API Surface
 
 Functions exposed as public API (no underscore prefix):
 
 - `src.opstree.formats.less.LessAdapter.render` - 38 calls
-- `src.opstree.cli.commands.scan.scan` - 37 calls
 - `src.opstree.formats.less.LessAdapter.parse` - 37 calls
+- `src.opstree.cli.commands.scan.scan` - 37 calls
 - `src.opstree.cli.commands.convert.convert` - 26 calls
 - `src.opstree.cli.commands.drift.drift` - 26 calls
 - `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan` - 21 calls
 - `src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse` - 19 calls
 - `src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse` - 18 calls
+- `src.opstree.fleet.scanner.compute_variance` - 18 calls
 - `src.opstree.integrations.compat.make_compat_helpers` - 16 calls
 - `src.opstree.formats.migration_yaml.MigrationYamlAdapter.render` - 13 calls
+- `src.opstree.fleet.scanner.scan_fleet` - 12 calls
 - `src.opstree.diagnostics.rules.Rule.evaluate` - 10 calls
 - `src.opstree.snapshot.diff.snapshot_diff` - 10 calls
+- `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies` - 9 calls
 - `src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render` - 9 calls
 - `src.opstree.scanner.linear.LinearScanner.scan` - 9 calls
-- `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies` - 9 calls
 - `src.opstree.layers.tree.LayerTree.topological_order` - 9 calls
 - `src.opstree.probes.builtin.os_linux.OsKernelProbe.scan` - 7 calls
-- `src.opstree.probes.builtin.physical_rpi._Exec.run` - 7 calls
 - `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan` - 7 calls
+- `src.opstree.probes.builtin.physical_rpi._Exec.run` - 7 calls
+- `src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies` - 6 calls
 - `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe` - 6 calls
 - `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies` - 6 calls
-- `src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies` - 6 calls
 - `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies` - 6 calls
 - `src.opstree.layers.tree.LayerDefinition.to_fraq_node` - 6 calls
-- `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan` - 5 calls
-- `src.opstree.probes.builtin.os_linux.OsConfigProbe.scan` - 5 calls
 - `src.opstree.drift.detector.DriftDetector.detect` - 5 calls
+- `src.opstree.probes.builtin.os_linux.OsConfigProbe.scan` - 5 calls
+- `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan` - 5 calls
+- `src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan` - 4 calls
 - `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan` - 4 calls
 - `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies` - 4 calls
-- `src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan` - 4 calls
 - `src.opstree.layers.tree.LayerTree.register` - 4 calls
 - `src.opstree.snapshot.model.Snapshot.load` - 4 calls
 - `src.opstree.layers.tree.LayerTree.to_fraq_node` - 3 calls
-- `src.opstree.probes.builtin.rpi_diagnostics.diagnose_display_layer` - 2 calls
-- `src.opstree.cli.main.cli` - 2 calls
-- `src.opstree.scanner.linear.scan_device` - 2 calls
-- `src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe` - 2 calls
-- `src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe` - 2 calls
-- `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe` - 2 calls
+- `src.opstree.diagnostics.rules.RuleEngine.evaluate` - 2 calls
+- `src.opstree.diagnostics.rules.RuleEngine.any_error` - 2 calls
 - `src.opstree.probes.registry.ProbeRegistry.register` - 2 calls
+- `src.opstree.probes.registry.ProbeRegistry.get` - 2 calls
+- `src.opstree.probes.registry.ProbeRegistry.all` - 2 calls
 
 ## System Interactions
 
@@ -520,11 +526,11 @@ How components interact:
 ```mermaid
 graph TD
     render --> get
+    parse --> search
+    parse --> finditer
     scan --> command
     scan --> argument
     scan --> option
-    parse --> search
-    parse --> finditer
     _list_containers --> _exec
     _list_containers --> execute
     _list_containers --> hasattr

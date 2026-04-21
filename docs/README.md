@@ -1,7 +1,7 @@
 <!-- code2docs:start --># op3
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-355-green)
-> **355** functions | **48** classes | **65** files | CC̄ = 3.7
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-435-green)
+> **435** functions | **50** classes | **70** files | CC̄ = 3.7
 
 > Auto-generated project documentation from source code analysis.
 
@@ -83,6 +83,7 @@ op3/
 ├── CHANGELOG
 ├── project
 ├── README
+    ├── API
     ├── README
         ├── snapshot
         ├── snapshot
@@ -120,6 +121,9 @@ op3/
                 ├── scan
         ├── scanner/
             ├── linear
+        ├── fleet/
+            ├── scanner
+            ├── model
         ├── layers/
             ├── tree
             ├── builtin
@@ -130,14 +134,15 @@ op3/
             ├── compat
     ├── op3/
         ├── toon
-    ├── context
-        ├── toon
+    ├── integration-roadmap
     ├── prompt
-    ├── calls
         ├── toon
         ├── toon
         ├── toon
+    ├── context
     ├── README
+        ├── toon
+    ├── calls
         ├── toon
 ```
 
@@ -171,6 +176,8 @@ op3/
 - **`FormatRegistry`** — Registry for format adapters (wraps fraq's FormatRegistry).
 - **`SnapshotYamlAdapter`** — Native op3 snapshot format adapter.
 - **`LinearScanner`** — Simple scanner that processes layers in topological order.
+- **`FleetVariance`** — Summary of fields that disagree across fleet members.
+- **`FleetSnapshot`** — N :class:`Snapshot` instances plus their cross-host variance.
 - **`LayerDefinition`** — Definicja jednej warstwy w drzewie.
 - **`LayerTree`** — Drzewo warstw — topological ordering, dependency resolution.
 - **`PhysicalDisplayData`** — —
@@ -199,7 +206,10 @@ op3/
 - `drift()` — —
 - `scan()` — —
 - `cli()` — —
+- `compute_variance()` — —
+- `scan_fleet()` — —
 - `register_format()` — —
+- `make_compat_helpers()` — —
 - `diagnose_display_layer()` — —
 - `get_default_registry()` — —
 - `register_probe()` — —
@@ -245,9 +255,35 @@ op3/
 - `test_engine_any_error_detects_firing_error_rule()` — —
 - `test_engine_any_error_respects_exclude()` — —
 - `test_diagnostic_to_dict_is_plain()` — —
+- `test_compute_variance_empty_returns_uniform()` — —
+- `test_compute_variance_single_snapshot_is_uniform()` — —
+- `test_compute_variance_identical_fleet_has_no_fields()` — —
+- `test_compute_variance_records_single_field_divergence()` — —
+- `test_compute_variance_counts_diverging_fields_per_layer()` — —
+- `test_compute_variance_records_missing_layer_as_none()` — —
+- `test_compute_variance_is_order_independent()` — —
+- `test_compute_variance_handles_nested_dict_equality()` — —
+- `test_scan_fleet_empty_returns_empty_fleet_snapshot()` — —
+- `test_scan_fleet_scans_each_target()` — —
+- `test_scan_fleet_preserves_iteration_order_in_targets()` — —
+- `test_scan_fleet_detects_drifted_kernel()` — —
+- `test_scan_fleet_uniform_when_all_hosts_identical()` — —
+- `test_scan_fleet_propagates_scanner_failure()` — —
+- `test_fleet_snapshot_for_target_lookup()` — —
 - `test_less_adapter_parse()` — —
 - `test_less_adapter_render()` — —
 - `test_less_adapter_roundtrip()` — —
+- `test_op3_available_true()` — —
+- `test_op3_enabled_truthy_values()` — —
+- `test_op3_enabled_falsy_values()` — —
+- `test_op3_enabled_env_absent()` — —
+- `test_should_use_op3()` — —
+- `test_require_op3_passes_when_available()` — —
+- `test_make_mock_context_round_trip()` — —
+- `test_make_ssh_context_factory()` — —
+- `test_make_scanner_uses_defaults()` — —
+- `test_make_scanner_respects_override()` — —
+- `test_compat_helpers_frozen()` — —
 - `test_layer_tree_registration()` — —
 - `test_layer_tree_duplicate_registration()` — —
 - `test_layer_tree_topological_order()` — —
@@ -293,6 +329,7 @@ op3/
 - `test_snapshot_diff_removed_layer()` — —
 - `test_snapshot_diff_modified_data()` — —
 - `execute()` — —
+- `print()` — —
 - `generate_readme()` — —
 - `get_default_registry()` — Return the process-global default registry.
 - `register_probe(probe_class)` — Decorator: instantiate ``probe_class`` and register it on the
@@ -303,10 +340,14 @@ op3/
 - `drift(intended, actual)` — Detect drift between intended and actual state.
 - `scan(target, ssh, output, format)` — Scan a device and output snapshot.
 - `scan_device(target, execute, layer_tree)` — Convenience function to scan a device.
+- `compute_variance(snapshots)` — Compute cross-host variance over a mapping of ``{target: Snapshot}``.
+- `scan_fleet(scanner, target_execute)` — Scan every target in ``target_execute`` concurrently.
 - `snapshot_diff(a, b)` — Compare two snapshots and return a list of changes.
 - `make_compat_helpers()` — Build a :class:`CompatHelpers` bundle for a downstream project.
 - `scan()` — —
 - `convert()` — —
+- `compute_variance()` — —
+- `scan_fleet()` — —
 - `diagnose_display_layer()` — —
 - `scan_device()` — —
 - `drift()` — —
@@ -317,6 +358,7 @@ op3/
 - `cli()` — —
 - `make_compat_helpers()` — —
 - `execute()` — —
+- `print()` — —
 - `generate_readme()` — —
 - `build_layer_tree()` — —
 - `build_scanner()` — —
@@ -358,9 +400,35 @@ op3/
 - `test_engine_any_error_detects_firing_error_rule()` — —
 - `test_engine_any_error_respects_exclude()` — —
 - `test_diagnostic_to_dict_is_plain()` — —
+- `test_compute_variance_empty_returns_uniform()` — —
+- `test_compute_variance_single_snapshot_is_uniform()` — —
+- `test_compute_variance_identical_fleet_has_no_fields()` — —
+- `test_compute_variance_records_single_field_divergence()` — —
+- `test_compute_variance_counts_diverging_fields_per_layer()` — —
+- `test_compute_variance_records_missing_layer_as_none()` — —
+- `test_compute_variance_is_order_independent()` — —
+- `test_compute_variance_handles_nested_dict_equality()` — —
+- `test_scan_fleet_empty_returns_empty_fleet_snapshot()` — —
+- `test_scan_fleet_scans_each_target()` — —
+- `test_scan_fleet_preserves_iteration_order_in_targets()` — —
+- `test_scan_fleet_detects_drifted_kernel()` — —
+- `test_scan_fleet_uniform_when_all_hosts_identical()` — —
+- `test_scan_fleet_propagates_scanner_failure()` — —
+- `test_fleet_snapshot_for_target_lookup()` — —
 - `test_less_adapter_parse()` — —
 - `test_less_adapter_render()` — —
 - `test_less_adapter_roundtrip()` — —
+- `test_op3_available_true()` — —
+- `test_op3_enabled_truthy_values()` — —
+- `test_op3_enabled_falsy_values()` — —
+- `test_op3_enabled_env_absent()` — —
+- `test_should_use_op3()` — —
+- `test_require_op3_passes_when_available()` — —
+- `test_make_mock_context_round_trip()` — —
+- `test_make_ssh_context_factory()` — —
+- `test_make_scanner_uses_defaults()` — —
+- `test_make_scanner_respects_override()` — —
+- `test_compat_helpers_frozen()` — —
 - `test_layer_tree_registration()` — —
 - `test_layer_tree_duplicate_registration()` — —
 - `test_layer_tree_topological_order()` — —
@@ -411,8 +479,9 @@ op3/
 
 📄 `CHANGELOG`
 📄 `README` (1 functions)
-📄 `SUMD` (114 functions)
+📄 `SUMD` (150 functions)
 📄 `SUMR`
+📄 `docs.API` (1 functions)
 📄 `docs.README` (1 functions)
 📄 `examples.doql.snapshot`
 📄 `examples.fraq.snapshot`
@@ -428,7 +497,8 @@ op3/
 📄 `project.context`
 📄 `project.duplication.toon`
 📄 `project.evolution.toon`
-📄 `project.map.toon` (253 functions)
+📄 `project.integration-roadmap`
+📄 `project.map.toon` (332 functions)
 📄 `project.project.toon`
 📄 `project.prompt`
 📄 `pyproject`
@@ -446,6 +516,9 @@ op3/
 📄 `src.opstree.diagnostics.rules` (6 functions, 3 classes)
 📦 `src.opstree.drift`
 📄 `src.opstree.drift.detector` (2 functions, 2 classes)
+📦 `src.opstree.fleet`
+📄 `src.opstree.fleet.model` (1 functions, 2 classes)
+📄 `src.opstree.fleet.scanner` (6 functions)
 📦 `src.opstree.formats`
 📄 `src.opstree.formats.less` (3 functions, 1 classes)
 📄 `src.opstree.formats.migration_yaml` (2 functions, 1 classes)

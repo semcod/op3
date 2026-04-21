@@ -2,6 +2,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
+from opstree._version import __version__
 from opstree.layers.tree import LayerTree
 from opstree.probes.base import Probe, ProbeContext, ProbeResult
 from opstree.probes.registry import ProbeRegistry
@@ -41,7 +42,7 @@ class LinearScanner:
         return Snapshot(
             target=target,
             scanned_at=datetime.now(timezone.utc),
-            scanner_version="0.1.12",
+            scanner_version=__version__,
             layers=layers,
             anomalies=anomalies,
         )

@@ -3,6 +3,7 @@ from __future__ import annotations
 import click
 from pathlib import Path
 from datetime import datetime, timezone
+from opstree._version import __version__
 from opstree.formats.less import LessAdapter
 from opstree.formats.migration_yaml import MigrationYamlAdapter
 from opstree.formats.snapshot_yaml import SnapshotYamlAdapter
@@ -31,7 +32,7 @@ def convert(input_file: str, output_file: str, format: str):
             snapshot = Snapshot(
                 target="unknown",
                 scanned_at=datetime.now(timezone.utc),
-                scanner_version="0.1.7",
+                scanner_version=__version__,
                 layers=partial.layers,
                 anomalies=[],
             )

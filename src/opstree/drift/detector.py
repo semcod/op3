@@ -2,6 +2,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
+from opstree._version import __version__
 from opstree.snapshot.model import Snapshot, PartialSnapshot
 from opstree.snapshot.diff import snapshot_diff, Change
 
@@ -37,7 +38,7 @@ class DriftDetector:
         intended_snapshot = Snapshot(
             target=intended.source_path or "unknown",
             scanned_at=actual.scanned_at,  # Use same timestamp for comparison
-            scanner_version="0.1.7",
+            scanner_version=__version__,
             layers=intended.layers,
         )
         

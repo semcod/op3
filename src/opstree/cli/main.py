@@ -1,13 +1,14 @@
 """CLI entry point for op3."""
 from __future__ import annotations
 import click
+from opstree import __version__
 from opstree.cli.commands.scan import scan
 from opstree.cli.commands.drift import drift
 from opstree.cli.commands.convert import convert
 
 
 @click.group()
-@click.version_option(version="0.1.7")
+@click.version_option(version=__version__)
 def cli():
     """op3 — Layered operations tree for infrastructure observation."""
     pass

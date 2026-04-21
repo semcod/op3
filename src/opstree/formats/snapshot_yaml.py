@@ -1,6 +1,7 @@
 """Snapshot YAML format adapter — native op3 snapshot format."""
 from __future__ import annotations
 from typing import Any, Dict
+from opstree._version import __version__
 from opstree.snapshot.model import Snapshot, PartialSnapshot, LayerData
 from datetime import datetime, timezone
 import yaml
@@ -28,7 +29,7 @@ class SnapshotYamlAdapter:
         return Snapshot(
             target=data.get("target", "unknown"),
             scanned_at=datetime.fromisoformat(data.get("scanned_at", datetime.now(timezone.utc).isoformat())),
-            scanner_version=data.get("scanner_version", "0.1.7"),
+            scanner_version=data.get("scanner_version", __version__),
             layers=layers,
             anomalies=data.get("anomalies", []),
         )
@@ -38,7 +39,7 @@ class SnapshotYamlAdapter:
         data = {
             "target": snapshot.target,
             "scanned_at": snapshot.scanned_at.isoformat() if hasattr(snapshot, "scanned_at") else datetime.now(timezone.utc).isoformat(),
-            "scanner_version": snapshot.scanner_version if hasattr(snapshot, "scanner_version") else "0.1.7",
+            "scanner_version": snapshot.scanner_version if hasattr(snapshot, "scanner_version") else __version__,
             "layers": {},
         }
         

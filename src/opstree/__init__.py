@@ -1,5 +1,6 @@
 """op3 — operations tree for layered infrastructure observation."""
 
+from opstree._version import __version__
 from opstree.layers.tree import LayerTree
 from opstree.layers.builtin import (
     PhysicalLayer, OsLayer, RuntimeLayer, 
@@ -14,10 +15,10 @@ from opstree.scanner.build import build_layer_tree, build_scanner
 from opstree.formats import FormatRegistry, register_format
 from opstree.drift.detector import DriftDetector, DriftReport
 from opstree.diagnostics import Diagnostic, Rule, RuleEngine, Severity
-
-__version__ = "0.1.14"
+from opstree.fleet import FleetSnapshot, FleetVariance, compute_variance, scan_fleet
 
 __all__ = [
+    "__version__",
     # Layers
     "LayerTree",
     "PhysicalLayer", "OsLayer", "RuntimeLayer",
@@ -31,6 +32,9 @@ __all__ = [
     # Scanner
     "LinearScanner", "scan_device",
     "build_layer_tree", "build_scanner",
+    # Fleet
+    "FleetSnapshot", "FleetVariance",
+    "compute_variance", "scan_fleet",
     # Formats
     "FormatRegistry", "register_format",
     # Drift

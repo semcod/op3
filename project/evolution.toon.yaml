@@ -1,4 +1,4 @@
-# code2llm/evolution | 352 func | 29f | 2026-04-21
+# code2llm/evolution | 432 func | 32f | 2026-04-21
 
 NEXT[6] (ranked by impact):
   [1] !! SPLIT           src/opstree/probes/builtin/rpi_diagnostics.py
@@ -30,7 +30,7 @@ RISKS[1]:
   ⚠ Splitting src/opstree/probes/builtin/rpi_diagnostics.py may break 12 import paths
 
 METRICS-TARGET:
-  CC̄:          1.3 → ≤0.9
+  CC̄:          1.1 → ≤0.8
   max-CC:      22 → ≤11
   god-modules: 1 → 0
   high-CC(≥15): 5 → ≤2
@@ -61,4 +61,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.7 → now CC̄=1.3
+  prev CC̄=1.2 → now CC̄=1.1
