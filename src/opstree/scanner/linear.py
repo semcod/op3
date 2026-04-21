@@ -41,7 +41,7 @@ class LinearScanner:
         return Snapshot(
             target=target,
             scanned_at=datetime.now(timezone.utc),
-            scanner_version="0.1.4",
+            scanner_version="0.1.5",
             layers=layers,
             anomalies=anomalies,
         )

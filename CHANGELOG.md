@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-04-21
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/unit/test_formats/test_less_adapter.py
+- Update tests/unit/test_snapshot.py
+
 ## [0.1.5] - 2026-04-21
 
 ### Docs
