@@ -10,10 +10,11 @@ from opstree.snapshot.diff import snapshot_diff, Change
 from opstree.probes.base import Probe, ProbeContext, ProbeResult
 from opstree.probes.registry import ProbeRegistry, register_probe
 from opstree.scanner.linear import LinearScanner, scan_device
+from opstree.scanner.build import build_layer_tree, build_scanner
 from opstree.formats import FormatRegistry, register_format
 from opstree.drift.detector import DriftDetector, DriftReport
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 __all__ = [
     # Layers
@@ -28,6 +29,7 @@ __all__ = [
     "ProbeRegistry", "register_probe",
     # Scanner
     "LinearScanner", "scan_device",
+    "build_layer_tree", "build_scanner",
     # Formats
     "FormatRegistry", "register_format",
     # Drift
