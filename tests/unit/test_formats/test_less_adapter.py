@@ -1,4 +1,5 @@
 """Unit tests for LESS format adapter."""
+from datetime import datetime, timezone
 import pytest
 from pathlib import Path
 from opstree.formats.less import LessAdapter
@@ -33,7 +34,6 @@ service[name="kiosk-browser"] {
 
 def test_less_adapter_render():
     """Test rendering Snapshot to LESS."""
-    from datetime import datetime, timezone
     adapter = LessAdapter()
     
     snapshot = Snapshot(
@@ -84,3 +84,122 @@ def test_less_adapter_roundtrip():
     # Check app name is preserved
     assert parsed.layers["business.health"].data["app_name"] == \
            reparsed.layers["business.health"].data["app_name"]
+
+
+# ── Sprint 3: inline comments, multi-line values, escape sequences ───────
+
+
+def test_less_adapter_inline_comments_stripped():
+    """Inline ``// comment`` suffixes must be removed from values."""
+    adapter = LessAdapter()
+    less_text = """
+app {
+  name: kiosk; // app identity
+  version: 0.1.0;
+}
+"""
+    result = adapter.parse(less_text)
+    assert result.layers["business.health"].data["app_version"] == "0.1.0"
+
+
+def test_less_adapter_multiline_value():
+    """Values that span multiple lines (no ``;`` on first line) are concatenated."""
+    adapter = LessAdapter()
+    less_text = """
+service[name="deploy"] {
+  script: echo start
+    echo middle
+    echo end;
+}
+"""
+    result = adapter.parse(less_text)
+    svc = result.layers["service.containers"].data["systemd_services"][0]
+    assert svc["script"] == "echo start\n    echo middle\n    echo end"
+
+
+def test_less_adapter_escaped_semicolon_does_not_terminate():
+    """A ``\\;`` inside a value must not end the multi-line continuation."""
+    adapter = LessAdapter()
+    less_text = """
+service[name="x"] {
+  cmd: if true; then
+    echo ok;
+}
+"""
+    result = adapter.parse(less_text)
+    svc = result.layers["service.containers"].data["systemd_services"][0]
+    assert svc["cmd"] == 'if true; then\n    echo ok'
+
+
+def test_less_adapter_escape_newline():
+    """``\\n`` in a single-line value is expanded to a literal newline."""
+    adapter = LessAdapter()
+    less_text = """
+app {
+  name: line1\\nline2;
+  version: 1.0.0;
+}
+"""
+    result = adapter.parse(less_text)
+    assert result.layers["business.health"].data["app_name"] == "line1\nline2"
+
+
+def test_less_adapter_escape_backslash():
+    """``\\\\`` produces a single literal backslash."""
+    adapter = LessAdapter()
+    less_text = r"""
+app {
+  name: path\\\\to\\file;
+  version: 1.0.0;
+}
+"""
+    result = adapter.parse(less_text)
+    assert result.layers["business.health"].data["app_name"] == r"path\\to\file"
+
+
+def test_less_adapter_render_escapes_semicolon():
+    """A ``;`` inside a value must be escaped on render so it is not mis-read."""
+    adapter = LessAdapter()
+    snapshot = Snapshot(
+        target="t",
+        scanned_at=datetime.now(timezone.utc),
+        scanner_version="0.2.0",
+        layers={
+            "business.health": LayerData(
+                layer_id="business.health",
+                probed_at=datetime.now(timezone.utc),
+                probed_by="test",
+                data={"app_name": "a;b", "app_version": "1.0.0", "overall_health": "ok", "alerts": []},
+            ),
+        },
+    )
+    rendered = adapter.render(snapshot)
+    assert "name: a\\;b;" in rendered
+    reparsed = adapter.parse(rendered)
+    assert reparsed.layers["business.health"].data["app_name"] == "a;b"
+
+
+def test_less_adapter_roundtrip_multiline():
+    """Parse → render → parse must preserve a multi-line value."""
+    adapter = LessAdapter()
+    snapshot = Snapshot(
+        target="t",
+        scanned_at=datetime.now(timezone.utc),
+        scanner_version="0.2.0",
+        layers={
+            "service.containers": LayerData(
+                layer_id="service.containers",
+                probed_at=datetime.now(timezone.utc),
+                probed_by="test",
+                data={
+                    "systemd_services": [
+                        {"name": "x", "cmd": "echo a\necho b\necho c"},
+                    ]
+                },
+            ),
+        },
+    )
+    rendered = adapter.render(snapshot)
+    reparsed = adapter.parse(rendered)
+    svc = reparsed.layers["service.containers"].data["systemd_services"][0]
+    assert svc["cmd"] == "echo a\necho b\necho c"

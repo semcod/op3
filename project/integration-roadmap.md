@@ -99,24 +99,32 @@ What this unblocks downstream:
 
 ---
 
-## Sprint 3 — LessAdapter feature extensions (asymmetric contract)
+## Sprint 3 — LessAdapter feature extensions (DONE, shipped in [Unreleased])
 
 Per analysis "Option 3": doql stays the richer parser, op3 extends its
-LESS adapter only with features it actually needs for round-trip:
+LESS adapter only with features it actually needs for round-trip.
 
-- Inline comments
-- Escape sequences
-- Multi-line values
+Delivered:
+
+- **Inline comments** — `_strip_inline_comment` strips `// ...` from any
+  line before key/value extraction; backslash-aware so `\//` survives.
+- **Multi-line values** — `_parse_block` continuation logic: if a line
+  does not end with an unescaped `;`, subsequent lines are appended
+  until the terminator appears. Leading whitespace of continuation
+  lines is preserved (trailing stripped).
+- **Escape sequences** — `\;` (literal semicolon), `\"` (literal quote),
+  `\n` (newline), `\\` (literal backslash) in both parse and render.
+- App block parsing refactored to use `_parse_block` instead of a
+  hand-rolled regex, giving uniform behaviour across all blocks.
+- 7 new tests; all `examples/doql/app.doql.less` and
+  `examples/redeploy/app.doql.less` parse without errors (workflow
+  blocks are silently skipped as out-of-scope, not hard failure).
 
 Explicitly **out of scope for op3's LessAdapter** (stay in doql):
 
-- `@variables`
-- `@import`
-- Complex nested selectors beyond what builtin layers need
-
-Parity test: `LessAdapter` parses every `.doql.less` fixture from
-`examples/doql/` and `examples/redeploy/` without errors. Advanced
-features silently dropped with a warning (not hard failure).
+- `@variables`, `@import`
+- Complex nested selectors beyond `app/interface/service/environment/deploy`
+- `workflow` declarations
 
 ---
 

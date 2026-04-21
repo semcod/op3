@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Sprint 3: LessAdapter feature extensions
+- `LessAdapter` now supports **inline comments** (`// ...` stripped
+  from any line before key/value extraction), **multi-line values**
+  (continuation until an unescaped `;`), and **escape sequences**
+  (`\;`, `\"`, `\n`, `\\`).
+- `render` automatically escapes `;`, `"`, and `\` so re-parsing is
+  safe.
+- App block parsing (`app { ... }`) refactored to use `_parse_block`
+  instead of a hand-rolled regex, ensuring comments / escapes / multi-line
+  are handled uniformly with every other block.
+- 7 new tests covering inline comments, multi-line values,
+  escaped-semicolon continuation, `\n` and `\\` unescape,
+  render escape, and round-trip preservation.
+
 ### Added — Sprint 2: fleet scanning
 - `opstree.fleet` subpackage — `FleetSnapshot`, `FleetVariance`,
   `scan_fleet`, `compute_variance`.
@@ -29,6 +43,17 @@ adapter-of-adapters for `FraqNode` — it does not provide snapshot
 merging semantics. A native implementation based on
 `opstree.snapshot` primitives is simpler, transport-agnostic, and keeps
 `fraq` as a dependency for what it actually does well.
+
+## [0.2.2] - 2026-04-21
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/API.md
+- Update project/integration-roadmap.md
+
+### Test
+- Update tests/unit/test_formats/test_less_adapter.py
 
 ## [0.2.1] - 2026-04-21
 

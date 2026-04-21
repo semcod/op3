@@ -335,6 +335,30 @@ top-level package — import them from
 directly. This keeps the top-level API surface small and lets us
 reshape the adapter internals without breaking downstream imports.
 
+### `LessAdapter` (stable since 0.2.0)
+
+The LESS adapter is the bridge between ``.doql.less`` configuration
+files and op3's :class:`Snapshot` / :class:`PartialSnapshot` models.
+It intentionally covers **only** the subset of LESS syntax needed for
+round-tripping the layers op3 understands (``app``, ``interface``,
+``service``, ``environment``, ``deploy``). Advanced constructs such as
+``@variables``, ``@import``, nested selectors beyond those five blocks,
+and ``workflow`` declarations are out of scope — they live in the richer
+doql parser.
+
+Supported in ``parse`` and ``render``:
+
+- **Inline comments** — ``// comment`` suffixes on any line are
+  stripped before key/value extraction.
+- **Multi-line values** — a value whose first line does not end with
+  an unescaped ``;`` continues onto subsequent lines until the
+  terminator appears. Leading whitespace of continuation lines is
+  preserved (trailing only is stripped) so indented heredocs survive.
+- **Escape sequences** — ``\;`` (literal semicolon), ``\"`` (literal
+  quote), ``\n`` (newline), and ``\\`` (literal backslash). On render,
+  ``;``, ``"``, and ``\`` are automatically escaped so the output is
+  safe to re-parse.
+
 ---
 
 ## Diagnostics
