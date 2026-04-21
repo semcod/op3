@@ -1,0 +1,22 @@
+# code2llm call graph | /home/tom/github/semcod/op3
+# nodes: 3 | edges: 2 | modules: 2
+# CC̄=3.7
+
+HUBS[20]:
+  src.opstree.snapshot.diff._diff_layer_data
+    CC=1  in:1  out:14  total:15
+  src.opstree.snapshot.diff.snapshot_diff
+    CC=4  in:1  out:10  total:11
+  src.opstree.drift.detector.DriftDetector.detect
+    CC=2  in:0  out:5  total:5
+
+MODULES:
+  src.opstree.drift.detector  [1 funcs]
+    detect  CC=2  out:5
+  src.opstree.snapshot.diff  [2 funcs]
+    _diff_layer_data  CC=1  out:14
+    snapshot_diff  CC=4  out:10
+
+EDGES:
+  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
+  src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data

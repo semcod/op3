@@ -1,0 +1,8 @@
+flowchart LR
+    subgraph src__opstree
+        src__opstree__drift__detector__DriftDetector__detect["detect"]
+        src__opstree__snapshot__diff___diff_layer_data["_diff_layer_data"]
+        src__opstree__snapshot__diff__snapshot_diff["snapshot_diff"]
+    end
+    src__opstree__drift__detector__DriftDetector__detect --> src__opstree__snapshot__diff__snapshot_diff
+    src__opstree__snapshot__diff__snapshot_diff --> src__opstree__snapshot__diff___diff_layer_data

@@ -19,7 +19,7 @@ from opstree.snapshot.model import Snapshot
 
 
 @click.group()
-@click.version_option(version="0.1.2")
+@click.version_option(version="0.1.4")
 def cli():
     """op3 — Layered operations tree for infrastructure observation."""
     pass
@@ -153,7 +153,7 @@ def convert(input_file: str, output_file: str, format: str):
             snapshot = Snapshot(
                 target="unknown",
                 scanned_at=datetime.now(timezone.utc),
-                scanner_version="0.1.2",
+                scanner_version="0.1.4",
                 layers=partial.layers,
                 anomalies=[],
             )

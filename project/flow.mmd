@@ -1,0 +1,25 @@
+flowchart TD
+
+    %% Entry points (blue)
+    classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
+
+    subgraph Core
+        src__opstree__formats__registry__FormatRegistry__register["register"]
+        src__opstree__formats__registry__FormatRegistry__get["get"]
+        src__opstree__formats__registry__FormatRegistry__available["available"]
+        src__opstree__formats__registry__FormatRegistry__serialize["serialize"]
+        src__opstree__formats__registry__register_format["register_format"]
+        src__opstree__probes__registry__ProbeRegistry__register["register"]
+        src__opstree__probes__registry__ProbeRegistry__get["get"]
+        src__opstree__probes__registry__ProbeRegistry__all["all"]
+        src__opstree__probes__registry__register_probe["register_probe"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__scan["scan"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___list_systemd_services["_list_systemd_services"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___is_service_enabled["_is_service_enabled"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__anomalies["anomalies"]
+        src__opstree__formats__snapshot_yaml__SnapshotYamlAdapter__parse["parse"]
+        ...["+61 more"]
+    end
+
+    class src__opstree__formats__registry__FormatRegistry__register,src__opstree__formats__registry__FormatRegistry__get,src__opstree__formats__registry__FormatRegistry__available,src__opstree__formats__registry__FormatRegistry__serialize,src__opstree__formats__registry__register_format,src__opstree__probes__registry__ProbeRegistry__register,src__opstree__probes__registry__ProbeRegistry__get,src__opstree__probes__registry__ProbeRegistry__all,src__opstree__probes__registry__register_probe,src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe entry

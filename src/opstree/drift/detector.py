@@ -37,7 +37,7 @@ class DriftDetector:
         intended_snapshot = Snapshot(
             target=intended.source_path or "unknown",
             scanned_at=actual.scanned_at,  # Use same timestamp for comparison
-            scanner_version="0.1.2",
+            scanner_version="0.1.4",
             layers=intended.layers,
         )
         

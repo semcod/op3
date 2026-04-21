@@ -1,0 +1,71 @@
+flowchart TD
+    subgraph src__opstree
+        src__opstree__formats__registry__FormatRegistry__register["register"]
+        src__opstree__formats__registry__FormatRegistry__get["get"]
+        src__opstree__formats__registry__FormatRegistry__available["available"]
+        src__opstree__formats__registry__FormatRegistry__serialize["serialize"]
+        src__opstree__formats__registry__register_format["register_format"]
+        src__opstree__probes__registry__ProbeRegistry__register["register"]
+        src__opstree__probes__registry__ProbeRegistry__get["get"]
+        src__opstree__probes__registry__ProbeRegistry__all["all"]
+        src__opstree__probes__registry__register_probe["register_probe"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__scan["scan"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___list_systemd_services["_list_systemd_services"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___is_service_enabled["_is_service_enabled"]
+        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__anomalies["anomalies"]
+        src__opstree__formats__snapshot_yaml__SnapshotYamlAdapter__parse["parse"]
+        src__opstree__formats__snapshot_yaml__SnapshotYamlAdapter__render["render"]
+        src__opstree__scanner__linear__LinearScanner____init__["__init__"]
+        src__opstree__scanner__linear__LinearScanner__scan["scan"]
+        src__opstree__scanner__linear__scan_device["scan_device"]
+        src__opstree__formats__less__LessAdapter__parse["parse"]
+        src__opstree__formats__less__LessAdapter__render{{render CC=22}}
+        src__opstree__formats__less__LessAdapter___parse_block["_parse_block"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe__scan["scan"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe___get_kernel_version["_get_kernel_version"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe___get_arch["_get_arch"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe___get_hostname["_get_hostname"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe___get_uptime["_get_uptime"]
+        src__opstree__probes__builtin__os_linux__OsKernelProbe__anomalies["anomalies"]
+        src__opstree__probes__builtin__os_linux__OsConfigProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__os_linux__OsConfigProbe__scan["scan"]
+        src__opstree__probes__builtin__os_linux__OsConfigProbe___read_config_txt["_read_config_txt"]
+        src__opstree__probes__builtin__os_linux__OsConfigProbe___read_cmdline["_read_cmdline"]
+        src__opstree__probes__builtin__os_linux__OsConfigProbe__anomalies["anomalies"]
+        src__opstree__cli__main__cli["cli"]
+        src__opstree__cli__main__scan{{scan CC=16}}
+        src__opstree__cli__main__drift["drift"]
+        src__opstree__cli__main__convert("convert CC=11")
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe____init__["__init__"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__scan["scan"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe___detect_runtime["_detect_runtime"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe___list_containers{{_list_containers CC=18}}
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__anomalies["anomalies"]
+        src__opstree__probes__builtin__endpoint_http__EndpointHttpProbe____init__["__init__"]
+        src__opstree__probes__builtin__endpoint_http__EndpointHttpProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__endpoint_http__EndpointHttpProbe__scan["scan"]
+        src__opstree__probes__builtin__endpoint_http__EndpointHttpProbe___check_endpoint["_check_endpoint"]
+        src__opstree__probes__builtin__endpoint_http__EndpointHttpProbe__anomalies["anomalies"]
+        src__opstree__probes__builtin__business_health__BusinessHealthProbe____init__["__init__"]
+        src__opstree__probes__builtin__business_health__BusinessHealthProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__business_health__BusinessHealthProbe__scan["scan"]
+        src__opstree__probes__builtin__business_health__BusinessHealthProbe___check_health_endpoint["_check_health_endpoint"]
+        src__opstree__probes__builtin__business_health__BusinessHealthProbe__anomalies["anomalies"]
+        src__opstree__formats__migration_yaml__MigrationYamlAdapter__parse["parse"]
+        src__opstree__formats__migration_yaml__MigrationYamlAdapter__render{{render CC=16}}
+        src__opstree__probes__builtin__physical_rpi__RpiPhysicalDisplayProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__physical_rpi__RpiPhysicalDisplayProbe__scan["scan"]
+        src__opstree__probes__builtin__physical_rpi__RpiPhysicalDisplayProbe___probe_board_model["_probe_board_model"]
+        src__opstree__probes__builtin__physical_rpi__RpiPhysicalDisplayProbe___scan_drm["_scan_drm"]
+    end
+    src__opstree__cli__main__scan --> src__opstree__scanner__linear__scan_device
+    src__opstree__drift__detector__DriftDetector__detect --> src__opstree__snapshot__diff__snapshot_diff
+    src__opstree__snapshot__diff__snapshot_diff --> src__opstree__snapshot__diff___diff_layer_data
+
+    classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
+    class src__opstree__formats__less__LessAdapter__render,src__opstree__cli__main__scan,src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe___list_containers,src__opstree__formats__migration_yaml__MigrationYamlAdapter__render highCC
+    class src__opstree__cli__main__convert,src__opstree__probes__builtin__physical_rpi__RpiPhysicalDisplayProbe__anomalies,src__opstree__layers__tree__LayerTree__topological_order medCC

@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Dict
 from opstree.snapshot.model import Snapshot, PartialSnapshot, LayerData
-from datetime import datetime
+from datetime import datetime, timezone
 import yaml
 
 
@@ -19,7 +19,7 @@ class SnapshotYamlAdapter:
         for layer_id, layer_data in data.get("layers", {}).items():
             layers[layer_id] = LayerData(
                 layer_id=layer_id,
-                probed_at=datetime.fromisoformat(layer_data.get("probed_at", datetime.utcnow().isoformat())),
+                probed_at=datetime.fromisoformat(layer_data.get("probed_at", datetime.now(timezone.utc).isoformat())),
                 probed_by=layer_data.get("probed_by", "unknown"),
                 data=layer_data.get("data", {}),
                 raw_evidence=layer_data.get("raw_evidence", {}),
@@ -27,8 +27,8 @@ class SnapshotYamlAdapter:
         
         return Snapshot(
             target=data.get("target", "unknown"),
-            scanned_at=datetime.fromisoformat(data.get("scanned_at", datetime.utcnow().isoformat())),
-            scanner_version=data.get("scanner_version", "0.1.2"),
+            scanned_at=datetime.fromisoformat(data.get("scanned_at", datetime.now(timezone.utc).isoformat())),
+            scanner_version=data.get("scanner_version", "0.1.4"),
             layers=layers,
             anomalies=data.get("anomalies", []),
         )
@@ -37,8 +37,8 @@ class SnapshotYamlAdapter:
         """Renderuj Snapshot → snapshot.yaml."""
         data = {
             "target": snapshot.target,
-            "scanned_at": snapshot.scanned_at.isoformat() if hasattr(snapshot, "scanned_at") else datetime.utcnow().isoformat(),
-            "scanner_version": snapshot.scanner_version if hasattr(snapshot, "scanner_version") else "0.1.2",
+            "scanned_at": snapshot.scanned_at.isoformat() if hasattr(snapshot, "scanned_at") else datetime.now(timezone.utc).isoformat(),
+            "scanner_version": snapshot.scanner_version if hasattr(snapshot, "scanner_version") else "0.1.4",
             "layers": {},
         }
         

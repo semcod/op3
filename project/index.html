@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>code2llm Analysis Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border: #475569;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8fafc;
+                --surface: #ffffff;
+                --surface-hover: #f1f5f9;
+                --border: #e2e8f0;
+                --text: #1e293b;
+                --text-muted: #64748b;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .search {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            color: var(--text);
+            font-size: 0.875rem;
+            outline: none;
+        }
+
+        .search input:focus {
+            border-color: var(--accent);
+        }
+
+        .search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .file-group {
+            margin-bottom: 1rem;
+        }
+
+        .file-group-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 0.125rem;
+        }
+
+        .file-item:hover {
+            background: var(--surface-hover);
+        }
+
+        .file-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .file-item.active .file-meta {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .file-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Content */
+        .content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .content-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .content-title h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            background: var(--surface-hover);
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--border);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .content-body {
+            flex: 1;
+            overflow: auto;
+            padding: 1.5rem;
+        }
+
+        /* Welcome */
+        .welcome {
+            max-width: 800px;
+        }
+
+        .welcome h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .welcome p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Content Display */
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+        }
+
+        .markdown-content {
+            line-height: 1.7;
+        }
+
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .markdown-content h1 {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .markdown-content p {
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content code {
+            background: var(--surface);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+
+        .markdown-content pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 1rem;
+            margin-left: 0;
+            color: var(--text-muted);
+        }
+
+        .markdown-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .markdown-content th {
+            background: var(--surface);
+        }
+
+        .markdown-content img {
+            max-width: 100%;
+            border-radius: 0.5rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        /* Mermaid */
+        .mermaid-content {
+            background: var(--surface);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .mermaid-content pre {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Image Preview */
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background: var(--surface);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar.open {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .file-size {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="header">
+                <h1>🔍 code2llm</h1>
+                <p>Analysis Results Browser</p>
+            </div>
+            <div class="search">
+                <input type="text" id="search" placeholder="Search files..." oninput="filterFiles(this.value)">
+            </div>
+            <div class="file-list" id="fileList">
+                <!-- Files will be rendered here -->
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="content-header">
+                <div class="content-title">
+                    <span id="contentIcon">📁</span>
+                    <h2 id="contentTitle">Welcome</h2>
+                </div>
+                <div class="content-actions" id="contentActions">
+                    <!-- Actions will be rendered here -->
+                </div>
+            </div>
+            <div class="content-body" id="contentBody">
+                <div class="welcome">
+                    <h2>Analysis Results</h2>
+                    <p>Select a file from the sidebar to view its contents. This interface works on GitHub Pages without any server required.</p>
+                    <div class="stats-grid" id="statsGrid">
+                        <!-- Stats will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize mermaid
+        mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+
+        const files = [{"name": "calls.png", "rel_path": "calls.png", "path": "calls.png", "size": "7.8KB", "icon": "🖼️", "type": "image", "type_name": "Image", "content": "[Binary file]", "is_subdir": false}, {"name": "compact_flow.png", "rel_path": "compact_flow.png", "path": "compact_flow.png", "size": "2.5KB", "icon": "🖼️", "type": "image", "type_name": "Image", "content": "[Binary file]", "is_subdir": false}, {"name": "flow.png", "rel_path": "flow.png", "path": "flow.png", "size": "17.9KB", "icon": "🖼️", "type": "image", "type_name": "Image", "content": "[Binary file]", "is_subdir": false}, {"name": "README.md", "rel_path": "README.md", "path": "README.md", "size": "9.3KB", "icon": "📝", "type": "markdown", "type_name": "Markdown", "content": "# code2llm - Generated Analysis Files\n\nThis directory contains the complete analysis of your project generated by `code2llm`. Each file serves a specific purpose for understanding, refactoring, and documenting your codebase.\n\n## 📁 Generated Files Overview\n\nWhen you run `code2llm ./ -f all`, the following files are created:\n\n### 🎯 Core Analysis Files\n\n| File | Format | Purpose | Key Insights |\n|------|--------|---------|--------------|\n| `evolution.toon.yaml` | **YAML** | **📋 Refactoring queue** - Prioritized improvements | 0 refactoring actions needed |\n| `map.toon.yaml` | **YAML** | **🗺️ Structural map + project header** - Modules, imports, exports, signatures, stats, alerts, hotspots, trend | Project architecture overview |\n\n### 🤖 LLM-Ready Documentation\n\n| File | Format | Purpose | Use Case |\n|------|--------|---------|----------|\n| `prompt.txt` | **Text** | **📝 Ready-to-send prompt** - Lists all files with instructions | Attach to LLM conversation as context guide |\n| `context.md` | **Markdown** | **📖 LLM narrative** - Architecture summary | Paste into ChatGPT/Claude for code analysis |\n\n### 📊 Visualizations\n\n| File | Format | Purpose | Description |\n|------|--------|---------|-------------|\n| `flow.mmd` | **Mermaid** | **🔄 Control flow diagram** | Function call paths with complexity styling |\n| `calls.mmd` | **Mermaid** | **📞 Call graph** | Function dependencies (edges only) |\n| `compact_flow.mmd` | **Mermaid** | **📦 Module overview** | Aggregated module-level view |\n\n## 🚀 Quick Start Commands\n\n### Basic Analysis\n```bash\n# Quick health check (TOON format only)\ncode2llm ./ -f toon\n\n# Generate all formats (what created these files)\ncode2llm ./ -f all\n\n# LLM-ready context only\ncode2llm ./ -f context\n```\n\n### Performance Options\n```bash\n# Fast analysis for large projects\ncode2llm ./ -f toon --strategy quick\n\n# Memory-limited analysis\ncode2llm ./ -f all --max-memory 500\n\n# Skip PNG generation (faster)\ncode2llm ./ -f all --no-png\n```\n\n### Refactoring Focus\n```bash\n# Get refactoring recommendations\ncode2llm ./ -f evolution\n\n# Focus on specific code smells\ncode2llm ./ -f toon --refactor --smell god_function\n\n# Data flow analysis\ncode2llm ./ -f flow --data-flow\n```\n\n## 📖 Understanding Each File\n\n### `analysis.toon` - Health Diagnostics\n**Purpose**: Quick overview of code health issues\n**Key sections**:\n- **HEALTH**: Critical issues (🔴) and warnings (🟡)\n- **REFACTOR**: Prioritized refactoring actions\n- **COUPLING**: Module dependencies and potential cycles\n- **LAYERS**: Package complexity metrics\n- **FUNCTIONS**: High-complexity functions (CC ≥ 10)\n- **CLASSES**: Complex classes needing attention\n\n**Example usage**:\n```bash\n# View health issues\ncat analysis.toon | head -30\n\n# Check refactoring priorities\ngrep \"REFACTOR\" analysis.toon\n```\n\n### `evolution.toon.yaml` - Refactoring Queue\n**Purpose**: Step-by-step refactoring plan\n**Key sections**:\n- **NEXT**: Immediate actions to take\n- **RISKS**: Potential breaking changes\n- **METRICS-TARGET**: Success criteria\n\n**Example usage**:\n```bash\n# Get refactoring plan\ncat evolution.toon.yaml\n\n# Track progress\ngrep \"NEXT\" evolution.toon.yaml\n```\n\n### `flow.toon` - Legacy Data Flow Analysis\n**Purpose**: Understand data movement through the system (legacy / explicit opt-in)\n**Key sections**:\n- **PIPELINES**: Data processing chains\n- **CONTRACTS**: Function input/output contracts\n- **SIDE_EFFECTS**: Functions with external impacts\n\n**Example usage**:\n```bash\n# Find data pipelines\ngrep \"PIPELINES\" flow.toon\n\n# Identify side effects\ngrep \"SIDE_EFFECTS\" flow.toon\n```\n\n### `map.toon.yaml` - Structural Map + Project Header\n**Purpose**: High-level architecture overview plus compact project header\n**Key sections**:\n- **MODULES**: All modules with basic stats\n- **IMPORTS**: Dependency relationships\n- **EXPORTS**: Public API surface and signatures\n- **HEADER**: Stats, alerts, hotspots, evolution trend\n\n**Example usage**:\n```bash\n# See project structure\ncat map.toon.yaml | head -50\n\n# Find public APIs\ngrep \"SIGNATURES\" map.toon.yaml\n```\n\n### `project.toon.yaml` - Compact Analysis View\n**Purpose**: Compact module view generated from project.yaml data\n**Status**: Legacy view generated on demand from unified project.yaml\n\n**Example usage**:\n```bash\n# View compact project structure\ncat project.toon.yaml | head -30\n\n# Find largest files\ngrep -E \"^  .*[0-9]{3,}$\" project.toon.yaml | sort -t',' -k2 -n -r | head -10\n```\n\n### `prompt.txt` - Ready-to-Send LLM Prompt\n**Purpose**: Pre-formatted prompt listing all generated files for LLM conversation\n**Generation**: Written when `code2llm` runs with a source path and requests `-f all` (including `--no-chunk`) or `code2logic`\n**Contents**:\n- **Files section**: Lists all existing generated files with descriptions, including `project.toon.yaml` when generated by `-f all`\n- **Source files section**: Highlights important source files such as `cli_exports/orchestrator.py`\n- **Missing section**: Shows which files weren't generated (if any)\n- **Task section**: Refactoring brief with concrete execution instructions, not just analysis\n- **Priority Order section**: State-dependent refactoring priorities, starting with blockers and then architecture cleanup\n- **Requirements section**: Guidelines for suggested changes\n\n**Example usage**:\n```bash\n# View the prompt\ncat prompt.txt\n\n# Copy to clipboard and paste into ChatGPT/Claude\ncat prompt.txt | pbcopy  # macOS\ncat prompt.txt | xclip -sel clip  # Linux\n```\n\n### `context.md` - LLM Narrative\n**Purpose**: Ready-to-paste context for AI assistants\n**Key sections**:\n- **Overview**: Project statistics\n- **Architecture**: Module breakdown\n- **Entry Points**: Public interfaces\n- **Patterns**: Design patterns detected\n\n**Example usage**:\n```bash\n# Copy to clipboard for LLM\ncat context.md | pbcopy  # macOS\ncat context.md | xclip -sel clip  # Linux\n\n# Use with Claude/ChatGPT for code analysis\n```\n\n### Visualization Files (`*.mmd`, `*.png`)\n**Purpose**: Visual understanding of code structure\n**Files**:\n- `flow.mmd` - Detailed control flow with complexity colors\n- `calls.mmd` - Simple call graph\n- `compact_flow.mmd` - High-level module view\n- `*.png` - Pre-rendered images\n\n**Example usage**:\n```bash\n# View diagrams\nopen flow.png  # macOS\nxdg-open flow.png  # Linux\n\n# Edit in Mermaid Live Editor\n# Copy content of .mmd files to https://mermaid.live\n```\n\n## 🔍 Common Analysis Patterns\n\n### 1. Code Health Assessment\n```bash\n# Quick health check\ncode2llm ./ -f toon\ncat analysis.toon | grep -E \"(HEALTH|REFACTOR)\"\n```\n\n### 2. Refactoring Planning\n```bash\n# Get refactoring queue\ncode2llm ./ -f evolution\ncat evolution.toon.yaml\n\n# Focus on specific issues\ncode2llm ./ -f toon --refactor --smell god_function\n```\n\n### 3. LLM Assistance\n```bash\n# Generate context for AI\ncode2llm ./ -f context\ncat context.md\n\n# Use with Claude: \"Based on this context, help me refactor the god modules\"\n```\n\n### 4. Team Documentation\n```bash\n# Generate all docs for team\ncode2llm ./ -f all -o ./docs/\n\n# Create visual diagrams\nopen docs/flow.png\n```\n\n## 📊 Interpreting Metrics\n\n### Complexity Metrics (CC)\n- **🔴 Critical (≥5.0)**: Immediate refactoring needed\n- **🟠 High (3.0-4.9)**: Consider refactoring\n- **🟡 Medium (1.5-2.9)**: Monitor complexity\n- **🟢 Low (0.1-1.4)**: Acceptable\n- **⚪ Basic (0.0)**: Simple functions\n\n### Module Health\n- **GOD Module**: Too large (>500 lines, >20 methods)\n- **HUB**: High fan-out (calls many modules)\n- **FAN-IN**: High incoming dependencies\n- **CYCLES**: Circular dependencies\n\n### Data Flow Indicators\n- **PIPELINE**: Sequential data processing\n- **CONTRACT**: Clear input/output specification\n- **SIDE_EFFECT**: External state modification\n\n## 🛠️ Integration Examples\n\n### CI/CD Pipeline\n```bash\n#!/bin/bash\n# Analyze code quality in CI\ncode2llm ./ -f toon -o ./analysis\nif grep -q \"🔴 GOD\" ./analysis/analysis.toon; then\n    echo \"❌ God modules detected\"\n    exit 1\nfi\n```\n\n### Pre-commit Hook\n```bash\n#!/bin/sh\n# .git/hooks/pre-commit\ncode2llm ./ -f toon -o ./temp_analysis\nif grep -q \"🔴\" ./temp_analysis/analysis.toon; then\n    echo \"⚠️  Critical issues found. Review before committing.\"\nfi\nrm -rf ./temp_analysis\n```\n\n### Documentation Generation\n```bash\n# Generate docs for README\ncode2llm ./ -f context -o ./docs/\necho \"## Architecture\" >> README.md\ncat docs/context.md >> README.md\n```\n\n## 📚 Next Steps\n\n1. **Review `analysis.toon`** - Identify critical issues\n2. **Check `evolution.toon.yaml`** - Plan refactoring priorities\n3. **Use `context.md`** - Get LLM assistance for complex changes\n4. **Reference visualizations** - Understand system architecture\n5. **Track progress** - Re-run analysis after changes\n\n## 🔧 Advanced Usage\n\n### Custom Analysis\n```bash\n# Deep analysis with all insights\ncode2llm ./ -m hybrid -f all --max-depth 15 -v\n\n# Performance-optimized\ncode2llm ./ -m static -f toon --strategy quick\n\n# Refactoring-focused\ncode2llm ./ -f toon,evolution --refactor\n```\n\n### Output Customization\n```bash\n# Separate output directories\ncode2llm ./ -f all -o ./analysis-$(date +%Y%m%d)\n\n# Split YAML into multiple files\ncode2llm ./ -f yaml --split-output\n\n# Separate orphaned functions\ncode2llm ./ -f yaml --separate-orphans\n```\n\n---\n\n**Generated by**: `code2llm ./ -f all --readme`  \n**Analysis Date**: 2026-04-21  \n**Total Functions**: 86  \n**Total Classes**: 43  \n**Modules**: 34  \n\nFor more information about code2llm, visit: https://github.com/tom-sapletta/code2llm\n", "is_subdir": false}, {"name": "context.md", "rel_path": "context.md", "path": "context.md", "size": "21.9KB", "icon": "📝", "type": "markdown", "type_name": "Markdown", "content": "# System Architecture Analysis\n\n## Overview\n\n- **Project**: /home/tom/github/semcod/op3\n- **Primary Language**: python\n- **Languages**: python: 33, shell: 1\n- **Analysis Mode**: static\n- **Total Functions**: 86\n- **Total Classes**: 43\n- **Modules**: 34\n- **Entry Points**: 83\n\n## Architecture by Module\n\n### src.opstree.probes.builtin.os_linux\n- **Functions**: 12\n- **Classes**: 2\n- **File**: `os_linux.py`\n\n### src.opstree.probes.builtin.physical_rpi\n- **Functions**: 8\n- **Classes**: 1\n- **File**: `physical_rpi.py`\n\n### src.opstree.probes.builtin.runtime_container\n- **Functions**: 6\n- **Classes**: 1\n- **File**: `runtime_container.py`\n\n### src.opstree.layers.tree\n- **Functions**: 6\n- **Classes**: 2\n- **File**: `tree.py`\n\n### src.opstree.formats.registry\n- **Functions**: 5\n- **Classes**: 1\n- **File**: `registry.py`\n\n### src.opstree.probes.builtin.service_containers\n- **Functions**: 5\n- **Classes**: 1\n- **File**: `service_containers.py`\n\n### src.opstree.probes.builtin.endpoint_http\n- **Functions**: 5\n- **Classes**: 1\n- **File**: `endpoint_http.py`\n\n### src.opstree.probes.builtin.business_health\n- **Functions**: 5\n- **Classes**: 1\n- **File**: `business_health.py`\n\n### src.opstree.probes.registry\n- **Functions**: 4\n- **Classes**: 1\n- **File**: `registry.py`\n\n### src.opstree.cli.main\n- **Functions**: 4\n- **File**: `main.py`\n\n### src.opstree.probes.context\n- **Functions**: 4\n- **Classes**: 5\n- **File**: `context.py`\n\n### src.opstree.probes.base\n- **Functions**: 4\n- **Classes**: 3\n- **File**: `base.py`\n\n### src.opstree.snapshot.model\n- **Functions**: 4\n- **Classes**: 3\n- **File**: `model.py`\n\n### src.opstree.scanner.linear\n- **Functions**: 3\n- **Classes**: 1\n- **File**: `linear.py`\n\n### src.opstree.formats.less\n- **Functions**: 3\n- **Classes**: 1\n- **File**: `less.py`\n\n### src.opstree.formats.snapshot_yaml\n- **Functions**: 2\n- **Classes**: 1\n- **File**: `snapshot_yaml.py`\n\n### src.opstree.formats.migration_yaml\n- **Functions**: 2\n- **Classes**: 1\n- **File**: `migration_yaml.py`\n\n### src.opstree.drift.detector\n- **Functions**: 2\n- **Classes**: 2\n- **File**: `detector.py`\n\n### src.opstree.snapshot.diff\n- **Functions**: 2\n- **Classes**: 1\n- **File**: `diff.py`\n\n### src.opstree.layers.builtin\n- **Functions**: 0\n- **Classes**: 14\n- **File**: `builtin.py`\n\n## Key Entry Points\n\nMain execution flows into the system:\n\n### src.opstree.cli.main.scan\n> Scan a device and output snapshot.\n- **Calls**: cli.command, click.argument, click.option, click.option, click.option, click.option, LayerTree, ProbeRegistry\n\n### src.opstree.formats.less.LessAdapter.render\n> Renderuj Snapshot → LESS.\n- **Calls**: snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, None.join, business_layer.data.get, business_layer.data.get\n\n### src.opstree.formats.less.LessAdapter.parse\n> Parsuj LESS → PartialSnapshot.\n- **Calls**: re.search, re.finditer, re.finditer, re.finditer, re.search, PartialSnapshot, None.strip, None.strip\n\n### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers\n> Lista kontenerów.\n- **Calls**: _exec, ctx.execute, hasattr, _exec, _exec, None.splitlines, len, json.loads\n\n### src.opstree.cli.main.drift\n> Detect drift between intended and actual state.\n- **Calls**: cli.command, click.argument, click.argument, Path, Path, Snapshot.load, DriftDetector, detector.detect\n\n### src.opstree.cli.main.convert\n> Convert between configuration formats.\n- **Calls**: cli.command, click.argument, click.argument, click.option, Path, None.write_text, click.echo, LessAdapter\n\n### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_drm\n> Skanuj wyjścia DRM.\n- **Calls**: ctx.execute, hasattr, None.splitlines, hasattr, hasattr, re.match, m.group, ctx.execute\n\n### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse\n> Parsuj snapshot.yaml → Snapshot.\n- **Calls**: yaml.safe_load, None.items, Snapshot, LayerData, data.get, data.get, datetime.fromisoformat, data.get\n\n### src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse\n> Parsuj migration.yaml → PartialSnapshot.\n- **Calls**: yaml.safe_load, data.get, data.get, PartialSnapshot, LayerData, LayerData, LayerData, datetime.utcnow\n\n### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights\n> Skanuj podświetlenia.\n- **Calls**: ctx.execute, hasattr, None.splitlines, hasattr, ctx.execute, ctx.execute, _get_int, _get_int\n\n### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime\n> Wykryj runtime i wersję.\n- **Calls**: ctx.execute, hasattr, _exec, _exec, _exec, None.strip, None.strip, None.split\n\n### src.opstree.formats.migration_yaml.MigrationYamlAdapter.render\n> Renderuj Snapshot → migration.yaml.\n- **Calls**: snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, yaml.dump, endpoint_layer.data.get, business_layer.data.get, ep.get, runtime_layer.data.get\n\n### src.opstree.probes.builtin.os_linux.OsKernelProbe._get_uptime\n- **Calls**: ctx.execute, hasattr, float, int, float, int, None.split, None.split\n\n### src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services\n> Lista systemd services.\n- **Calls**: _exec, ctx.execute, hasattr, None.splitlines, line.split, stdout.strip, len, services.append\n\n### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render\n> Renderuj Snapshot → snapshot.yaml.\n- **Calls**: snapshot.layers.items, hasattr, yaml.dump, hasattr, snapshot.scanned_at.isoformat, None.isoformat, hasattr, layer_data.probed_at.isoformat\n\n### src.opstree.scanner.linear.LinearScanner.scan\n> Scan all layers and return a complete snapshot.\n- **Calls**: ProbeContext, self.layer_tree.topological_order, Snapshot, self.probe_registry.get, probe.can_probe, datetime.now, probe.scan, probe.anomalies\n\n### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe._check_endpoint\n> Sprawdź pojedynczy endpoint.\n- **Calls**: _exec, _exec, ctx.execute, hasattr, int, int, stdout.strip, float\n\n### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies\n> Wykryj anomalie w endpointach.\n- **Calls**: data.data.get, ep.get, anomalies.append, ep.get, anomalies.append, ep.get, ep.get, ep.get\n\n### src.opstree.layers.tree.LayerTree.topological_order\n> Zwróć warstwy w kolejności do skanowania (DAG).\n- **Calls**: self._layers.values, queue.pop, result.append, self._layers.values, len, len, ValueError, in_degree.items\n\n### src.opstree.formats.less.LessAdapter._parse_block\n> Parse a LESS block into key-value pairs.\n- **Calls**: body.split, line.strip, line.split, None.strip, line.startswith, key.strip, None.rstrip, value.strip\n\n### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan\n> Zeskanuj warstwę.\n- **Calls**: ProbeResult, self._probe_board_model, self._scan_drm, self._scan_backlights, self._check_kms, self._get_kms_driver, LayerData, datetime.now\n\n### src.opstree.probes.builtin.os_linux.OsKernelProbe.scan\n> Zeskanuj warstwę.\n- **Calls**: ProbeResult, self._get_kernel_version, self._get_arch, self._get_hostname, self._get_uptime, LayerData, datetime.now\n\n### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan\n> Zeskanuj warstwę.\n- **Calls**: ProbeResult, endpoint.get, endpoint.get, self._check_endpoint, results.append, LayerData, datetime.now\n\n### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe\n> Czy ten probe może pobiec w tym kontekście?\n- **Calls**: ctx.execute, hasattr, _check, _check, _check, _check\n\n### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies\n> Wykryj anomalie w kontenerach.\n- **Calls**: data.data.get, anomalies.append, container.get, container.get, container.get, container.get\n\n### src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies\n> Wykryj anomalie w zdrowiu aplikacji.\n- **Calls**: data.data.get, data.data.get, anomalies.append, anomalies.append, data.data.get, data.data.get\n\n### src.opstree.probes.context.SSHContext.__init__\n> Args:\n    target: SSH target in format \"user@host\"\n    metadata: Additional metadata\n    ssh_key_path: Path to SSH private key (optional)\n- **Calls**: None.__init__, ssh_cmd.extend, subprocess.run, ExecuteResult, ssh_cmd.extend, super\n\n### src.opstree.layers.tree.LayerDefinition.to_fraq_node\n> Konwertuj na FraqNode dla użycia przez fraq.core.\n- **Calls**: len, FraqNode, self.id.split, hash, float, float\n\n### src.opstree.probes.builtin.os_linux.OsConfigProbe.scan\n> Zeskanuj warstwę.\n- **Calls**: self._read_config_txt, self._read_cmdline, ProbeResult, LayerData, datetime.now\n\n### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan\n> Zeskanuj warstwę.\n- **Calls**: self._detect_runtime, self._list_containers, ProbeResult, LayerData, datetime.now\n\n## Process Flows\n\nKey execution flows identified:\n\n### Flow 1: scan\n```\nscan [src.opstree.cli.main]\n```\n\n### Flow 2: render\n```\nrender [src.opstree.formats.less.LessAdapter]\n```\n\n### Flow 3: parse\n```\nparse [src.opstree.formats.less.LessAdapter]\n```\n\n### Flow 4: _list_containers\n```\n_list_containers [src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe]\n```\n\n### Flow 5: drift\n```\ndrift [src.opstree.cli.main]\n```\n\n### Flow 6: convert\n```\nconvert [src.opstree.cli.main]\n```\n\n### Flow 7: _scan_drm\n```\n_scan_drm [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe]\n```\n\n### Flow 8: _scan_backlights\n```\n_scan_backlights [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe]\n```\n\n### Flow 9: _detect_runtime\n```\n_detect_runtime [src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe]\n```\n\n### Flow 10: _get_uptime\n```\n_get_uptime [src.opstree.probes.builtin.os_linux.OsKernelProbe]\n```\n\n## Key Classes\n\n### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe\n> Skanuje DSI/HDMI/backlight na Raspberry Pi.\n- **Methods**: 8\n- **Key Methods**: src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.can_probe, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_board_model, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_drm, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._check_kms, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._get_kms_driver, src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies\n\n### src.opstree.probes.builtin.os_linux.OsKernelProbe\n> Skanuje jądro Linux.\n- **Methods**: 7\n- **Key Methods**: src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe, src.opstree.probes.builtin.os_linux.OsKernelProbe.scan, src.opstree.probes.builtin.os_linux.OsKernelProbe._get_kernel_version, src.opstree.probes.builtin.os_linux.OsKernelProbe._get_arch, src.opstree.probes.builtin.os_linux.OsKernelProbe._get_hostname, src.opstree.probes.builtin.os_linux.OsKernelProbe._get_uptime, src.opstree.probes.builtin.os_linux.OsKernelProbe.anomalies\n\n### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe\n> Skanuje runtime kontenerów (docker/podman).\n- **Methods**: 6\n- **Key Methods**: src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.__init__, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies\n\n### src.opstree.probes.builtin.service_containers.ServiceContainersProbe\n> Skanuje systemd services.\n- **Methods**: 5\n- **Key Methods**: src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe, src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan, src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services, src.opstree.probes.builtin.service_containers.ServiceContainersProbe._is_service_enabled, src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies\n\n### src.opstree.probes.builtin.os_linux.OsConfigProbe\n> Skanuje konfigurację systemu.\n- **Methods**: 5\n- **Key Methods**: src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe, src.opstree.probes.builtin.os_linux.OsConfigProbe.scan, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline, src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies\n\n### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe\n> Skanuje HTTP endpoints.\n- **Methods**: 5\n- **Key Methods**: src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.__init__, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.can_probe, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe._check_endpoint, src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies\n\n### src.opstree.probes.builtin.business_health.BusinessHealthProbe\n> Skanuje zdrowie aplikacji.\n- **Methods**: 5\n- **Key Methods**: src.opstree.probes.builtin.business_health.BusinessHealthProbe.__init__, src.opstree.probes.builtin.business_health.BusinessHealthProbe.can_probe, src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan, src.opstree.probes.builtin.business_health.BusinessHealthProbe._check_health_endpoint, src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies\n\n### src.opstree.layers.tree.LayerTree\n> Drzewo warstw — topological ordering, dependency resolution.\n- **Methods**: 5\n- **Key Methods**: src.opstree.layers.tree.LayerTree.__init__, src.opstree.layers.tree.LayerTree.register, src.opstree.layers.tree.LayerTree.get, src.opstree.layers.tree.LayerTree.topological_order, src.opstree.layers.tree.LayerTree.to_fraq_node\n\n### src.opstree.formats.registry.FormatRegistry\n> Registry for format adapters (wraps fraq's FormatRegistry).\n- **Methods**: 4\n- **Key Methods**: src.opstree.formats.registry.FormatRegistry.register, src.opstree.formats.registry.FormatRegistry.get, src.opstree.formats.registry.FormatRegistry.available, src.opstree.formats.registry.FormatRegistry.serialize\n\n### src.opstree.snapshot.model.Snapshot\n> Pełna migawka urządzenia/systemu.\n- **Methods**: 4\n- **Key Methods**: src.opstree.snapshot.model.Snapshot.layer, src.opstree.snapshot.model.Snapshot.query, src.opstree.snapshot.model.Snapshot.to_yaml, src.opstree.snapshot.model.Snapshot.load\n- **Inherits**: BaseModel\n\n### src.opstree.probes.registry.ProbeRegistry\n> Registry for probes by layer_id.\n- **Methods**: 3\n- **Key Methods**: src.opstree.probes.registry.ProbeRegistry.register, src.opstree.probes.registry.ProbeRegistry.get, src.opstree.probes.registry.ProbeRegistry.all\n\n### src.opstree.formats.less.LessAdapter\n> Parsuj i emituj .doql.less.\n- **Methods**: 3\n- **Key Methods**: src.opstree.formats.less.LessAdapter.parse, src.opstree.formats.less.LessAdapter.render, src.opstree.formats.less.LessAdapter._parse_block\n\n### src.opstree.probes.base.Probe\n> Kontrakt probe'a.\n- **Methods**: 3\n- **Key Methods**: src.opstree.probes.base.Probe.can_probe, src.opstree.probes.base.Probe.scan, src.opstree.probes.base.Probe.anomalies\n- **Inherits**: Protocol\n\n### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter\n> Native op3 snapshot format adapter.\n- **Methods**: 2\n- **Key Methods**: src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse, src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render\n\n### src.opstree.scanner.linear.LinearScanner\n> Simple scanner that processes layers in topological order.\n- **Methods**: 2\n- **Key Methods**: src.opstree.scanner.linear.LinearScanner.__init__, src.opstree.scanner.linear.LinearScanner.scan\n\n### src.opstree.formats.migration_yaml.MigrationYamlAdapter\n> Parsuj i emituj migration.yaml (redeploy-compatible).\n- **Methods**: 2\n- **Key Methods**: src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse, src.opstree.formats.migration_yaml.MigrationYamlAdapter.render\n\n### src.opstree.drift.detector.DriftDetector\n> Detect drift between intended state (from config) and actual state (from scan).\n- **Methods**: 2\n- **Key Methods**: src.opstree.drift.detector.DriftDetector.detect, src.opstree.drift.detector.DriftDetector._summarize_changes\n\n### src.opstree.probes.context.ExecuteResult\n> Result of command execution.\n- **Methods**: 1\n- **Key Methods**: src.opstree.probes.context.ExecuteResult.ok\n\n### src.opstree.probes.context.ProbeContext\n> Base context for probe execution.\n- **Methods**: 1\n- **Key Methods**: src.opstree.probes.context.ProbeContext.__init__\n\n### src.opstree.probes.context.LocalContext\n> Local execution context (runs commands on localhost).\n- **Methods**: 1\n- **Key Methods**: src.opstree.probes.context.LocalContext.__init__\n- **Inherits**: ProbeContext\n\n## Data Transformation Functions\n\nKey functions that process and transform data:\n\n### src.opstree.formats.registry.FormatRegistry.serialize\n> Serialize data using the specified format.\n- **Output to**: cls._registry.serialize\n\n### src.opstree.formats.registry.register_format\n> Decorator to register a format adapter.\n- **Output to**: FormatRegistry.register\n\n### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse\n> Parsuj snapshot.yaml → Snapshot.\n- **Output to**: yaml.safe_load, None.items, Snapshot, LayerData, data.get\n\n### src.opstree.formats.less.LessAdapter.parse\n> Parsuj LESS → PartialSnapshot.\n- **Output to**: re.search, re.finditer, re.finditer, re.finditer, re.search\n\n### src.opstree.formats.less.LessAdapter._parse_block\n> Parse a LESS block into key-value pairs.\n- **Output to**: body.split, line.strip, line.split, None.strip, line.startswith\n\n### src.opstree.cli.main.convert\n> Convert between configuration formats.\n- **Output to**: cli.command, click.argument, click.argument, click.option, Path\n\n### src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse\n> Parsuj migration.yaml → PartialSnapshot.\n- **Output to**: yaml.safe_load, data.get, data.get, PartialSnapshot, LayerData\n\n## Public API Surface\n\nFunctions exposed as public API (no underscore prefix):\n\n- `src.opstree.cli.main.scan` - 39 calls\n- `src.opstree.formats.less.LessAdapter.render` - 38 calls\n- `src.opstree.formats.less.LessAdapter.parse` - 37 calls\n- `src.opstree.cli.main.drift` - 26 calls\n- `src.opstree.cli.main.convert` - 26 calls\n- `src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse` - 19 calls\n- `src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse` - 18 calls\n- `src.opstree.formats.migration_yaml.MigrationYamlAdapter.render` - 13 calls\n- `src.opstree.snapshot.diff.snapshot_diff` - 10 calls\n- `src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render` - 9 calls\n- `src.opstree.scanner.linear.LinearScanner.scan` - 9 calls\n- `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies` - 9 calls\n- `src.opstree.layers.tree.LayerTree.topological_order` - 9 calls\n- `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan` - 8 calls\n- `src.opstree.probes.builtin.os_linux.OsKernelProbe.scan` - 7 calls\n- `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan` - 7 calls\n- `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe` - 6 calls\n- `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies` - 6 calls\n- `src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies` - 6 calls\n- `src.opstree.layers.tree.LayerDefinition.to_fraq_node` - 6 calls\n- `src.opstree.probes.builtin.os_linux.OsConfigProbe.scan` - 5 calls\n- `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan` - 5 calls\n- `src.opstree.drift.detector.DriftDetector.detect` - 5 calls\n- `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan` - 4 calls\n- `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies` - 4 calls\n- `src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan` - 4 calls\n- `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies` - 4 calls\n- `src.opstree.layers.tree.LayerTree.register` - 4 calls\n- `src.opstree.snapshot.model.Snapshot.load` - 4 calls\n- `src.opstree.layers.tree.LayerTree.to_fraq_node` - 3 calls\n- `src.opstree.probes.registry.register_probe` - 2 calls\n- `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe` - 2 calls\n- `src.opstree.scanner.linear.scan_device` - 2 calls\n- `src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe` - 2 calls\n- `src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe` - 2 calls\n- `src.opstree.cli.main.cli` - 2 calls\n- `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.can_probe` - 2 calls\n- `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.can_probe` - 2 calls\n- `src.opstree.snapshot.model.Snapshot.query` - 2 calls\n- `src.opstree.snapshot.model.Snapshot.to_yaml` - 2 calls\n\n## System Interactions\n\nHow components interact:\n\n```mermaid\ngraph TD\n    scan --> command\n    scan --> argument\n    scan --> option\n    render --> get\n    parse --> search\n    parse --> finditer\n    _list_containers --> _exec\n    _list_containers --> execute\n    _list_containers --> hasattr\n    drift --> command\n    drift --> argument\n    drift --> Path\n    convert --> command\n    convert --> argument\n    convert --> option\n    convert --> Path\n    _scan_drm --> execute\n    _scan_drm --> hasattr\n    _scan_drm --> splitlines\n    parse --> safe_load\n    parse --> items\n    parse --> Snapshot\n    parse --> LayerData\n    parse --> get\n    parse --> PartialSnapshot\n    _scan_backlights --> execute\n    _scan_backlights --> hasattr\n    _scan_backlights --> splitlines\n    _detect_runtime --> execute\n    _detect_runtime --> hasattr\n```\n\n## Reverse Engineering Guidelines\n\n1. **Entry Points**: Start analysis from the entry points listed above\n2. **Core Logic**: Focus on classes with many methods\n3. **Data Flow**: Follow data transformation functions\n4. **Process Flows**: Use the flow diagrams for execution paths\n5. **API Surface**: Public API functions reveal the interface\n\n## Context for LLM\n\nMaintain the identified architectural patterns and public API surface when suggesting changes.", "is_subdir": false}, {"name": "calls.mmd", "rel_path": "calls.mmd", "path": "calls.mmd", "size": "466B", "icon": "📈", "type": "mermaid", "type_name": "Mermaid", "content": "flowchart LR\n    subgraph src__opstree\n        src__opstree__drift__detector__DriftDetector__detect[&quot;detect&quot;]\n        src__opstree__snapshot__diff___diff_layer_data[&quot;_diff_layer_data&quot;]\n        src__opstree__snapshot__diff__snapshot_diff[&quot;snapshot_diff&quot;]\n    end\n    src__opstree__drift__detector__DriftDetector__detect --&gt; src__opstree__snapshot__diff__snapshot_diff\n    src__opstree__snapshot__diff__snapshot_diff --&gt; src__opstree__snapshot__diff___diff_layer_data\n", "is_subdir": false}, {"name": "compact_flow.mmd", "rel_path": "compact_flow.mmd", "path": "compact_flow.mmd", "size": "58B", "icon": "📈", "type": "mermaid", "type_name": "Mermaid", "content": "flowchart TD\n    src__opstree[&quot;src.opstree&lt;br/&gt;86 funcs&quot;]\n", "is_subdir": false}, {"name": "flow.mmd", "rel_path": "flow.mmd", "path": "flow.mmd", "size": "2.0KB", "icon": "📈", "type": "mermaid", "type_name": "Mermaid", "content": "flowchart TD\n\n    %% Entry points (blue)\n    classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff\n\n    subgraph Core\n        src__opstree__formats__registry__FormatRegistry__register[&quot;register&quot;]\n        src__opstree__formats__registry__FormatRegistry__get[&quot;get&quot;]\n        src__opstree__formats__registry__FormatRegistry__available[&quot;available&quot;]\n        src__opstree__formats__registry__FormatRegistry__serialize[&quot;serialize&quot;]\n        src__opstree__formats__registry__register_format[&quot;register_format&quot;]\n        src__opstree__probes__registry__ProbeRegistry__register[&quot;register&quot;]\n        src__opstree__probes__registry__ProbeRegistry__get[&quot;get&quot;]\n        src__opstree__probes__registry__ProbeRegistry__all[&quot;all&quot;]\n        src__opstree__probes__registry__register_probe[&quot;register_probe&quot;]\n        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe[&quot;can_probe&quot;]\n        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__scan[&quot;scan&quot;]\n        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___list_systemd_services[&quot;_list_systemd_services&quot;]\n        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___is_service_enabled[&quot;_is_service_enabled&quot;]\n        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__anomalies[&quot;anomalies&quot;]\n        src__opstree__formats__snapshot_yaml__SnapshotYamlAdapter__parse[&quot;parse&quot;]\n        ...[&quot;+61 more&quot;]\n    end\n\n    class src__opstree__formats__registry__FormatRegistry__register,src__opstree__formats__registry__FormatRegistry__get,src__opstree__formats__registry__FormatRegistry__available,src__opstree__formats__registry__FormatRegistry__serialize,src__opstree__formats__registry__register_format,src__opstree__probes__registry__ProbeRegistry__register,src__opstree__probes__registry__ProbeRegistry__get,src__opstree__probes__registry__ProbeRegistry__all,src__opstree__probes__registry__register_probe,src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe entry\n", "is_subdir": false}, {"name": "prompt.txt", "rel_path": "prompt.txt", "path": "prompt.txt", "size": "2.9KB", "icon": "📄", "type": "text", "type_name": "Text", "content": "You are an AI assistant helping me understand and improve a codebase.\nUse the attached/generated files as the authoritative context.\nYour goal is to refactor the project based on these files, not just summarize it.\n\nwe are in project path: op3\n\nFiles for analysis:\n\nNote: project/validation.toon.yaml and project/duplication.toon.yaml are generated by external tools (vallm and redup)\n- analysis.toon.yaml  (Health diagnostics - complexity metrics, god modules, coupling issues, refactoring priorities) [3KB]\n- map.toon.yaml  (Structural map - files, sizes, imports, exports, signatures, project header) [7KB]\n- evolution.toon.yaml  (Refactoring queue - ranked actions by impact/effort, risks, metrics targets, history) [1KB]\n- project.toon.yaml  (Compact project overview - generated from project.yaml data) [2KB]\n- context.md  (LLM narrative - architecture summary and project context) [21KB]\n\nMissing files (not generated in this run):\n- README.md\n\nTask:\n- Treat this prompt as a refactoring brief: identify the highest-priority changes and prepare concrete edits.\n- Use the file set to decide whether the first pass should focus on correctness, duplication, complexity reduction, or architecture cleanup.\n- If you can safely implement the refactor, do it; otherwise give an exact file-by-file change plan and test plan.\n- Use analysis.toon.yaml to locate high-CC functions and god modules that should be split first.\n- Keep module boundaries intact and update imports/exports according to map.toon.yaml.\n- Use evolution.toon.yaml as the execution backlog and work from the top-ranked items.\n- Keep project.toon.yaml aligned with the refactored architecture.\n\nPriority Order:\nP1 — Split or simplify the highest-CC / god modules identified in analysis.toon.yaml.\nP1 — Preserve module boundaries and update imports/exports according to map.toon.yaml.\nP2 — Keep the compact project overview in project.toon.yaml aligned with the refactor.\nP2 — Execute the highest-impact items from evolution.toon.yaml in order of benefit/risk.\n\nFocus Areas for Analysis:\n1. **Code Health Analysis** - Review complexity metrics, god modules, coupling issues from analysis.toon.yaml\n2. **Structural Map** - Use map.toon.yaml to inspect imports, exports, signatures, and the project header\n3. **Refactoring Priorities** - Examine ranked refactoring actions and risk assessment from evolution.toon.yaml\n4. **Project Overview** - Review the compact project overview from project.toon.yaml\n\nAnalysis Strategy:\n- Start with analysis.toon.yaml for health metrics, then map.toon.yaml for structure and signatures\n- Review evolution.toon.yaml for action priorities and next steps\n- Compare the compact project overview in project.toon.yaml with the main analysis files\n\nConstraints:\n- Prefer minimal, incremental changes.\n- Maintain full backward compatibility.\n- Base recommendations on concrete metrics from the provided files.\n- If uncertain, ask clarifying questions.\n", "is_subdir": false}, {"name": "mermaid.export", "rel_path": "mermaid.export", "path": "mermaid.export", "size": "6.1KB", "icon": "📄", "type": "unknown", "type_name": "EXPORT", "content": "[Binary file]", "is_subdir": false}, {"name": "analysis.toon.yaml", "rel_path": "analysis.toon.yaml", "path": "analysis.toon.yaml", "size": "3.1KB", "icon": "⚙️", "type": "yaml", "type_name": "YAML", "content": "# code2llm | 34f 2214L | python:33,shell:1 | 2026-04-21\n# CC̄=3.7 | critical:4/86 | dups:0 | cycles:0\n\nHEALTH[4]:\n  🟡 CC    render CC=22 (limit:15)\n  🟡 CC    scan CC=16 (limit:15)\n  🟡 CC    _list_containers CC=18 (limit:15)\n  🟡 CC    render CC=16 (limit:15)\n\nREFACTOR[1]:\n  1. split 4 high-CC methods  (CC&gt;15)\n\nPIPELINES[72]:\n  [1] Src [register]: register\n      PURITY: 100% pure\n  [2] Src [get]: get\n      PURITY: 100% pure\n  [3] Src [available]: available\n      PURITY: 100% pure\n  [4] Src [serialize]: serialize\n      PURITY: 100% pure\n  [5] Src [register_format]: register_format\n      PURITY: 100% pure\n\nLAYERS:\n  src/                            CC̄=3.7    ←in:0  →out:0\n  │ !! less                       192L  1C    3m  CC=22     ←0\n  │ physical_rpi               184L  1C    8m  CC=12     ←0\n  │ !! main                       180L  0C    4m  CC=16     ←0\n  │ builtin                    179L  14C    0m  CC=0.0    ←0\n  │ !! runtime_container          173L  1C    6m  CC=18     ←0\n  │ os_linux                   142L  2C   12m  CC=7      ←0\n  │ !! migration_yaml             108L  1C    2m  CC=16     ←0\n  │ endpoint_http              107L  1C    5m  CC=6      ←0\n  │ business_health             98L  1C    5m  CC=6      ←0\n  │ context                     97L  5C    4m  CC=2      ←0\n  │ service_containers          93L  1C    5m  CC=4      ←0\n  │ diff                        88L  1C    2m  CC=4      ←1\n  │ tree                        88L  2C    6m  CC=11     ←0\n  │ detector                    77L  2C    2m  CC=4      ←0\n  │ snapshot_yaml               57L  1C    2m  CC=5      ←0\n  │ model                       55L  3C    4m  CC=1      ←1\n  │ linear                      53L  1C    3m  CC=6      ←1\n  │ base                        44L  3C    4m  CC=2      ←0\n  │ registry                    38L  1C    4m  CC=2      ←0\n  │ registry                    35L  1C    5m  CC=1      ←0\n  │ __init__                    35L  0C    0m  CC=0.0    ←0\n  │ __init__                    12L  0C    0m  CC=0.0    ←0\n  │ __init__                     8L  0C    0m  CC=0.0    ←0\n  │ __init__                     8L  0C    0m  CC=0.0    ←0\n  │ __init__                     6L  0C    0m  CC=0.0    ←0\n  │ __init__                     6L  0C    0m  CC=0.0    ←0\n  │ __init__                     6L  0C    0m  CC=0.0    ←0\n  │ __init__                     3L  0C    0m  CC=0.0    ←0\n  │ _version                     2L  0C    0m  CC=0.0    ←0\n  │ __init__                     1L  0C    0m  CC=0.0    ←0\n  │ __init__                     1L  0C    0m  CC=0.0    ←0\n  │ __init__                     1L  0C    0m  CC=0.0    ←0\n  │ __init__                     1L  0C    0m  CC=0.0    ←0\n  │\n  ./                              CC̄=0.0    ←in:0  →out:0\n  │ project.sh                  36L  0C    0m  CC=0.0    ←0\n  │\n\nCOUPLING: no cross-package imports detected\n\nEXTERNAL:\n  validation: run `vallm batch .` → validation.toon\n  duplication: run `redup scan .` → duplication.toon\n", "is_subdir": false}, {"name": "calls.toon.yaml", "rel_path": "calls.toon.yaml", "path": "calls.toon.yaml", "size": "714B", "icon": "⚙️", "type": "yaml", "type_name": "YAML", "content": "# code2llm call graph | /home/tom/github/semcod/op3\n# nodes: 3 | edges: 2 | modules: 2\n# CC̄=3.7\n\nHUBS[20]:\n  src.opstree.snapshot.diff._diff_layer_data\n    CC=1  in:1  out:14  total:15\n  src.opstree.snapshot.diff.snapshot_diff\n    CC=4  in:1  out:10  total:11\n  src.opstree.drift.detector.DriftDetector.detect\n    CC=2  in:0  out:5  total:5\n\nMODULES:\n  src.opstree.drift.detector  [1 funcs]\n    detect  CC=2  out:5\n  src.opstree.snapshot.diff  [2 funcs]\n    _diff_layer_data  CC=1  out:14\n    snapshot_diff  CC=4  out:10\n\nEDGES:\n  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff\n  src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data\n", "is_subdir": false}, {"name": "calls.yaml", "rel_path": "calls.yaml", "path": "calls.yaml", "size": "6.1KB", "icon": "⚙️", "type": "yaml", "type_name": "YAML", "content": "project: /home/tom/github/semcod/op3\ngenerated_from: code2llm call graph analysis\nstats:\n  total_nodes: 3\n  total_edges: 2\n  modules_count: 2\nnodes:\n  src.opstree.drift.detector.DriftDetector.detect:\n    name: detect\n    module: src.opstree.drift.detector\n    line: 22\n    cyclomatic_complexity: 2\n    calls_out: 5\n    calls_in: 0\n  src.opstree.snapshot.diff._diff_layer_data:\n    name: _diff_layer_data\n    module: src.opstree.snapshot.diff\n    line: 48\n    cyclomatic_complexity: 1\n    calls_out: 14\n    calls_in: 1\n  src.opstree.snapshot.diff.snapshot_diff:\n    name: snapshot_diff\n    module: src.opstree.snapshot.diff\n    line: 18\n    cyclomatic_complexity: 4\n    calls_out: 10\n    calls_in: 1\nedges:\n- caller: src.opstree.drift.detector.DriftDetector.detect\n  callee: src.opstree.snapshot.diff.snapshot_diff\n  call_type: resolved\n- caller: src.opstree.snapshot.diff.snapshot_diff\n  callee: src.opstree.snapshot.diff._diff_layer_data\n  call_type: resolved\nmodules:\n  src.opstree.drift.detector:\n  - src.opstree.drift.detector.DriftDetector.detect\n  src.opstree.snapshot.diff:\n  - src.opstree.snapshot.diff._diff_layer_data\n  - src.opstree.snapshot.diff.snapshot_diff\nentry_points:\n- src.opstree.cli.main.cli\n- src.opstree.cli.main.convert\n- src.opstree.cli.main.drift\n- src.opstree.cli.main.scan\n- src.opstree.drift.detector.DriftDetector._summarize_changes\n- src.opstree.drift.detector.DriftDetector.detect\n- src.opstree.formats.less.LessAdapter._parse_block\n- src.opstree.formats.less.LessAdapter.parse\n- src.opstree.formats.less.LessAdapter.render\n- src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse\n- src.opstree.formats.migration_yaml.MigrationYamlAdapter.render\n- src.opstree.formats.registry.FormatRegistry.available\n- src.opstree.formats.registry.FormatRegistry.get\n- src.opstree.formats.registry.FormatRegistry.register\n- src.opstree.formats.registry.FormatRegistry.serialize\n- src.opstree.formats.registry.register_format\n- src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse\n- src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render\n- src.opstree.layers.tree.LayerDefinition.to_fraq_node\n- src.opstree.layers.tree.LayerTree.__init__\n- src.opstree.layers.tree.LayerTree.get\n- src.opstree.layers.tree.LayerTree.register\n- src.opstree.layers.tree.LayerTree.to_fraq_node\n- src.opstree.layers.tree.LayerTree.topological_order\n- src.opstree.probes.base.Probe.anomalies\n- src.opstree.probes.base.Probe.can_probe\n- src.opstree.probes.base.Probe.scan\n- src.opstree.probes.base.ProbeContext.__post_init__\n- src.opstree.probes.builtin.business_health.BusinessHealthProbe.__init__\n- src.opstree.probes.builtin.business_health.BusinessHealthProbe._check_health_endpoint\n- src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies\n- src.opstree.probes.builtin.business_health.BusinessHealthProbe.can_probe\n- src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan\n- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.__init__\n- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe._check_endpoint\n- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies\n- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.can_probe\n- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan\n- src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline\n- src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt\n- src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies\n- src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe\n- src.opstree.probes.builtin.os_linux.OsConfigProbe.scan\n- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_arch\n- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_hostname\n- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_kernel_version\n- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_uptime\n- src.opstree.probes.builtin.os_linux.OsKernelProbe.anomalies\n- src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe\n- src.opstree.probes.builtin.os_linux.OsKernelProbe.scan\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._check_kms\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._get_kms_driver\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_board_model\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_drm\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.can_probe\n- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan\n- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.__init__\n- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime\n- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers\n- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies\n- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe\n- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan\n- src.opstree.probes.builtin.service_containers.ServiceContainersProbe._is_service_enabled\n- src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services\n- src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies\n- src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe\n- src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan\n- src.opstree.probes.context.LocalContext.__init__\n- src.opstree.probes.context.MockContext.__init__\n- src.opstree.probes.context.ProbeContext.__init__\n- src.opstree.probes.context.SSHContext.__init__\n- src.opstree.probes.registry.ProbeRegistry.all\n- src.opstree.probes.registry.ProbeRegistry.get\n- src.opstree.probes.registry.ProbeRegistry.register\n- src.opstree.probes.registry.register_probe\n- src.opstree.scanner.linear.LinearScanner.__init__\n- src.opstree.scanner.linear.LinearScanner.scan\n- src.opstree.snapshot.model.Snapshot.layer\n- src.opstree.snapshot.model.Snapshot.load\n- src.opstree.snapshot.model.Snapshot.query\n- src.opstree.snapshot.model.Snapshot.to_yaml\n", "is_subdir": false}, {"name": "evolution.toon.yaml", "rel_path": "evolution.toon.yaml", "path": "evolution.toon.yaml", "size": "1.8KB", "icon": "⚙️", "type": "yaml", "type_name": "YAML", "content": "# code2llm/evolution | 86 func | 19f | 2026-04-21\n\nNEXT[4] (ranked by impact):\n  [1] !  SPLIT-FUNC      scan  CC=16  fan=28\n      WHY: CC=16 exceeds 15\n      EFFORT: ~1h  IMPACT: 448\n\n  [2] !  SPLIT-FUNC      LessAdapter.render  CC=22  fan=13\n      WHY: CC=22 exceeds 15\n      EFFORT: ~1h  IMPACT: 286\n\n  [3] !  SPLIT-FUNC      RuntimeContainerProbe._list_containers  CC=18  fan=11\n      WHY: CC=18 exceeds 15\n      EFFORT: ~1h  IMPACT: 198\n\n  [4] !  SPLIT-FUNC      MigrationYamlAdapter.render  CC=16  fan=6\n      WHY: CC=16 exceeds 15\n      EFFORT: ~1h  IMPACT: 96\n\n\nRISKS[0]: none\n\nMETRICS-TARGET:\n  CC̄:          3.7 → ≤2.6\n  max-CC:      22 → ≤11\n  god-modules: 0 → 0\n  high-CC(≥15): 4 → ≤2\n  hub-types:   0 → ≤0\n\nPATTERNS (language parser shared logic):\n  _extract_declarations() in base.py — unified extraction for:\n    - TypeScript: interfaces, types, classes, functions, arrow funcs\n    - PHP: namespaces, traits, classes, functions, includes\n    - Ruby: modules, classes, methods, requires\n    - C++: classes, structs, functions, #includes\n    - C#: classes, interfaces, methods, usings\n    - Java: classes, interfaces, methods, imports\n    - Go: packages, functions, structs\n    - Rust: modules, functions, traits, use statements\n\n  Shared regex patterns per language:\n    - import: language-specific import/require/using patterns\n    - class: class/struct/trait declarations with inheritance\n    - function: function/method signatures with visibility\n    - brace_tracking: for C-family languages ({ })\n    - end_keyword_tracking: for Ruby (module/class/def...end)\n\n  Benefits:\n    - Consistent extraction logic across all languages\n    - Reduced code duplication (~70% reduction in parser LOC)\n    - Easier maintenance: fix once, apply everywhere\n    - Standardized FunctionInfo/ClassInfo models\n\nHISTORY:\n  (first run — no previous data)\n", "is_subdir": false}, {"name": "map.toon.yaml", "rel_path": "map.toon.yaml", "path": "map.toon.yaml", "size": "7.5KB", "icon": "⚙️", "type": "yaml", "type_name": "YAML", "content": "# op3 | 34f 2214L | shell:1,python:33 | 2026-04-21\n# stats: 86 func | 0 cls | 34 mod | CC̄=3.7 | critical:4 | cycles:0\n# alerts[5]: fan-out scan=28; CC LessAdapter.render=22; CC RuntimeContainerProbe._list_containers=18; fan-out convert=17; CC MigrationYamlAdapter.render=16\n# hotspots[5]: scan fan=28; convert fan=17; LessAdapter.render fan=13; drift fan=13; LessAdapter.parse fan=12\n# evolution: baseline\n# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods\nM[34]:\n  project.sh,36\n  src/op3/__init__.py,3\n  src/opstree/__init__.py,35\n  src/opstree/_version.py,2\n  src/opstree/cli/__init__.py,1\n  src/opstree/cli/commands/__init__.py,1\n  src/opstree/cli/main.py,180\n  src/opstree/config_apply/__init__.py,1\n  src/opstree/drift/__init__.py,6\n  src/opstree/drift/detector.py,77\n  src/opstree/formats/__init__.py,6\n  src/opstree/formats/less.py,192\n  src/opstree/formats/migration_yaml.py,108\n  src/opstree/formats/registry.py,35\n  src/opstree/formats/snapshot_yaml.py,57\n  src/opstree/layers/__init__.py,12\n  src/opstree/layers/builtin.py,179\n  src/opstree/layers/tree.py,88\n  src/opstree/probes/__init__.py,8\n  src/opstree/probes/base.py,44\n  src/opstree/probes/builtin/__init__.py,1\n  src/opstree/probes/builtin/business_health.py,98\n  src/opstree/probes/builtin/endpoint_http.py,107\n  src/opstree/probes/builtin/os_linux.py,142\n  src/opstree/probes/builtin/physical_rpi.py,184\n  src/opstree/probes/builtin/runtime_container.py,173\n  src/opstree/probes/builtin/service_containers.py,93\n  src/opstree/probes/context.py,97\n  src/opstree/probes/registry.py,38\n  src/opstree/scanner/__init__.py,6\n  src/opstree/scanner/linear.py,53\n  src/opstree/snapshot/__init__.py,8\n  src/opstree/snapshot/diff.py,88\n  src/opstree/snapshot/model.py,55\nD:\n  src/opstree/formats/less.py:\n    e: LessAdapter\n    LessAdapter: parse(1),render(2),_parse_block(1)  # Parsuj i emituj .doql.less...\n  src/opstree/probes/builtin/runtime_container.py:\n    e: RuntimeContainerProbe\n    RuntimeContainerProbe: __init__(1),can_probe(1),scan(1),_detect_runtime(1),_list_containers(2),anomalies(1)  # Skanuje runtime kontenerów (docker/podman)...\n  src/opstree/cli/main.py:\n    e: cli,scan,drift,convert\n    cli()\n    scan(target;ssh;output;format;layers)\n    drift(intended;actual)\n    convert(input_file;output_file;format)\n  src/opstree/formats/migration_yaml.py:\n    e: MigrationYamlAdapter\n    MigrationYamlAdapter: parse(1),render(1)  # Parsuj i emituj migration.yaml (redeploy-compatible)...\n  src/opstree/probes/builtin/physical_rpi.py:\n    e: RpiPhysicalDisplayProbe\n    RpiPhysicalDisplayProbe: can_probe(1),scan(1),_probe_board_model(1),_scan_drm(1),_scan_backlights(1),_check_kms(1),_get_kms_driver(1),anomalies(1)  # Skanuje DSI/HDMI/backlight na Raspberry Pi...\n  src/opstree/layers/tree.py:\n    e: LayerDefinition,LayerTree\n    LayerDefinition: to_fraq_node(0)  # Definicja jednej warstwy w drzewie...\n    LayerTree: __init__(0),register(1),get(1),topological_order(0),to_fraq_node(0)  # Drzewo warstw — topological ordering, dependency resolution...\n  src/opstree/probes/builtin/os_linux.py:\n    e: OsKernelProbe,OsConfigProbe\n    OsKernelProbe: can_probe(1),scan(1),_get_kernel_version(1),_get_arch(1),_get_hostname(1),_get_uptime(1),anomalies(1)  # Skanuje jądro Linux...\n    OsConfigProbe: can_probe(1),scan(1),_read_config_txt(1),_read_cmdline(1),anomalies(1)  # Skanuje konfigurację systemu...\n  src/opstree/scanner/linear.py:\n    e: LinearScanner,scan_device\n    LinearScanner: __init__(1),scan(2)  # Simple scanner that processes layers in topological order...\n    scan_device(target;execute;layer_tree)\n  src/opstree/probes/builtin/endpoint_http.py:\n    e: EndpointHttpProbe\n    EndpointHttpProbe: __init__(1),can_probe(1),scan(1),_check_endpoint(3),anomalies(1)  # Skanuje HTTP endpoints...\n  src/opstree/probes/builtin/business_health.py:\n    e: BusinessHealthProbe\n    BusinessHealthProbe: __init__(2),can_probe(1),scan(1),_check_health_endpoint(2),anomalies(1)  # Skanuje zdrowie aplikacji...\n  src/opstree/formats/snapshot_yaml.py:\n    e: SnapshotYamlAdapter\n    SnapshotYamlAdapter: parse(1),render(1)  # Native op3 snapshot format adapter...\n  src/opstree/probes/builtin/service_containers.py:\n    e: ServiceContainersProbe\n    ServiceContainersProbe: can_probe(1),scan(1),_list_systemd_services(1),_is_service_enabled(2),anomalies(1)  # Skanuje systemd services...\n  src/opstree/drift/detector.py:\n    e: DriftReport,DriftDetector\n    DriftReport:  # Report of drift between intended and actual state...\n    DriftDetector: detect(2),_summarize_changes(1)  # Detect drift between intended state (from config) and actual...\n  src/opstree/snapshot/diff.py:\n    e: Change,snapshot_diff,_diff_layer_data\n    Change:  # Represents a single change between two snapshots...\n    snapshot_diff(a;b)\n    _diff_layer_data(a_layer;b_layer)\n  src/opstree/probes/registry.py:\n    e: ProbeRegistry,register_probe\n    ProbeRegistry: register(1),get(1),all(0)  # Registry for probes by layer_id...\n    register_probe(probe_class)\n  src/opstree/probes/context.py:\n    e: ExecuteResult,ProbeContext,LocalContext,MockContext,SSHContext\n    ExecuteResult:  # Result of command execution...\n    ProbeContext: __init__(3)  # Base context for probe execution...\n    LocalContext(ProbeContext): __init__(1)  # Local execution context (runs commands on localhost)...\n    MockContext(ProbeContext): __init__(2)  # Mock context for testing with predefined responses...\n    SSHContext(ProbeContext): __init__(3)  # SSH execution context for remote scanning...\n  src/opstree/probes/base.py:\n    e: ProbeContext,ProbeResult,Probe\n    ProbeContext: __post_init__(0)  # Kontekst dla probe — nie wie o SSH, click, nic konkretnego...\n    ProbeResult:  # Wynik probe'a...\n    Probe(Protocol): can_probe(1),scan(1),anomalies(1)  # Kontrakt probe'a...\n  src/opstree/formats/registry.py:\n    e: FormatRegistry,register_format\n    FormatRegistry: register(2),get(1),available(0),serialize(2)  # Registry for format adapters (wraps fraq's FormatRegistry)...\n    register_format(name;adapter)\n  src/opstree/snapshot/model.py:\n    e: LayerData,Snapshot,PartialSnapshot\n    LayerData(BaseModel):  # Dane jednej warstwy...\n    Snapshot(BaseModel): layer(1),query(1),to_yaml(0),load(1)  # Pełna migawka urządzenia/systemu...\n    PartialSnapshot(BaseModel):  # Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszy...\n  project.sh:\n  src/opstree/__init__.py:\n  src/opstree/drift/__init__.py:\n  src/opstree/probes/__init__.py:\n  src/opstree/formats/__init__.py:\n  src/opstree/config_apply/__init__.py:\n  src/opstree/cli/__init__.py:\n  src/opstree/cli/commands/__init__.py:\n  src/opstree/scanner/__init__.py:\n  src/opstree/layers/__init__.py:\n  src/opstree/snapshot/__init__.py:\n  src/op3/__init__.py:\n  src/opstree/probes/builtin/__init__.py:\n  src/opstree/_version.py:\n  src/opstree/layers/builtin.py:\n    e: PhysicalDisplayData,OsKernelData,OsConfigData,RuntimeContainerData,RuntimeCompositorData,ServiceContainersData,EndpointHttpData,BusinessHealthData,PhysicalLayer,OsLayer,RuntimeLayer,ServiceLayer,EndpointLayer,BusinessLayer\n    PhysicalDisplayData(BaseModel):\n    OsKernelData(BaseModel):\n    OsConfigData(BaseModel):\n    RuntimeContainerData(BaseModel):\n    RuntimeCompositorData(BaseModel):\n    ServiceContainersData(BaseModel):\n    EndpointHttpData(BaseModel):\n    BusinessHealthData(BaseModel):\n    PhysicalLayer:  # Physical infrastructure layer...\n    OsLayer:  # Operating system layer...\n    RuntimeLayer:  # Runtime environment layer...\n    ServiceLayer:  # Services layer...\n    EndpointLayer:  # Network endpoints layer...\n    BusinessLayer:  # Business logic layer...\n", "is_subdir": false}, {"name": "project.toon.yaml", "rel_path": "project.toon.yaml", "path": "project.toon.yaml", "size": "2.5KB", "icon": "⚙️", "type": "yaml", "type_name": "YAML", "content": "# op3 | 86 func | 19f | 2873L | python | 2026-04-21\n\nHEALTH:\n  CC̄=3.7  critical=7 (limit:10)  dup=1  cycles=0\n\nALERTS[11]:\n  !!! high_fan_out     scan = 28 (limit:10)\n  !!  cc_exceeded      LessAdapter.render = 22 (limit:15)\n  !!  high_fan_out     convert = 17 (limit:10)\n  !   cc_exceeded      RuntimeContainerProbe._list_containers = 18 (limit:15)\n  !   cc_exceeded      scan = 16 (limit:15)\n  !   cc_exceeded      MigrationYamlAdapter.render = 16 (limit:15)\n  !   high_fan_out     LessAdapter.render = 13 (limit:10)\n  !   high_fan_out     drift = 13 (limit:10)\n  !   high_fan_out     LessAdapter.parse = 12 (limit:10)\n  !   high_fan_out     RpiPhysicalDisplayProbe._scan_drm = 12 (limit:10)\n\nMODULES[34] (top by size):\n  M[src/opstree/formats/less.py] 192L C:1 F:3 CC↑22 D:0 (python)\n  M[src/opstree/probes/builtin/physical_rpi.py] 184L C:1 F:8 CC↑12 D:0 (python)\n  M[src/opstree/cli/main.py] 180L C:0 F:4 CC↑16 D:0 (python)\n  M[src/opstree/layers/builtin.py] 179L C:14 F:0 CC↑0 D:0 (python)\n  M[src/opstree/probes/builtin/runtime_container.py] 173L C:1 F:6 CC↑18 D:0 (python)\n  M[src/opstree/probes/builtin/os_linux.py] 142L C:2 F:12 CC↑7 D:0 (python)\n  M[src/opstree/formats/migration_yaml.py] 108L C:1 F:2 CC↑16 D:0 (python)\n  M[src/opstree/probes/builtin/endpoint_http.py] 107L C:1 F:5 CC↑6 D:0 (python)\n  M[src/opstree/probes/builtin/business_health.py] 98L C:1 F:5 CC↑6 D:0 (python)\n  M[src/opstree/probes/context.py] 97L C:5 F:4 CC↑2 D:0 (python)\n  M[src/opstree/probes/builtin/service_containers.py] 93L C:1 F:5 CC↑4 D:0 (python)\n  M[src/opstree/layers/tree.py] 88L C:2 F:6 CC↑11 D:0 (python)\n  M[src/opstree/snapshot/diff.py] 88L C:1 F:2 CC↑4 D:1 (python)\n  M[src/opstree/drift/detector.py] 77L C:2 F:2 CC↑4 D:0 (python)\n  M[src/opstree/formats/snapshot_yaml.py] 57L C:1 F:2 CC↑5 D:0 (python)\n  LANGS: python:33/shell:1\n\nHOTSPOTS[7]:\n  ★ scan fan=28  // Scan a device and output snapshot.\n  ★ convert fan=17  // Convert between configuration formats.\n  ★ LessAdapter.render fan=13  // Renderuj Snapshot → LESS.\n  ★ drift fan=13  // Detect drift between intended and actual state.\n  ★ LessAdapter.parse fan=12  // Parsuj LESS → PartialSnapshot.\n\nREFACTOR[6]:\n  [1] M/L Split LessAdapter.render (CC=22)\n  [2] M/L Split scan (CC=16)\n  [3] M/L Split RuntimeContainerProbe._list_containers (CC=18)\n  [4] M/L Split MigrationYamlAdapter.render (CC=16)\n  [5] M/M Reduce scan fan-out (currently 28)\n\nEVOLUTION:\n  2026-04-21 CC̄=3.7 crit=7 2873L // Automated analysis\n", "is_subdir": false}];
+        let currentFile = null;
+
+        function renderFileList(filter = '') {
+            const list = document.getElementById('fileList');
+            const filtered = files.filter(f =>
+                f.name.toLowerCase().includes(filter.toLowerCase()) ||
+                f.path.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state">No files found</div>';
+                return;
+            }
+
+            // Group by type
+            const groups = {};
+            for (const file of filtered) {
+                const type = file.type_name;
+                if (!groups[type]) groups[type] = [];
+                groups[type].push(file);
+            }
+
+            let html = '';
+            for (const [typeName, groupFiles] of Object.entries(groups)) {
+                html += `
+                    <div class="file-group">
+                        <div class="file-group-title">${typeName} Files (${groupFiles.length})</div>
+                        ${groupFiles.map(f => `
+                            <div class="file-item ${currentFile?.name === f.name ? 'active' : ''}"
+                                 onclick="selectFile('${f.name}')">
+                                <span class="file-icon">${f.icon}</span>
+                                <div class="file-info">
+                                    <div class="file-name">${f.name}</div>
+                                    <div class="file-meta">${f.path}</div>
+                                </div>
+                                <span class="file-size">${f.size}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            list.innerHTML = html;
+        }
+
+        function selectFile(name) {
+            const file = files.find(f => f.name === name);
+            if (!file) return;
+
+            currentFile = file;
+
+            document.getElementById('contentIcon').textContent = file.icon;
+            document.getElementById('contentTitle').textContent = file.name;
+
+            // Actions
+            const actions = document.getElementById('contentActions');
+            actions.innerHTML = `
+                <a href="${file.rel_path}" download class="btn">⬇ Download</a>
+                <a href="${file.rel_path}" target="_blank" class="btn btn-primary">↗ Open Raw</a>
+            `;
+
+            // Content
+            const body = document.getElementById('contentBody');
+            if (file.type === 'markdown') {
+                // Render markdown as HTML using marked.js
+                body.innerHTML = `<div class="markdown-content">${marked.parse(file.content)}</div>`;
+            } else if (file.type === 'html') {
+                // For HTML files, show in iframe for safety
+                body.innerHTML = `<iframe src="${file.rel_path}" style="width:100%;height:100%;border:none;border-radius:0.5rem;"></iframe>`;
+            } else if (file.type === 'image') {
+                // For images, display the actual image
+                body.innerHTML = `<div class="image-preview"><img src="${file.rel_path}" alt="${file.name}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:0.5rem;"></div>`;
+            } else if (file.type === 'mermaid') {
+                // Render mermaid diagram
+                const diagramId = 'mermaid-diagram-' + Date.now();
+                body.innerHTML = `<div class="mermaid-content"><pre class="mermaid" id="${diagramId}">${file.content}</pre></div>`;
+                // Initialize mermaid on the new element
+                setTimeout(() => {
+                    mermaid.init(undefined, document.getElementById(diagramId));
+                }, 0);
+            } else if (file.type === 'json') {
+                try {
+                    const json = JSON.parse(file.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
+                    const formatted = JSON.stringify(json, null, 2);
+                    body.innerHTML = `<pre><code class="language-json">${formatted.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+                    hljs.highlightElement(body.querySelector('code'));
+                } catch {
+                    body.innerHTML = `<pre>${file.content}</pre>`;
+                }
+            } else if (file.type === 'yaml') {
+                // YAML with syntax highlighting
+                body.innerHTML = `<pre><code class="language-yaml">${file.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+                hljs.highlightElement(body.querySelector('code'));
+            } else if (file.type === 'toon') {
+                // TOON with simple highlighting (use ini as closest match for key: value format)
+                body.innerHTML = `<pre><code class="language-ini">${file.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+                hljs.highlightElement(body.querySelector('code'));
+            } else if (file.type === 'code') {
+                // Code files with auto-highlighting
+                body.innerHTML = `<pre><code>${file.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+                hljs.highlightElement(body.querySelector('code'));
+            } else {
+                body.innerHTML = `<pre>${file.content}</pre>`;
+            }
+
+            renderFileList(document.getElementById('search').value);
+        }
+
+        function filterFiles(query) {
+            renderFileList(query);
+        }
+
+        function renderStats() {
+            const stats = {};
+            for (const f of files) {
+                stats[f.type_name] = (stats[f.type_name] || 0) + 1;
+            }
+
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = Object.entries(stats)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, count]) => `
+                    <div class="stat-card">
+                        <div class="stat-value">${count}</div>
+                        <div class="stat-label">${type}</div>
+                    </div>
+                `).join('');
+        }
+
+        // Initialize
+        renderStats();
+        renderFileList();
+
+        // Select first file if available
+        if (files.length > 0) {
+            selectFile(files[0].name);
+        }
+    </script>
+</body>
+</html>

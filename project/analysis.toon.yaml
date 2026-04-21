@@ -1,0 +1,69 @@
+# code2llm | 34f 2214L | python:33,shell:1 | 2026-04-21
+# CC̄=3.7 | critical:4/86 | dups:0 | cycles:0
+
+HEALTH[4]:
+  🟡 CC    render CC=22 (limit:15)
+  🟡 CC    scan CC=16 (limit:15)
+  🟡 CC    _list_containers CC=18 (limit:15)
+  🟡 CC    render CC=16 (limit:15)
+
+REFACTOR[1]:
+  1. split 4 high-CC methods  (CC>15)
+
+PIPELINES[72]:
+  [1] Src [register]: register
+      PURITY: 100% pure
+  [2] Src [get]: get
+      PURITY: 100% pure
+  [3] Src [available]: available
+      PURITY: 100% pure
+  [4] Src [serialize]: serialize
+      PURITY: 100% pure
+  [5] Src [register_format]: register_format
+      PURITY: 100% pure
+
+LAYERS:
+  src/                            CC̄=3.7    ←in:0  →out:0
+  │ !! less                       192L  1C    3m  CC=22     ←0
+  │ physical_rpi               184L  1C    8m  CC=12     ←0
+  │ !! main                       180L  0C    4m  CC=16     ←0
+  │ builtin                    179L  14C    0m  CC=0.0    ←0
+  │ !! runtime_container          173L  1C    6m  CC=18     ←0
+  │ os_linux                   142L  2C   12m  CC=7      ←0
+  │ !! migration_yaml             108L  1C    2m  CC=16     ←0
+  │ endpoint_http              107L  1C    5m  CC=6      ←0
+  │ business_health             98L  1C    5m  CC=6      ←0
+  │ context                     97L  5C    4m  CC=2      ←0
+  │ service_containers          93L  1C    5m  CC=4      ←0
+  │ diff                        88L  1C    2m  CC=4      ←1
+  │ tree                        88L  2C    6m  CC=11     ←0
+  │ detector                    77L  2C    2m  CC=4      ←0
+  │ snapshot_yaml               57L  1C    2m  CC=5      ←0
+  │ model                       55L  3C    4m  CC=1      ←1
+  │ linear                      53L  1C    3m  CC=6      ←1
+  │ base                        44L  3C    4m  CC=2      ←0
+  │ registry                    38L  1C    4m  CC=2      ←0
+  │ registry                    35L  1C    5m  CC=1      ←0
+  │ __init__                    35L  0C    0m  CC=0.0    ←0
+  │ __init__                    12L  0C    0m  CC=0.0    ←0
+  │ __init__                     8L  0C    0m  CC=0.0    ←0
+  │ __init__                     8L  0C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     3L  0C    0m  CC=0.0    ←0
+  │ _version                     2L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │
+  ./                              CC̄=0.0    ←in:0  →out:0
+  │ project.sh                  36L  0C    0m  CC=0.0    ←0
+  │
+
+COUPLING: no cross-package imports detected
+
+EXTERNAL:
+  validation: run `vallm batch .` → validation.toon
+  duplication: run `redup scan .` → duplication.toon

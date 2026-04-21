@@ -1,0 +1,125 @@
+project: /home/tom/github/semcod/op3
+generated_from: code2llm call graph analysis
+stats:
+  total_nodes: 3
+  total_edges: 2
+  modules_count: 2
+nodes:
+  src.opstree.drift.detector.DriftDetector.detect:
+    name: detect
+    module: src.opstree.drift.detector
+    line: 22
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 0
+  src.opstree.snapshot.diff._diff_layer_data:
+    name: _diff_layer_data
+    module: src.opstree.snapshot.diff
+    line: 48
+    cyclomatic_complexity: 1
+    calls_out: 14
+    calls_in: 1
+  src.opstree.snapshot.diff.snapshot_diff:
+    name: snapshot_diff
+    module: src.opstree.snapshot.diff
+    line: 18
+    cyclomatic_complexity: 4
+    calls_out: 10
+    calls_in: 1
+edges:
+- caller: src.opstree.drift.detector.DriftDetector.detect
+  callee: src.opstree.snapshot.diff.snapshot_diff
+  call_type: resolved
+- caller: src.opstree.snapshot.diff.snapshot_diff
+  callee: src.opstree.snapshot.diff._diff_layer_data
+  call_type: resolved
+modules:
+  src.opstree.drift.detector:
+  - src.opstree.drift.detector.DriftDetector.detect
+  src.opstree.snapshot.diff:
+  - src.opstree.snapshot.diff._diff_layer_data
+  - src.opstree.snapshot.diff.snapshot_diff
+entry_points:
+- src.opstree.cli.main.cli
+- src.opstree.cli.main.convert
+- src.opstree.cli.main.drift
+- src.opstree.cli.main.scan
+- src.opstree.drift.detector.DriftDetector._summarize_changes
+- src.opstree.drift.detector.DriftDetector.detect
+- src.opstree.formats.less.LessAdapter._parse_block
+- src.opstree.formats.less.LessAdapter.parse
+- src.opstree.formats.less.LessAdapter.render
+- src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse
+- src.opstree.formats.migration_yaml.MigrationYamlAdapter.render
+- src.opstree.formats.registry.FormatRegistry.available
+- src.opstree.formats.registry.FormatRegistry.get
+- src.opstree.formats.registry.FormatRegistry.register
+- src.opstree.formats.registry.FormatRegistry.serialize
+- src.opstree.formats.registry.register_format
+- src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse
+- src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render
+- src.opstree.layers.tree.LayerDefinition.to_fraq_node
+- src.opstree.layers.tree.LayerTree.__init__
+- src.opstree.layers.tree.LayerTree.get
+- src.opstree.layers.tree.LayerTree.register
+- src.opstree.layers.tree.LayerTree.to_fraq_node
+- src.opstree.layers.tree.LayerTree.topological_order
+- src.opstree.probes.base.Probe.anomalies
+- src.opstree.probes.base.Probe.can_probe
+- src.opstree.probes.base.Probe.scan
+- src.opstree.probes.base.ProbeContext.__post_init__
+- src.opstree.probes.builtin.business_health.BusinessHealthProbe.__init__
+- src.opstree.probes.builtin.business_health.BusinessHealthProbe._check_health_endpoint
+- src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies
+- src.opstree.probes.builtin.business_health.BusinessHealthProbe.can_probe
+- src.opstree.probes.builtin.business_health.BusinessHealthProbe.scan
+- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.__init__
+- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe._check_endpoint
+- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies
+- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.can_probe
+- src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan
+- src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline
+- src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt
+- src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies
+- src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe
+- src.opstree.probes.builtin.os_linux.OsConfigProbe.scan
+- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_arch
+- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_hostname
+- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_kernel_version
+- src.opstree.probes.builtin.os_linux.OsKernelProbe._get_uptime
+- src.opstree.probes.builtin.os_linux.OsKernelProbe.anomalies
+- src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe
+- src.opstree.probes.builtin.os_linux.OsKernelProbe.scan
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._check_kms
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._get_kms_driver
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_board_model
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_drm
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.can_probe
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan
+- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.__init__
+- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime
+- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers
+- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies
+- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe
+- src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan
+- src.opstree.probes.builtin.service_containers.ServiceContainersProbe._is_service_enabled
+- src.opstree.probes.builtin.service_containers.ServiceContainersProbe._list_systemd_services
+- src.opstree.probes.builtin.service_containers.ServiceContainersProbe.anomalies
+- src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe
+- src.opstree.probes.builtin.service_containers.ServiceContainersProbe.scan
+- src.opstree.probes.context.LocalContext.__init__
+- src.opstree.probes.context.MockContext.__init__
+- src.opstree.probes.context.ProbeContext.__init__
+- src.opstree.probes.context.SSHContext.__init__
+- src.opstree.probes.registry.ProbeRegistry.all
+- src.opstree.probes.registry.ProbeRegistry.get
+- src.opstree.probes.registry.ProbeRegistry.register
+- src.opstree.probes.registry.register_probe
+- src.opstree.scanner.linear.LinearScanner.__init__
+- src.opstree.scanner.linear.LinearScanner.scan
+- src.opstree.snapshot.model.Snapshot.layer
+- src.opstree.snapshot.model.Snapshot.load
+- src.opstree.snapshot.model.Snapshot.query
+- src.opstree.snapshot.model.Snapshot.to_yaml

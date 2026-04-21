@@ -22,7 +22,7 @@ def test_snapshot_creation():
     snapshot = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={
             "layer1": LayerData(
                 layer_id="layer1",
@@ -47,7 +47,7 @@ def test_snapshot_layer_accessor():
     snapshot = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={"layer1": layer_data},
     )
     assert snapshot.layer("layer1") == layer_data
@@ -63,7 +63,7 @@ def test_snapshot_yaml_roundtrip():
     snapshot = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={
             "layer1": LayerData(
                 layer_id="layer1",
@@ -96,14 +96,14 @@ def test_snapshot_diff_added_layer():
     snapshot_a = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={},
     )
     
     snapshot_b = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={
             "layer1": LayerData(
                 layer_id="layer1",
@@ -125,7 +125,7 @@ def test_snapshot_diff_removed_layer():
     snapshot_a = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={
             "layer1": LayerData(
                 layer_id="layer1",
@@ -139,7 +139,7 @@ def test_snapshot_diff_removed_layer():
     snapshot_b = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={},
     )
     
@@ -154,7 +154,7 @@ def test_snapshot_diff_modified_data():
     snapshot_a = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={
             "layer1": LayerData(
                 layer_id="layer1",
@@ -168,7 +168,7 @@ def test_snapshot_diff_modified_data():
     snapshot_b = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.2",
+        scanner_version="0.1.4",
         layers={
             "layer1": LayerData(
                 layer_id="layer1",
