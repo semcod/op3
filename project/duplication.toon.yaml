@@ -1,19 +1,18 @@
-# redup/duplication | 4 groups | 36f 2181L | 2026-04-21
+# redup/duplication | 4 groups | 40f 3322L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 36
-  total_lines:   2181
+  files_scanned: 40
+  total_lines:   3322
   dup_groups:    4
-  dup_fragments: 12
-  saved_lines:   44
-  scan_ms:       5265
+  dup_fragments: 11
+  saved_lines:   37
+  scan_ms:       5266
 
-HOTSPOTS[6] (files with most duplication):
-  src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.9%)
-  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.6%)
-  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.6%)
-  src/opstree/probes/builtin/runtime_container.py  dup=10L  groups=1  frags=2  (0.5%)
-  src/opstree/probes/builtin/physical_rpi.py  dup=8L  groups=1  frags=1  (0.4%)
+HOTSPOTS[5] (files with most duplication):
+  src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.6%)
+  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.4%)
+  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.4%)
+  src/opstree/probes/builtin/runtime_container.py  dup=10L  groups=1  frags=2  (0.3%)
   src/opstree/probes/builtin/business_health.py  dup=5L  groups=1  frags=1  (0.2%)
 
 DUPLICATES[4] (ranked by impact):
@@ -23,10 +22,9 @@ DUPLICATES[4] (ranked by impact):
       src/opstree/probes/builtin/runtime_container.py:61-65  (_exec)
       src/opstree/probes/builtin/runtime_container.py:92-96  (_exec)
       src/opstree/probes/builtin/service_containers.py:43-47  (_exec)
-  [3c3a6744432c27c8]   STRU  can_probe  L=7 N=3 saved=14 sim=1.00
+  [183bda4b6299c725]   EXAC  can_probe  L=7 N=2 saved=7 sim=1.00
       src/opstree/probes/builtin/os_linux.py:13-19  (can_probe)
       src/opstree/probes/builtin/os_linux.py:90-96  (can_probe)
-      src/opstree/probes/builtin/physical_rpi.py:15-22  (can_probe)
   [b805c0edf8ab951c]   STRU  can_probe  L=7 N=2 saved=7 sim=1.00
       src/opstree/probes/builtin/endpoint_http.py:20-26  (can_probe)
       src/opstree/probes/builtin/service_containers.py:13-19  (can_probe)
@@ -39,8 +37,8 @@ REFACTOR[4] (ranked by priority):
       WHY: 5 occurrences of 5-line block across 4 files — saves 20 lines
       FILES: src/opstree/probes/builtin/business_health.py, src/opstree/probes/builtin/endpoint_http.py, src/opstree/probes/builtin/runtime_container.py, src/opstree/probes/builtin/service_containers.py
   [2] ○ extract_function   → src/opstree/probes/builtin/utils/can_probe.py
-      WHY: 3 occurrences of 7-line block across 2 files — saves 14 lines
-      FILES: src/opstree/probes/builtin/os_linux.py, src/opstree/probes/builtin/physical_rpi.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: src/opstree/probes/builtin/os_linux.py
   [3] ○ extract_function   → src/opstree/probes/builtin/utils/can_probe.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: src/opstree/probes/builtin/endpoint_http.py, src/opstree/probes/builtin/service_containers.py
@@ -51,17 +49,17 @@ REFACTOR[4] (ranked by priority):
 QUICK_WINS[3] (low risk, high savings — do first):
   [1] extract_function   saved=20L  → src/opstree/probes/builtin/utils/_exec.py
       FILES: business_health.py, endpoint_http.py, runtime_container.py +1
-  [2] extract_function   saved=14L  → src/opstree/probes/builtin/utils/can_probe.py
-      FILES: os_linux.py, physical_rpi.py
+  [2] extract_function   saved=7L  → src/opstree/probes/builtin/utils/can_probe.py
+      FILES: os_linux.py
   [3] extract_function   saved=7L  → src/opstree/probes/builtin/utils/can_probe.py
       FILES: endpoint_http.py, service_containers.py
 
-EFFORT_ESTIMATE (total ≈ 1.5h):
+EFFORT_ESTIMATE (total ≈ 1.2h):
   medium _exec                               saved=20L  ~40min
-  easy   can_probe                           saved=14L  ~28min
+  easy   can_probe                           saved=7L  ~14min
   easy   can_probe                           saved=7L  ~14min
   easy   anomalies                           saved=3L  ~6min
 
 METRICS-TARGET:
   dup_groups:  4 → 0
-  saved_lines: 44 lines recoverable
+  saved_lines: 37 lines recoverable

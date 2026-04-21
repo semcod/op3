@@ -1,26 +1,27 @@
-# op3 | 86 func | 19f | 2873L | python | 2026-04-21
+# op3 | 121 func | 24f | 4952L | python | 2026-04-21
 
 HEALTH:
-  CC̄=3.7  critical=7 (limit:10)  dup=1  cycles=0
+  CC̄=3.7  critical=10 (limit:10)  dup=1  cycles=0
 
-ALERTS[11]:
-  !!! high_fan_out     scan = 28 (limit:10)
+ALERTS[14]:
+  !!! high_fan_out     scan = 26 (limit:10)
+  !!! high_fan_out     RpiPhysicalDisplayProbe.scan = 21 (limit:10)
   !!  cc_exceeded      LessAdapter.render = 22 (limit:15)
   !!  high_fan_out     convert = 17 (limit:10)
   !   cc_exceeded      RuntimeContainerProbe._list_containers = 18 (limit:15)
-  !   cc_exceeded      scan = 16 (limit:15)
+  !   cc_exceeded      RpiPhysicalDisplayProbe._probe_wlr_randr = 17 (limit:15)
   !   cc_exceeded      MigrationYamlAdapter.render = 16 (limit:15)
+  !   cc_exceeded      scan = 16 (limit:15)
   !   high_fan_out     LessAdapter.render = 13 (limit:10)
   !   high_fan_out     drift = 13 (limit:10)
-  !   high_fan_out     LessAdapter.parse = 12 (limit:10)
-  !   high_fan_out     RpiPhysicalDisplayProbe._scan_drm = 12 (limit:10)
 
-MODULES[34] (top by size):
+MODULES[40] (top by size):
+  M[src/opstree/probes/builtin/rpi_diagnostics.py] 528L C:0 F:12 CC↑10 D:0 (python)
+  M[src/opstree/probes/builtin/physical_rpi.py] 401L C:2 F:22 CC↑17 D:0 (python)
   M[src/opstree/formats/less.py] 192L C:1 F:3 CC↑22 D:0 (python)
-  M[src/opstree/probes/builtin/physical_rpi.py] 184L C:1 F:8 CC↑12 D:0 (python)
-  M[src/opstree/cli/main.py] 180L C:0 F:4 CC↑16 D:0 (python)
   M[src/opstree/layers/builtin.py] 179L C:14 F:0 CC↑0 D:0 (python)
   M[src/opstree/probes/builtin/runtime_container.py] 173L C:1 F:6 CC↑18 D:0 (python)
+  M[src/opstree/diagnostics/rules.py] 149L C:3 F:6 CC↑7 D:0 (python)
   M[src/opstree/probes/builtin/os_linux.py] 142L C:2 F:12 CC↑7 D:0 (python)
   M[src/opstree/formats/migration_yaml.py] 108L C:1 F:2 CC↑16 D:0 (python)
   M[src/opstree/probes/builtin/endpoint_http.py] 107L C:1 F:5 CC↑6 D:0 (python)
@@ -29,23 +30,22 @@ MODULES[34] (top by size):
   M[src/opstree/probes/builtin/service_containers.py] 93L C:1 F:5 CC↑4 D:0 (python)
   M[src/opstree/layers/tree.py] 88L C:2 F:6 CC↑11 D:0 (python)
   M[src/opstree/snapshot/diff.py] 88L C:1 F:2 CC↑4 D:1 (python)
-  M[src/opstree/drift/detector.py] 77L C:2 F:2 CC↑4 D:0 (python)
-  M[src/opstree/formats/snapshot_yaml.py] 57L C:1 F:2 CC↑5 D:0 (python)
-  LANGS: python:33/shell:1
+  M[src/opstree/probes/registry.py] 80L C:1 F:7 CC↑2 D:1 (python)
+  LANGS: python:39/shell:1
 
-HOTSPOTS[7]:
-  ★ scan fan=28  // Scan a device and output snapshot.
+HOTSPOTS[9]:
+  ★ scan fan=26  // Scan a device and output snapshot.
+  ★ RpiPhysicalDisplayProbe.scan fan=21  // Orchestrates 21 calls
   ★ convert fan=17  // Convert between configuration formats.
   ★ LessAdapter.render fan=13  // Renderuj Snapshot → LESS.
   ★ drift fan=13  // Detect drift between intended and actual state.
-  ★ LessAdapter.parse fan=12  // Parsuj LESS → PartialSnapshot.
 
-REFACTOR[6]:
-  [1] M/L Split LessAdapter.render (CC=22)
-  [2] M/L Split scan (CC=16)
+REFACTOR[9]:
+  [1] H/H Split god module src/opstree/probes/builtin/rpi_diagnostics.py (528L, 0 classes)
+  [2] M/L Split MigrationYamlAdapter.render (CC=16)
   [3] M/L Split RuntimeContainerProbe._list_containers (CC=18)
-  [4] M/L Split MigrationYamlAdapter.render (CC=16)
-  [5] M/M Reduce scan fan-out (currently 28)
+  [4] M/L Split LessAdapter.render (CC=22)
+  [5] M/L Split RpiPhysicalDisplayProbe._probe_wlr_randr (CC=17)
 
 EVOLUTION:
-  2026-04-21 CC̄=3.7 crit=7 2873L // Automated analysis
+  2026-04-21 CC̄=3.7 crit=10 4952L // Automated analysis

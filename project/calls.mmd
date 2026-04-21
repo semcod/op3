@@ -1,8 +1,30 @@
 flowchart LR
     subgraph src__opstree
-        src__opstree__drift__detector__DriftDetector__detect["detect"]
-        src__opstree__snapshot__diff___diff_layer_data["_diff_layer_data"]
+        src__opstree__probes__builtin__rpi_diagnostics___all_ok_rule["_all_ok_rule"]
+        src__opstree__probes__builtin__rpi_diagnostics___backlight_power_off_rules["_backlight_power_off_rules"]
+        src__opstree__probes__builtin__rpi_diagnostics___dsi_connected["_dsi_connected"]
+        src__opstree__probes__builtin__rpi_diagnostics___backlights["_backlights"]
         src__opstree__snapshot__diff__snapshot_diff["snapshot_diff"]
+        src__opstree__probes__builtin__rpi_diagnostics___all_ok["_all_ok"]
+        src__opstree__probes__builtin__rpi_diagnostics___i2c_chip_missing_rules["_i2c_chip_missing_rules"]
+        src__opstree__snapshot__diff___diff_layer_data["_diff_layer_data"]
+        src__opstree__probes__builtin__rpi_diagnostics___backlight_chip_addr["_backlight_chip_addr"]
+        src__opstree__drift__detector__DriftDetector__detect["detect"]
+        src__opstree__probes__registry__ProbeRegistry__all["all"]
+        src__opstree__probes__builtin__rpi_diagnostics___dsi_outputs["_dsi_outputs"]
+        src__opstree__probes__builtin__rpi_diagnostics___i2c_buses["_i2c_buses"]
+        src__opstree__probes__builtin__rpi_diagnostics___has_dsi_overlay["_has_dsi_overlay"]
     end
-    src__opstree__drift__detector__DriftDetector__detect --> src__opstree__snapshot__diff__snapshot_diff
+    src__opstree__probes__builtin__rpi_diagnostics___dsi_connected --> src__opstree__probes__builtin__rpi_diagnostics___dsi_outputs
+    src__opstree__probes__builtin__rpi_diagnostics___all_ok --> src__opstree__probes__builtin__rpi_diagnostics___dsi_outputs
+    src__opstree__probes__builtin__rpi_diagnostics___all_ok --> src__opstree__probes__builtin__rpi_diagnostics___backlights
+    src__opstree__probes__builtin__rpi_diagnostics___all_ok --> src__opstree__probes__builtin__rpi_diagnostics___has_dsi_overlay
+    src__opstree__probes__builtin__rpi_diagnostics___all_ok --> src__opstree__probes__builtin__rpi_diagnostics___dsi_connected
+    src__opstree__probes__builtin__rpi_diagnostics___all_ok --> src__opstree__probes__registry__ProbeRegistry__all
+    src__opstree__probes__builtin__rpi_diagnostics___backlight_power_off_rules --> src__opstree__probes__builtin__rpi_diagnostics___backlights
+    src__opstree__probes__builtin__rpi_diagnostics___i2c_chip_missing_rules --> src__opstree__probes__builtin__rpi_diagnostics___backlights
+    src__opstree__probes__builtin__rpi_diagnostics___i2c_chip_missing_rules --> src__opstree__probes__builtin__rpi_diagnostics___backlight_chip_addr
+    src__opstree__probes__builtin__rpi_diagnostics___i2c_chip_missing_rules --> src__opstree__probes__builtin__rpi_diagnostics___i2c_buses
+    src__opstree__probes__builtin__rpi_diagnostics___all_ok_rule --> src__opstree__probes__builtin__rpi_diagnostics___all_ok
     src__opstree__snapshot__diff__snapshot_diff --> src__opstree__snapshot__diff___diff_layer_data
+    src__opstree__drift__detector__DriftDetector__detect --> src__opstree__snapshot__diff__snapshot_diff

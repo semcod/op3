@@ -1,7 +1,7 @@
 <!-- code2docs:start --># op3
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-86-green)
-> **86** functions | **43** classes | **37** files | CC̄ = 3.7
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-121-green)
+> **121** functions | **47** classes | **40** files | CC̄ = 3.7
 
 > Auto-generated project documentation from source code analysis.
 
@@ -75,74 +75,83 @@ docs = generate_docs("./my-project", config=config)
 ```
 op3/
 ├── project
-                ├── service_containers
-            ├── less
+            ├── builtin/
+        ├── drift/
+        ├── probes/
+                ├── rpi_diagnostics
+            ├── migration_yaml
             ├── registry
         ├── formats/
             ├── snapshot_yaml
+            ├── less
         ├── config_apply/
         ├── cli/
             ├── main
                 ├── convert
-                ├── drift
             ├── commands/
-                ├── scan
+                ├── drift
         ├── scanner/
+        ├── _version
+                ├── scan
+    ├── opstree/
             ├── linear
         ├── layers/
-                ├── runtime_container
-                ├── business_health
         ├── snapshot/
-                ├── os_linux
-        ├── probes/
+                ├── business_health
     ├── op3/
-            ├── migration_yaml
-                ├── endpoint_http
-    ├── opstree/
-            ├── registry
-        ├── drift/
-            ├── builtin/
-        ├── _version
                 ├── physical_rpi
             ├── context
-            ├── diff
+        ├── diagnostics/
+                ├── service_containers
+                ├── runtime_container
+                ├── endpoint_http
+            ├── registry
+                ├── os_linux
             ├── base
-            ├── tree
             ├── detector
-            ├── builtin
+            ├── tree
+            ├── diff
+            ├── rules
             ├── model
+            ├── builtin
 ```
 
 ## API Overview
 
 ### Classes
 
-- **`ServiceContainersProbe`** — Skanuje systemd services.
-- **`LessAdapter`** — Parsuj i emituj .doql.less.
+- **`MigrationYamlAdapter`** — Parsuj i emituj migration.yaml (redeploy-compatible).
 - **`FormatRegistry`** — Registry for format adapters (wraps fraq's FormatRegistry).
 - **`SnapshotYamlAdapter`** — Native op3 snapshot format adapter.
+- **`LessAdapter`** — Parsuj i emituj .doql.less.
 - **`LinearScanner`** — Simple scanner that processes layers in topological order.
-- **`RuntimeContainerProbe`** — Skanuje runtime kontenerów (docker/podman).
 - **`BusinessHealthProbe`** — Skanuje zdrowie aplikacji.
-- **`OsKernelProbe`** — Skanuje jądro Linux.
-- **`OsConfigProbe`** — Skanuje konfigurację systemu.
-- **`MigrationYamlAdapter`** — Parsuj i emituj migration.yaml (redeploy-compatible).
-- **`EndpointHttpProbe`** — Skanuje HTTP endpoints.
-- **`ProbeRegistry`** — Registry for probes by layer_id.
-- **`RpiPhysicalDisplayProbe`** — Skanuje DSI/HDMI/backlight na Raspberry Pi.
+- **`RpiPhysicalDisplayProbe`** — Full hardware probe for a Raspberry Pi-class board.
 - **`ExecuteResult`** — Result of command execution.
 - **`ProbeContext`** — Base context for probe execution.
 - **`LocalContext`** — Local execution context (runs commands on localhost).
 - **`MockContext`** — Mock context for testing with predefined responses.
 - **`SSHContext`** — SSH execution context for remote scanning.
-- **`Change`** — Represents a single change between two snapshots.
+- **`ServiceContainersProbe`** — Skanuje systemd services.
+- **`RuntimeContainerProbe`** — Skanuje runtime kontenerów (docker/podman).
+- **`EndpointHttpProbe`** — Skanuje HTTP endpoints.
+- **`ProbeRegistry`** — Registry for probes keyed by ``layer_id``.
+- **`OsKernelProbe`** — Skanuje jądro Linux.
+- **`OsConfigProbe`** — Skanuje konfigurację systemu.
 - **`ProbeContext`** — Kontekst dla probe — nie wie o SSH, click, nic konkretnego.
 - **`ProbeResult`** — Wynik probe'a.
 - **`Probe`** — Kontrakt probe'a.
-- **`LayerDefinition`** — Definicja jednej warstwy w drzewie.
-- **`LayerTree`** — Drzewo warstw — topological ordering, dependency resolution.
 - **`DriftReport`** — Report of drift between intended and actual state.
 - **`DriftDetector`** — Detect drift between intended state (from config) and actual state (from scan).
+- **`LayerDefinition`** — Definicja jednej warstwy w drzewie.
+- **`LayerTree`** — Drzewo warstw — topological ordering, dependency resolution.
+- **`Change`** — Represents a single change between two snapshots.
+- **`Diagnostic`** — A single finding emitted by a rule.
+- **`Rule`** — Declarative diagnostic rule over subject ``T``.
+- **`RuleEngine`** — Runs a list of :class:`Rule` objects against a subject.
+- **`LayerData`** — Dane jednej warstwy.
+- **`Snapshot`** — Pełna migawka urządzenia/systemu.
+- **`PartialSnapshot`** — Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszystkich warstw.
 - **`PhysicalDisplayData`** — —
 - **`OsKernelData`** — —
 - **`OsConfigData`** — —
@@ -157,19 +166,18 @@ op3/
 - **`ServiceLayer`** — Services layer.
 - **`EndpointLayer`** — Network endpoints layer.
 - **`BusinessLayer`** — Business logic layer.
-- **`LayerData`** — Dane jednej warstwy.
-- **`Snapshot`** — Pełna migawka urządzenia/systemu.
-- **`PartialSnapshot`** — Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszystkich warstw.
 
 ### Functions
 
+- `diagnose_display_layer(layer_data)` — Run the full RPi display rule-set against a layer data dict.
 - `register_format(name, adapter)` — Decorator to register a format adapter.
 - `cli()` — op3 — Layered operations tree for infrastructure observation.
 - `convert(input_file, output_file, format)` — Convert between configuration formats.
 - `drift(intended, actual)` — Detect drift between intended and actual state.
 - `scan(target, ssh, output, format)` — Scan a device and output snapshot.
 - `scan_device(target, execute, layer_tree)` — Convenience function to scan a device.
-- `register_probe(probe_class)` — Decorator to register a probe class.
+- `get_default_registry()` — Return the process-global default registry.
+- `register_probe(probe_class)` — Decorator: instantiate ``probe_class`` and register it on the
 - `snapshot_diff(a, b)` — Compare two snapshots and return a list of changes.
 
 
@@ -186,6 +194,8 @@ op3/
 📄 `src.opstree.cli.commands.scan` (1 functions)
 📄 `src.opstree.cli.main` (1 functions)
 📦 `src.opstree.config_apply`
+📦 `src.opstree.diagnostics`
+📄 `src.opstree.diagnostics.rules` (6 functions, 3 classes)
 📦 `src.opstree.drift`
 📄 `src.opstree.drift.detector` (2 functions, 2 classes)
 📦 `src.opstree.formats`
@@ -202,11 +212,12 @@ op3/
 📄 `src.opstree.probes.builtin.business_health` (5 functions, 1 classes)
 📄 `src.opstree.probes.builtin.endpoint_http` (5 functions, 1 classes)
 📄 `src.opstree.probes.builtin.os_linux` (12 functions, 2 classes)
-📄 `src.opstree.probes.builtin.physical_rpi` (8 functions, 1 classes)
+📄 `src.opstree.probes.builtin.physical_rpi` (22 functions, 2 classes)
+📄 `src.opstree.probes.builtin.rpi_diagnostics` (12 functions)
 📄 `src.opstree.probes.builtin.runtime_container` (6 functions, 1 classes)
 📄 `src.opstree.probes.builtin.service_containers` (5 functions, 1 classes)
 📄 `src.opstree.probes.context` (4 functions, 5 classes)
-📄 `src.opstree.probes.registry` (4 functions, 1 classes)
+📄 `src.opstree.probes.registry` (7 functions, 1 classes)
 📦 `src.opstree.scanner`
 📄 `src.opstree.scanner.linear` (3 functions, 1 classes)
 📦 `src.opstree.snapshot`

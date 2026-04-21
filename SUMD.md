@@ -20,7 +20,7 @@ Layered operations tree — observe, diff, orchestrate infrastructure as data
 ## Metadata
 
 - **name**: `op3`
-- **version**: `0.1.7`
+- **version**: `0.1.11`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -110,7 +110,7 @@ environment[name="local"] {
 ```yaml
 project:
   name: op3
-  version: 0.1.7
+  version: 0.1.11
   env: local
 ```
 
@@ -177,20 +177,20 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# op3 | 49f 3242L | python:43,less:5,shell:1 | 2026-04-21
-# stats: 37 func | 43 cls | 49 mod | CC̄=4.4 | critical:4 | cycles:0
-# alerts[5]: CC scan=16; CC test_full_scan_with_mock_context=16; CC test_builtin_layers_exist=13; CC convert=11; CC test_cli_help=6
+# op3 | 58f 5327L | python:52,less:5,shell:1 | 2026-04-21
+# stats: 114 func | 48 cls | 58 mod | CC̄=3.3 | critical:6 | cycles:0
+# alerts[5]: CC test_probe_emits_full_hardware_dict=18; CC scan=16; CC test_full_scan_with_mock_context=16; CC test_builtin_layers_exist=13; CC convert=11
 # hotspots[5]: scan fan=24; convert fan=16; drift fan=12; test_full_scan_with_mock_context fan=12; test_snapshot_yaml_roundtrip fan=10
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[49]:
+M[58]:
   app.doql.less,60
   examples/doql/app.doql.less,110
   examples/fraq/app.doql.less,60
   examples/redeploy/app.doql.less,60
   project.sh,36
   src/op3/__init__.py,4
-  src/opstree/__init__.py,36
+  src/opstree/__init__.py,41
   src/opstree/_version.py,3
   src/opstree/cli/__init__.py,2
   src/opstree/cli/commands/__init__.py,2
@@ -199,6 +199,8 @@ M[49]:
   src/opstree/cli/commands/scan.py,70
   src/opstree/cli/main.py,23
   src/opstree/config_apply/__init__.py,2
+  src/opstree/diagnostics/__init__.py,41
+  src/opstree/diagnostics/rules.py,150
   src/opstree/drift/__init__.py,7
   src/opstree/drift/detector.py,78
   src/opstree/formats/__init__.py,7
@@ -215,12 +217,14 @@ M[49]:
   src/opstree/probes/builtin/business_health.py,99
   src/opstree/probes/builtin/endpoint_http.py,108
   src/opstree/probes/builtin/os_linux.py,143
-  src/opstree/probes/builtin/physical_rpi.py,185
+  src/opstree/probes/builtin/physical_rpi.py,402
+  src/opstree/probes/builtin/rpi_diagnostics.py,529
   src/opstree/probes/builtin/runtime_container.py,174
   src/opstree/probes/builtin/service_containers.py,94
   src/opstree/probes/context.py,98
-  src/opstree/probes/registry.py,39
-  src/opstree/scanner/__init__.py,7
+  src/opstree/probes/registry.py,81
+  src/opstree/scanner/__init__.py,9
+  src/opstree/scanner/build.py,159
   src/opstree/scanner/linear.py,54
   src/opstree/snapshot/__init__.py,9
   src/opstree/snapshot/diff.py,89
@@ -229,9 +233,14 @@ M[49]:
   tests/fixtures/sample.doql.less,33
   tests/integration/test_cli.py,103
   tests/integration/test_full_scan.py,156
+  tests/integration/test_rpi_hardware_pipeline.py,145
   tests/test_op3.py,12
+  tests/unit/test_build_scanner.py,170
+  tests/unit/test_diagnostics.py,177
   tests/unit/test_formats/test_less_adapter.py,87
   tests/unit/test_layers.py,91
+  tests/unit/test_probe_registry.py,154
+  tests/unit/test_rpi_diagnostics.py,294
   tests/unit/test_snapshot.py,187
 D:
   src/op3/__init__.py:
@@ -252,6 +261,12 @@ D:
     e: cli
     cli()
   src/opstree/config_apply/__init__.py:
+  src/opstree/diagnostics/__init__.py:
+  src/opstree/diagnostics/rules.py:
+    e: Diagnostic,Rule,RuleEngine
+    Diagnostic: to_dict(0)  # A single finding emitted by a rule.
+    Rule: __post_init__(0),evaluate(1)  # Declarative diagnostic rule over subject ``T``.
+    RuleEngine: __init__(1),rules(0),evaluate(1),any_error(1)  # Runs a list of :class:`Rule` objects against a subject.
   src/opstree/drift/__init__.py:
   src/opstree/drift/detector.py:
     e: DriftReport,DriftDetector
@@ -310,8 +325,23 @@ D:
     OsKernelProbe: can_probe(1),scan(1),_get_kernel_version(1),_get_arch(1),_get_hostname(1),_get_uptime(1),anomalies(1)  # Skanuje jądro Linux.
     OsConfigProbe: can_probe(1),scan(1),_read_config_txt(1),_read_cmdline(1),anomalies(1)  # Skanuje konfigurację systemu.
   src/opstree/probes/builtin/physical_rpi.py:
-    e: RpiPhysicalDisplayProbe
-    RpiPhysicalDisplayProbe: can_probe(1),scan(1),_probe_board_model(1),_scan_drm(1),_scan_backlights(1),_check_kms(1),_get_kms_driver(1),anomalies(1)  # Skanuje DSI/HDMI/backlight na Raspberry Pi.
+    e: _Exec,RpiPhysicalDisplayProbe
+    _Exec: run(3),lines(0),text(1),int_(1)  # Uniform adapter over the two shapes ``ProbeContext.execute``
+    RpiPhysicalDisplayProbe: can_probe(1),scan(1),anomalies(1),_probe_board_model(1),_probe_config_txt(1),_extract_dsi_overlays(1),_scan_drm(1),_probe_wlr_randr(1),_merge_wlr_into_drm(2),_scan_backlights(1),_probe_framebuffers(1),_probe_i2c_buses(1),_probe_dsi_dmesg(1),_probe_kernel_modules(1),_probe_wayland_sockets(1),_probe_compositor_processes(1),_check_kms(1),_get_kms_driver(1)  # Full hardware probe for a Raspberry Pi-class board.
+  src/opstree/probes/builtin/rpi_diagnostics.py:
+    e: _dsi_outputs,_has_dsi_overlay,_dsi_connected,_backlights,_i2c_buses,_kernel_modules,_backlight_chip_addr,_all_ok,_backlight_power_off_rules,_i2c_chip_missing_rules,_all_ok_rule,diagnose_display_layer
+    _dsi_outputs(hw)
+    _has_dsi_overlay(hw)
+    _dsi_connected(hw)
+    _backlights(hw)
+    _i2c_buses(hw)
+    _kernel_modules(hw)
+    _backlight_chip_addr(name)
+    _all_ok(hw)
+    _backlight_power_off_rules(hw)
+    _i2c_chip_missing_rules(hw)
+    _all_ok_rule()
+    diagnose_display_layer(layer_data)
   src/opstree/probes/builtin/runtime_container.py:
     e: RuntimeContainerProbe
     RuntimeContainerProbe: __init__(1),can_probe(1),scan(1),_detect_runtime(1),_list_containers(2),anomalies(1)  # Skanuje runtime kontenerów (docker/podman).
@@ -326,10 +356,17 @@ D:
     MockContext: __init__(2)  # Mock context for testing with predefined responses.
     SSHContext: __init__(3)  # SSH execution context for remote scanning.
   src/opstree/probes/registry.py:
-    e: register_probe,ProbeRegistry
-    ProbeRegistry: register(2),get(2),all(1)  # Registry for probes by layer_id.
+    e: get_default_registry,register_probe,ProbeRegistry
+    ProbeRegistry: __init__(0),register(1),get(1),all(0),clear(0)  # Registry for probes keyed by ``layer_id``.
+    get_default_registry()
     register_probe(probe_class)
   src/opstree/scanner/__init__.py:
+  src/opstree/scanner/build.py:
+    e: _default_probe_factory,_resolve_dependencies,build_layer_tree,build_scanner
+    _default_probe_factory(layer_id)
+    _resolve_dependencies(layer_ids)
+    build_layer_tree(layer_ids)
+    build_scanner(layer_ids)
   src/opstree/scanner/linear.py:
     e: scan_device,LinearScanner
     LinearScanner: __init__(1),scan(2)  # Simple scanner that processes layers in topological order.
@@ -361,10 +398,43 @@ D:
     e: test_full_scan_with_mock_context,test_rpi_probe_anomaly_detection
     test_full_scan_with_mock_context()
     test_rpi_probe_anomaly_detection()
+  tests/integration/test_rpi_hardware_pipeline.py:
+    e: _common_responses,test_probe_emits_full_hardware_dict,test_probe_output_feeds_diagnostics_to_clean_system,test_probe_output_feeds_diagnostics_to_broken_system
+    _common_responses(extra)
+    test_probe_emits_full_hardware_dict()
+    test_probe_output_feeds_diagnostics_to_clean_system()
+    test_probe_output_feeds_diagnostics_to_broken_system()
   tests/test_op3.py:
     e: test_placeholder,test_import
     test_placeholder()
     test_import()
+  tests/unit/test_build_scanner.py:
+    e: test_build_layer_tree_registers_requested_leaf,test_build_layer_tree_pulls_transitive_dependencies,test_build_layer_tree_orders_deps_before_dependents,test_build_layer_tree_rejects_unknown_layer,test_build_layer_tree_deduplicates_shared_dependencies,test_build_scanner_uses_isolated_registry,test_build_scanner_registry_not_shared_with_default,test_build_scanner_populates_probes_for_requested_layers,test_build_scanner_include_default_probes_false_leaves_registry_empty,test_build_scanner_extra_probes_are_appended,test_build_scanner_end_to_end_scan,test_build_scanner_does_not_leak_into_subsequent_calls
+    test_build_layer_tree_registers_requested_leaf()
+    test_build_layer_tree_pulls_transitive_dependencies()
+    test_build_layer_tree_orders_deps_before_dependents()
+    test_build_layer_tree_rejects_unknown_layer()
+    test_build_layer_tree_deduplicates_shared_dependencies()
+    test_build_scanner_uses_isolated_registry()
+    test_build_scanner_registry_not_shared_with_default()
+    test_build_scanner_populates_probes_for_requested_layers()
+    test_build_scanner_include_default_probes_false_leaves_registry_empty()
+    test_build_scanner_extra_probes_are_appended()
+    test_build_scanner_end_to_end_scan()
+    test_build_scanner_does_not_leak_into_subsequent_calls()
+  tests/unit/test_diagnostics.py:
+    e: test_rule_requires_exactly_one_of_predicate_or_dynamic,test_predicate_rule_requires_message,test_predicate_rule_fires_and_returns_diagnostic,test_predicate_rule_does_not_fire_returns_empty,test_dynamic_rule_fans_out_multiple_diagnostics,test_static_message_and_fix_strings,test_rule_evidence_callable,test_engine_aggregates_all_rules,test_engine_any_error_detects_firing_error_rule,test_engine_any_error_respects_exclude,test_diagnostic_to_dict_is_plain
+    test_rule_requires_exactly_one_of_predicate_or_dynamic()
+    test_predicate_rule_requires_message()
+    test_predicate_rule_fires_and_returns_diagnostic()
+    test_predicate_rule_does_not_fire_returns_empty()
+    test_dynamic_rule_fans_out_multiple_diagnostics()
+    test_static_message_and_fix_strings()
+    test_rule_evidence_callable()
+    test_engine_aggregates_all_rules()
+    test_engine_any_error_detects_firing_error_rule()
+    test_engine_any_error_respects_exclude()
+    test_diagnostic_to_dict_is_plain()
   tests/unit/test_formats/test_less_adapter.py:
     e: test_less_adapter_parse,test_less_adapter_render,test_less_adapter_roundtrip
     test_less_adapter_parse()
@@ -378,6 +448,44 @@ D:
     test_layer_tree_cycle_detection()
     test_builtin_layers_exist()
     test_builtin_layer_dependencies()
+  tests/unit/test_probe_registry.py:
+    e: test_registry_instances_are_isolated,test_register_appends_multiple_probes_for_same_layer,test_get_returns_empty_list_for_unknown_layer,test_get_returns_copy_so_mutation_doesnt_leak,test_all_returns_deep_copy,test_clear_empties_registry,test_get_default_registry_returns_module_singleton,test_register_probe_decorator_uses_default_registry,test_decorator_does_not_pollute_user_registries,_DummyProbe
+    _DummyProbe: __init__(2),can_probe(1),scan(1),anomalies(1)  # Bare-minimum structural probe used throughout this file.
+    test_registry_instances_are_isolated()
+    test_register_appends_multiple_probes_for_same_layer()
+    test_get_returns_empty_list_for_unknown_layer()
+    test_get_returns_copy_so_mutation_doesnt_leak()
+    test_all_returns_deep_copy()
+    test_clear_empties_registry()
+    test_get_default_registry_returns_module_singleton()
+    test_register_probe_decorator_uses_default_registry()
+    test_decorator_does_not_pollute_user_registries()
+  tests/unit/test_rpi_diagnostics.py:
+    e: _hw,_names,test_healthy_system_emits_only_all_ok,test_no_dsi_overlay_fires_when_overlay_missing,test_display_auto_detect_conflict,test_dsi_overlay_no_drm_connector,test_dsi_no_edid_panel_missing,test_dsi_connector_not_connected,test_dsi_connected_no_backlight,test_dsi_backlight_init_failed_extracts_error_code,test_no_drm_kernel_driver,test_dsi_driver_not_loaded,test_i2c_arm_not_enabled,test_i2c_backlight_bus_empty,test_compositor_not_running,test_wayland_socket_missing,test_chromium_not_running_info_only,test_dpms_off,test_no_wayland_output,test_all_ok_no_wayland,test_backlight_power_off_dynamic_rule,test_backlight_brightness_zero_dynamic_rule,test_i2c_chip_missing_dynamic_rule,test_rule_names_are_unique
+    _hw()
+    _names(diags)
+    test_healthy_system_emits_only_all_ok()
+    test_no_dsi_overlay_fires_when_overlay_missing()
+    test_display_auto_detect_conflict()
+    test_dsi_overlay_no_drm_connector()
+    test_dsi_no_edid_panel_missing()
+    test_dsi_connector_not_connected()
+    test_dsi_connected_no_backlight()
+    test_dsi_backlight_init_failed_extracts_error_code()
+    test_no_drm_kernel_driver()
+    test_dsi_driver_not_loaded()
+    test_i2c_arm_not_enabled()
+    test_i2c_backlight_bus_empty()
+    test_compositor_not_running()
+    test_wayland_socket_missing()
+    test_chromium_not_running_info_only()
+    test_dpms_off()
+    test_no_wayland_output()
+    test_all_ok_no_wayland()
+    test_backlight_power_off_dynamic_rule()
+    test_backlight_brightness_zero_dynamic_rule()
+    test_i2c_chip_missing_dynamic_rule()
+    test_rule_names_are_unique()
   tests/unit/test_snapshot.py:
     e: test_layer_data_creation,test_snapshot_creation,test_snapshot_layer_accessor,test_snapshot_yaml_roundtrip,test_snapshot_diff_added_layer,test_snapshot_diff_removed_layer,test_snapshot_diff_modified_data
     test_layer_data_creation()
@@ -391,7 +499,7 @@ D:
 
 ## Call Graph
 
-*3 nodes · 2 edges · 2 modules · CC̄=3.7*
+*14 nodes · 13 edges · 4 modules · CC̄=3.7*
 
 ### Hubs (by degree)
 
@@ -399,11 +507,16 @@ D:
 |----------|----|----|-----|-------|
 | `_diff_layer_data` *(in src.opstree.snapshot.diff)* | 1 | 1 | 14 | **15** |
 | `snapshot_diff` *(in src.opstree.snapshot.diff)* | 4 | 1 | 10 | **11** |
+| `_all_ok` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 7 | 1 | 9 | **10** |
+| `_i2c_chip_missing_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 10 ⚠ | 0 | 8 | **8** |
+| `_backlight_power_off_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 4 | 0 | 7 | **7** |
+| `_backlight_chip_addr` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 2 | 1 | 5 | **6** |
 | `detect` *(in src.opstree.drift.detector.DriftDetector)* | 2 | 0 | 5 | **5** |
+| `_all_ok_rule` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 1 | 0 | 4 | **4** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 3 | edges: 2 | modules: 2
+# nodes: 14 | edges: 13 | modules: 4
 # CC̄=3.7
 
 HUBS[20]:
@@ -411,19 +524,65 @@ HUBS[20]:
     CC=1  in:1  out:14  total:15
   src.opstree.snapshot.diff.snapshot_diff
     CC=4  in:1  out:10  total:11
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok
+    CC=7  in:1  out:9  total:10
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+    CC=10  in:0  out:8  total:8
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+    CC=4  in:0  out:7  total:7
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+    CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+    CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+    CC=3  in:2  out:2  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+    CC=2  in:1  out:3  total:4
+  src.opstree.probes.registry.ProbeRegistry.all
+    CC=2  in:1  out:2  total:3
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+    CC=2  in:1  out:1  total:2
 
 MODULES:
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
+  src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
+    _all_ok  CC=7  out:9
+    _all_ok_rule  CC=1  out:4
+    _backlight_chip_addr  CC=2  out:5
+    _backlight_power_off_rules  CC=4  out:7
+    _backlights  CC=2  out:1
+    _dsi_connected  CC=2  out:3
+    _dsi_outputs  CC=3  out:2
+    _has_dsi_overlay  CC=2  out:3
+    _i2c_buses  CC=2  out:1
+    _i2c_chip_missing_rules  CC=10  out:8
+  src.opstree.probes.registry  [1 funcs]
+    all  CC=2  out:2
   src.opstree.snapshot.diff  [2 funcs]
     _diff_layer_data  CC=1  out:14
     snapshot_diff  CC=4  out:10
 
 EDGES:
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected → src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.registry.ProbeRegistry.all
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
+  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
 ```
 
 ## Intent

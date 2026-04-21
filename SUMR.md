@@ -15,7 +15,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `op3`
-- **version**: `0.1.7`
+- **version**: `0.1.11`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -121,7 +121,7 @@ pfix>=0.1.60
 
 ## Call Graph
 
-*3 nodes · 2 edges · 2 modules · CC̄=3.7*
+*14 nodes · 13 edges · 4 modules · CC̄=3.7*
 
 ### Hubs (by degree)
 
@@ -129,11 +129,16 @@ pfix>=0.1.60
 |----------|----|----|-----|-------|
 | `_diff_layer_data` *(in src.opstree.snapshot.diff)* | 1 | 1 | 14 | **15** |
 | `snapshot_diff` *(in src.opstree.snapshot.diff)* | 4 | 1 | 10 | **11** |
+| `_all_ok` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 7 | 1 | 9 | **10** |
+| `_i2c_chip_missing_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 10 ⚠ | 0 | 8 | **8** |
+| `_backlight_power_off_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 4 | 0 | 7 | **7** |
+| `_backlight_chip_addr` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 2 | 1 | 5 | **6** |
 | `detect` *(in src.opstree.drift.detector.DriftDetector)* | 2 | 0 | 5 | **5** |
+| `_all_ok_rule` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 1 | 0 | 4 | **4** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 3 | edges: 2 | modules: 2
+# nodes: 14 | edges: 13 | modules: 4
 # CC̄=3.7
 
 HUBS[20]:
@@ -141,19 +146,65 @@ HUBS[20]:
     CC=1  in:1  out:14  total:15
   src.opstree.snapshot.diff.snapshot_diff
     CC=4  in:1  out:10  total:11
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok
+    CC=7  in:1  out:9  total:10
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+    CC=10  in:0  out:8  total:8
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+    CC=4  in:0  out:7  total:7
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+    CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+    CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+    CC=3  in:2  out:2  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+    CC=2  in:1  out:3  total:4
+  src.opstree.probes.registry.ProbeRegistry.all
+    CC=2  in:1  out:2  total:3
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+    CC=2  in:1  out:1  total:2
 
 MODULES:
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
+  src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
+    _all_ok  CC=7  out:9
+    _all_ok_rule  CC=1  out:4
+    _backlight_chip_addr  CC=2  out:5
+    _backlight_power_off_rules  CC=4  out:7
+    _backlights  CC=2  out:1
+    _dsi_connected  CC=2  out:3
+    _dsi_outputs  CC=3  out:2
+    _has_dsi_overlay  CC=2  out:3
+    _i2c_buses  CC=2  out:1
+    _i2c_chip_missing_rules  CC=10  out:8
+  src.opstree.probes.registry  [1 funcs]
+    all  CC=2  out:2
   src.opstree.snapshot.diff  [2 funcs]
     _diff_layer_data  CC=1  out:14
     snapshot_diff  CC=4  out:10
 
 EDGES:
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected → src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.registry.ProbeRegistry.all
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
+  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
 ```
 
 ## Refactoring Analysis
@@ -164,7 +215,7 @@ EDGES:
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 3 | edges: 2 | modules: 2
+# nodes: 14 | edges: 13 | modules: 4
 # CC̄=3.7
 
 HUBS[20]:
@@ -172,55 +223,103 @@ HUBS[20]:
     CC=1  in:1  out:14  total:15
   src.opstree.snapshot.diff.snapshot_diff
     CC=4  in:1  out:10  total:11
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok
+    CC=7  in:1  out:9  total:10
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+    CC=10  in:0  out:8  total:8
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+    CC=4  in:0  out:7  total:7
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+    CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+    CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+    CC=3  in:2  out:2  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+    CC=2  in:1  out:3  total:4
+  src.opstree.probes.registry.ProbeRegistry.all
+    CC=2  in:1  out:2  total:3
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+    CC=2  in:1  out:1  total:2
 
 MODULES:
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
+  src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
+    _all_ok  CC=7  out:9
+    _all_ok_rule  CC=1  out:4
+    _backlight_chip_addr  CC=2  out:5
+    _backlight_power_off_rules  CC=4  out:7
+    _backlights  CC=2  out:1
+    _dsi_connected  CC=2  out:3
+    _dsi_outputs  CC=3  out:2
+    _has_dsi_overlay  CC=2  out:3
+    _i2c_buses  CC=2  out:1
+    _i2c_chip_missing_rules  CC=10  out:8
+  src.opstree.probes.registry  [1 funcs]
+    all  CC=2  out:2
   src.opstree.snapshot.diff  [2 funcs]
     _diff_layer_data  CC=1  out:14
     snapshot_diff  CC=4  out:10
 
 EDGES:
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected → src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok → src.opstree.probes.registry.ProbeRegistry.all
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlights
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
+  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 34f 2214L | python:33,shell:1 | 2026-04-21
-# CC̄=3.7 | critical:4/86 | dups:0 | cycles:0
+# code2llm | 40f 3200L | python:39,shell:1 | 2026-04-21
+# CC̄=3.7 | critical:5/121 | dups:0 | cycles:0
 
-HEALTH[4]:
-  🟡 CC    render CC=22 (limit:15)
-  🟡 CC    scan CC=16 (limit:15)
-  🟡 CC    _list_containers CC=18 (limit:15)
+HEALTH[5]:
   🟡 CC    render CC=16 (limit:15)
+  🟡 CC    _list_containers CC=18 (limit:15)
+  🟡 CC    render CC=22 (limit:15)
+  🟡 CC    _probe_wlr_randr CC=17 (limit:15)
+  🟡 CC    scan CC=16 (limit:15)
 
 REFACTOR[1]:
-  1. split 4 high-CC methods  (CC>15)
+  1. split 5 high-CC methods  (CC>15)
 
-PIPELINES[72]:
-  [1] Src [register]: register
+PIPELINES[98]:
+  [1] Src [_kernel_modules]: _kernel_modules
       PURITY: 100% pure
-  [2] Src [get]: get
+  [2] Src [_backlight_power_off_rules]: _backlight_power_off_rules → _backlights
       PURITY: 100% pure
-  [3] Src [available]: available
+  [3] Src [_i2c_chip_missing_rules]: _i2c_chip_missing_rules → _backlights
       PURITY: 100% pure
-  [4] Src [serialize]: serialize
+  [4] Src [_all_ok_rule]: _all_ok_rule → _all_ok → _dsi_outputs
       PURITY: 100% pure
-  [5] Src [register_format]: register_format
+  [5] Src [diagnose_display_layer]: diagnose_display_layer
       PURITY: 100% pure
 
 LAYERS:
   src/                            CC̄=3.7    ←in:0  →out:0
+  │ !! rpi_diagnostics            528L  0C   12m  CC=10     ←0
+  │ !! physical_rpi               401L  2C   22m  CC=17     ←0
   │ !! less                       192L  1C    3m  CC=22     ←0
-  │ physical_rpi               184L  1C    8m  CC=12     ←0
-  │ !! main                       180L  0C    4m  CC=16     ←0
   │ builtin                    179L  14C    0m  CC=0.0    ←0
   │ !! runtime_container          173L  1C    6m  CC=18     ←0
+  │ rules                      149L  3C    6m  CC=7      ←0
   │ os_linux                   142L  2C   12m  CC=7      ←0
   │ !! migration_yaml             108L  1C    2m  CC=16     ←0
   │ endpoint_http              107L  1C    5m  CC=6      ←0
@@ -229,18 +328,23 @@ LAYERS:
   │ service_containers          93L  1C    5m  CC=4      ←0
   │ diff                        88L  1C    2m  CC=4      ←1
   │ tree                        88L  2C    6m  CC=11     ←0
+  │ registry                    80L  1C    7m  CC=2      ←1
   │ detector                    77L  2C    2m  CC=4      ←0
+  │ !! scan                        69L  0C    1m  CC=16     ←0
   │ snapshot_yaml               57L  1C    2m  CC=5      ←0
-  │ model                       55L  3C    4m  CC=1      ←1
-  │ linear                      53L  1C    3m  CC=6      ←1
+  │ model                       55L  3C    4m  CC=1      ←2
+  │ linear                      53L  1C    3m  CC=6      ←0
+  │ convert                     52L  0C    1m  CC=11     ←0
   │ base                        44L  3C    4m  CC=2      ←0
-  │ registry                    38L  1C    4m  CC=2      ←0
+  │ drift                       40L  0C    1m  CC=5      ←0
+  │ __init__                    40L  0C    0m  CC=0.0    ←0
+  │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ registry                    35L  1C    5m  CC=1      ←0
-  │ __init__                    35L  0C    0m  CC=0.0    ←0
+  │ main                        22L  0C    1m  CC=1      ←0
   │ __init__                    12L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
-  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ __init__                     3L  0C    0m  CC=0.0    ←0
@@ -264,22 +368,21 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 4 groups | 36f 2181L | 2026-04-21
+# redup/duplication | 4 groups | 40f 3322L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 36
-  total_lines:   2181
+  files_scanned: 40
+  total_lines:   3322
   dup_groups:    4
-  dup_fragments: 12
-  saved_lines:   44
-  scan_ms:       5265
+  dup_fragments: 11
+  saved_lines:   37
+  scan_ms:       5266
 
-HOTSPOTS[6] (files with most duplication):
-  src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.9%)
-  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.6%)
-  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.6%)
-  src/opstree/probes/builtin/runtime_container.py  dup=10L  groups=1  frags=2  (0.5%)
-  src/opstree/probes/builtin/physical_rpi.py  dup=8L  groups=1  frags=1  (0.4%)
+HOTSPOTS[5] (files with most duplication):
+  src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.6%)
+  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.4%)
+  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.4%)
+  src/opstree/probes/builtin/runtime_container.py  dup=10L  groups=1  frags=2  (0.3%)
   src/opstree/probes/builtin/business_health.py  dup=5L  groups=1  frags=1  (0.2%)
 
 DUPLICATES[4] (ranked by impact):
@@ -289,10 +392,9 @@ DUPLICATES[4] (ranked by impact):
       src/opstree/probes/builtin/runtime_container.py:61-65  (_exec)
       src/opstree/probes/builtin/runtime_container.py:92-96  (_exec)
       src/opstree/probes/builtin/service_containers.py:43-47  (_exec)
-  [3c3a6744432c27c8]   STRU  can_probe  L=7 N=3 saved=14 sim=1.00
+  [183bda4b6299c725]   EXAC  can_probe  L=7 N=2 saved=7 sim=1.00
       src/opstree/probes/builtin/os_linux.py:13-19  (can_probe)
       src/opstree/probes/builtin/os_linux.py:90-96  (can_probe)
-      src/opstree/probes/builtin/physical_rpi.py:15-22  (can_probe)
   [b805c0edf8ab951c]   STRU  can_probe  L=7 N=2 saved=7 sim=1.00
       src/opstree/probes/builtin/endpoint_http.py:20-26  (can_probe)
       src/opstree/probes/builtin/service_containers.py:13-19  (can_probe)
@@ -305,8 +407,8 @@ REFACTOR[4] (ranked by priority):
       WHY: 5 occurrences of 5-line block across 4 files — saves 20 lines
       FILES: src/opstree/probes/builtin/business_health.py, src/opstree/probes/builtin/endpoint_http.py, src/opstree/probes/builtin/runtime_container.py, src/opstree/probes/builtin/service_containers.py
   [2] ○ extract_function   → src/opstree/probes/builtin/utils/can_probe.py
-      WHY: 3 occurrences of 7-line block across 2 files — saves 14 lines
-      FILES: src/opstree/probes/builtin/os_linux.py, src/opstree/probes/builtin/physical_rpi.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: src/opstree/probes/builtin/os_linux.py
   [3] ○ extract_function   → src/opstree/probes/builtin/utils/can_probe.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: src/opstree/probes/builtin/endpoint_http.py, src/opstree/probes/builtin/service_containers.py
@@ -317,52 +419,61 @@ REFACTOR[4] (ranked by priority):
 QUICK_WINS[3] (low risk, high savings — do first):
   [1] extract_function   saved=20L  → src/opstree/probes/builtin/utils/_exec.py
       FILES: business_health.py, endpoint_http.py, runtime_container.py +1
-  [2] extract_function   saved=14L  → src/opstree/probes/builtin/utils/can_probe.py
-      FILES: os_linux.py, physical_rpi.py
+  [2] extract_function   saved=7L  → src/opstree/probes/builtin/utils/can_probe.py
+      FILES: os_linux.py
   [3] extract_function   saved=7L  → src/opstree/probes/builtin/utils/can_probe.py
       FILES: endpoint_http.py, service_containers.py
 
-EFFORT_ESTIMATE (total ≈ 1.5h):
+EFFORT_ESTIMATE (total ≈ 1.2h):
   medium _exec                               saved=20L  ~40min
-  easy   can_probe                           saved=14L  ~28min
+  easy   can_probe                           saved=7L  ~14min
   easy   can_probe                           saved=7L  ~14min
   easy   anomalies                           saved=3L  ~6min
 
 METRICS-TARGET:
   dup_groups:  4 → 0
-  saved_lines: 44 lines recoverable
+  saved_lines: 37 lines recoverable
 ```
 
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 86 func | 19f | 2026-04-21
+# code2llm/evolution | 121 func | 24f | 2026-04-21
 
-NEXT[4] (ranked by impact):
-  [1] !  SPLIT-FUNC      scan  CC=16  fan=28
+NEXT[6] (ranked by impact):
+  [1] !! SPLIT           src/opstree/probes/builtin/rpi_diagnostics.py
+      WHY: 528L, 0 classes, max CC=10
+      EFFORT: ~4h  IMPACT: 5280
+
+  [2] !  SPLIT-FUNC      scan  CC=16  fan=26
       WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 448
+      EFFORT: ~1h  IMPACT: 416
 
-  [2] !  SPLIT-FUNC      LessAdapter.render  CC=22  fan=13
+  [3] !  SPLIT-FUNC      LessAdapter.render  CC=22  fan=13
       WHY: CC=22 exceeds 15
       EFFORT: ~1h  IMPACT: 286
 
-  [3] !  SPLIT-FUNC      RuntimeContainerProbe._list_containers  CC=18  fan=11
+  [4] !  SPLIT-FUNC      RuntimeContainerProbe._list_containers  CC=18  fan=11
       WHY: CC=18 exceeds 15
       EFFORT: ~1h  IMPACT: 198
 
-  [4] !  SPLIT-FUNC      MigrationYamlAdapter.render  CC=16  fan=6
+  [5] !  SPLIT-FUNC      RpiPhysicalDisplayProbe._probe_wlr_randr  CC=17  fan=11
+      WHY: CC=17 exceeds 15
+      EFFORT: ~1h  IMPACT: 187
+
+  [6] !  SPLIT-FUNC      MigrationYamlAdapter.render  CC=16  fan=6
       WHY: CC=16 exceeds 15
       EFFORT: ~1h  IMPACT: 96
 
 
-RISKS[0]: none
+RISKS[1]:
+  ⚠ Splitting src/opstree/probes/builtin/rpi_diagnostics.py may break 12 import paths
 
 METRICS-TARGET:
   CC̄:          3.7 → ≤2.6
   max-CC:      22 → ≤11
-  god-modules: 0 → 0
-  high-CC(≥15): 4 → ≤2
+  god-modules: 1 → 0
+  high-CC(≥15): 5 → ≤2
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -390,7 +501,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  (first run — no previous data)
+  prev CC̄=3.7 → now CC̄=3.7
 ```
 
 ## Intent

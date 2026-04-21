@@ -1,30 +1,39 @@
-# code2llm/evolution | 86 func | 19f | 2026-04-21
+# code2llm/evolution | 121 func | 24f | 2026-04-21
 
-NEXT[4] (ranked by impact):
-  [1] !  SPLIT-FUNC      scan  CC=16  fan=28
+NEXT[6] (ranked by impact):
+  [1] !! SPLIT           src/opstree/probes/builtin/rpi_diagnostics.py
+      WHY: 528L, 0 classes, max CC=10
+      EFFORT: ~4h  IMPACT: 5280
+
+  [2] !  SPLIT-FUNC      scan  CC=16  fan=26
       WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 448
+      EFFORT: ~1h  IMPACT: 416
 
-  [2] !  SPLIT-FUNC      LessAdapter.render  CC=22  fan=13
+  [3] !  SPLIT-FUNC      LessAdapter.render  CC=22  fan=13
       WHY: CC=22 exceeds 15
       EFFORT: ~1h  IMPACT: 286
 
-  [3] !  SPLIT-FUNC      RuntimeContainerProbe._list_containers  CC=18  fan=11
+  [4] !  SPLIT-FUNC      RuntimeContainerProbe._list_containers  CC=18  fan=11
       WHY: CC=18 exceeds 15
       EFFORT: ~1h  IMPACT: 198
 
-  [4] !  SPLIT-FUNC      MigrationYamlAdapter.render  CC=16  fan=6
+  [5] !  SPLIT-FUNC      RpiPhysicalDisplayProbe._probe_wlr_randr  CC=17  fan=11
+      WHY: CC=17 exceeds 15
+      EFFORT: ~1h  IMPACT: 187
+
+  [6] !  SPLIT-FUNC      MigrationYamlAdapter.render  CC=16  fan=6
       WHY: CC=16 exceeds 15
       EFFORT: ~1h  IMPACT: 96
 
 
-RISKS[0]: none
+RISKS[1]:
+  ⚠ Splitting src/opstree/probes/builtin/rpi_diagnostics.py may break 12 import paths
 
 METRICS-TARGET:
   CC̄:          3.7 → ≤2.6
   max-CC:      22 → ≤11
-  god-modules: 0 → 0
-  high-CC(≥15): 4 → ≤2
+  god-modules: 1 → 0
+  high-CC(≥15): 5 → ≤2
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -52,4 +61,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  (first run — no previous data)
+  prev CC̄=3.7 → now CC̄=3.7

@@ -1,34 +1,36 @@
-# code2llm | 34f 2214L | python:33,shell:1 | 2026-04-21
-# CC̄=3.7 | critical:4/86 | dups:0 | cycles:0
+# code2llm | 40f 3200L | python:39,shell:1 | 2026-04-21
+# CC̄=3.7 | critical:5/121 | dups:0 | cycles:0
 
-HEALTH[4]:
-  🟡 CC    render CC=22 (limit:15)
-  🟡 CC    scan CC=16 (limit:15)
-  🟡 CC    _list_containers CC=18 (limit:15)
+HEALTH[5]:
   🟡 CC    render CC=16 (limit:15)
+  🟡 CC    _list_containers CC=18 (limit:15)
+  🟡 CC    render CC=22 (limit:15)
+  🟡 CC    _probe_wlr_randr CC=17 (limit:15)
+  🟡 CC    scan CC=16 (limit:15)
 
 REFACTOR[1]:
-  1. split 4 high-CC methods  (CC>15)
+  1. split 5 high-CC methods  (CC>15)
 
-PIPELINES[72]:
-  [1] Src [register]: register
+PIPELINES[98]:
+  [1] Src [_kernel_modules]: _kernel_modules
       PURITY: 100% pure
-  [2] Src [get]: get
+  [2] Src [_backlight_power_off_rules]: _backlight_power_off_rules → _backlights
       PURITY: 100% pure
-  [3] Src [available]: available
+  [3] Src [_i2c_chip_missing_rules]: _i2c_chip_missing_rules → _backlights
       PURITY: 100% pure
-  [4] Src [serialize]: serialize
+  [4] Src [_all_ok_rule]: _all_ok_rule → _all_ok → _dsi_outputs
       PURITY: 100% pure
-  [5] Src [register_format]: register_format
+  [5] Src [diagnose_display_layer]: diagnose_display_layer
       PURITY: 100% pure
 
 LAYERS:
   src/                            CC̄=3.7    ←in:0  →out:0
+  │ !! rpi_diagnostics            528L  0C   12m  CC=10     ←0
+  │ !! physical_rpi               401L  2C   22m  CC=17     ←0
   │ !! less                       192L  1C    3m  CC=22     ←0
-  │ physical_rpi               184L  1C    8m  CC=12     ←0
-  │ !! main                       180L  0C    4m  CC=16     ←0
   │ builtin                    179L  14C    0m  CC=0.0    ←0
   │ !! runtime_container          173L  1C    6m  CC=18     ←0
+  │ rules                      149L  3C    6m  CC=7      ←0
   │ os_linux                   142L  2C   12m  CC=7      ←0
   │ !! migration_yaml             108L  1C    2m  CC=16     ←0
   │ endpoint_http              107L  1C    5m  CC=6      ←0
@@ -37,18 +39,23 @@ LAYERS:
   │ service_containers          93L  1C    5m  CC=4      ←0
   │ diff                        88L  1C    2m  CC=4      ←1
   │ tree                        88L  2C    6m  CC=11     ←0
+  │ registry                    80L  1C    7m  CC=2      ←1
   │ detector                    77L  2C    2m  CC=4      ←0
+  │ !! scan                        69L  0C    1m  CC=16     ←0
   │ snapshot_yaml               57L  1C    2m  CC=5      ←0
-  │ model                       55L  3C    4m  CC=1      ←1
-  │ linear                      53L  1C    3m  CC=6      ←1
+  │ model                       55L  3C    4m  CC=1      ←2
+  │ linear                      53L  1C    3m  CC=6      ←0
+  │ convert                     52L  0C    1m  CC=11     ←0
   │ base                        44L  3C    4m  CC=2      ←0
-  │ registry                    38L  1C    4m  CC=2      ←0
+  │ drift                       40L  0C    1m  CC=5      ←0
+  │ __init__                    40L  0C    0m  CC=0.0    ←0
+  │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ registry                    35L  1C    5m  CC=1      ←0
-  │ __init__                    35L  0C    0m  CC=0.0    ←0
+  │ main                        22L  0C    1m  CC=1      ←0
   │ __init__                    12L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
-  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ __init__                     3L  0C    0m  CC=0.0    ←0

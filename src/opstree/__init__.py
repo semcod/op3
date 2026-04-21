@@ -15,7 +15,7 @@ from opstree.formats import FormatRegistry, register_format
 from opstree.drift.detector import DriftDetector, DriftReport
 from opstree.diagnostics import Diagnostic, Rule, RuleEngine, Severity
 
-__version__ = "0.1.11"
+__version__ = "0.1.13"
 
 __all__ = [
     # Layers

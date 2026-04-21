@@ -4,22 +4,22 @@ flowchart TD
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph Core
-        src__opstree__formats__registry__FormatRegistry__register["register"]
-        src__opstree__formats__registry__FormatRegistry__get["get"]
-        src__opstree__formats__registry__FormatRegistry__available["available"]
-        src__opstree__formats__registry__FormatRegistry__serialize["serialize"]
-        src__opstree__formats__registry__register_format["register_format"]
-        src__opstree__probes__registry__ProbeRegistry__register["register"]
-        src__opstree__probes__registry__ProbeRegistry__get["get"]
-        src__opstree__probes__registry__ProbeRegistry__all["all"]
-        src__opstree__probes__registry__register_probe["register_probe"]
-        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe["can_probe"]
-        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__scan["scan"]
-        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___list_systemd_services["_list_systemd_services"]
-        src__opstree__probes__builtin__service_containers__ServiceContainersProbe___is_service_enabled["_is_service_enabled"]
-        src__opstree__probes__builtin__service_containers__ServiceContainersProbe__anomalies["anomalies"]
-        src__opstree__formats__snapshot_yaml__SnapshotYamlAdapter__parse["parse"]
-        ...["+61 more"]
+        src__opstree__probes__builtin__rpi_diagnostics___dsi_outputs["_dsi_outputs"]
+        src__opstree__probes__builtin__rpi_diagnostics___dsi_connected["_dsi_connected"]
+        src__opstree__probes__builtin__rpi_diagnostics___kernel_modules["_kernel_modules"]
+        src__opstree__probes__builtin__rpi_diagnostics___all_ok["_all_ok"]
+        src__opstree__probes__builtin__rpi_diagnostics___backlight_power_off_rules["_backlight_power_off_rules"]
+        src__opstree__probes__builtin__rpi_diagnostics___i2c_chip_missing_rules["_i2c_chip_missing_rules"]
+        src__opstree__probes__builtin__rpi_diagnostics___all_ok_rule["_all_ok_rule"]
+        src__opstree__probes__builtin__rpi_diagnostics__diagnose_display_layer["diagnose_display_layer"]
+        src__opstree__formats__migration_yaml__MigrationYamlAdapter__parse["parse"]
+        src__opstree__formats__migration_yaml__MigrationYamlAdapter__render["render"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__can_probe["can_probe"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__scan["scan"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe___detect_runtime["_detect_runtime"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe___list_containers["_list_containers"]
+        src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__anomalies["anomalies"]
+        ...["+88 more"]
     end
 
-    class src__opstree__formats__registry__FormatRegistry__register,src__opstree__formats__registry__FormatRegistry__get,src__opstree__formats__registry__FormatRegistry__available,src__opstree__formats__registry__FormatRegistry__serialize,src__opstree__formats__registry__register_format,src__opstree__probes__registry__ProbeRegistry__register,src__opstree__probes__registry__ProbeRegistry__get,src__opstree__probes__registry__ProbeRegistry__all,src__opstree__probes__registry__register_probe,src__opstree__probes__builtin__service_containers__ServiceContainersProbe__can_probe entry
+    class src__opstree__probes__builtin__rpi_diagnostics___kernel_modules,src__opstree__probes__builtin__rpi_diagnostics___backlight_power_off_rules,src__opstree__probes__builtin__rpi_diagnostics___i2c_chip_missing_rules,src__opstree__probes__builtin__rpi_diagnostics___all_ok_rule,src__opstree__probes__builtin__rpi_diagnostics__diagnose_display_layer,src__opstree__formats__migration_yaml__MigrationYamlAdapter__parse,src__opstree__formats__migration_yaml__MigrationYamlAdapter__render,src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__can_probe,src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe__scan,src__opstree__probes__builtin__runtime_container__RuntimeContainerProbe___detect_runtime entry

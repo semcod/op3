@@ -1,16 +1,58 @@
 project: /home/tom/github/semcod/op3
 generated_from: code2llm call graph analysis
 stats:
-  total_nodes: 3
-  total_edges: 2
-  modules_count: 2
+  total_nodes: 14
+  total_edges: 13
+  modules_count: 4
 nodes:
-  src.opstree.drift.detector.DriftDetector.detect:
-    name: detect
-    module: src.opstree.drift.detector
-    line: 22
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule:
+    name: _all_ok_rule
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 478
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules:
+    name: _backlight_power_off_rules
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 81
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 0
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_connected:
+    name: _dsi_connected
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 43
     cyclomatic_complexity: 2
-    calls_out: 5
+    calls_out: 3
+    calls_in: 1
+  src.opstree.probes.builtin.rpi_diagnostics._backlights:
+    name: _backlights
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 47
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 3
+  src.opstree.snapshot.diff.snapshot_diff:
+    name: snapshot_diff
+    module: src.opstree.snapshot.diff
+    line: 18
+    cyclomatic_complexity: 4
+    calls_out: 10
+    calls_in: 1
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok:
+    name: _all_ok
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 67
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 1
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules:
+    name: _i2c_chip_missing_rules
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 105
+    cyclomatic_complexity: 10
+    calls_out: 8
     calls_in: 0
   src.opstree.snapshot.diff._diff_layer_data:
     name: _diff_layer_data
@@ -19,31 +61,118 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 14
     calls_in: 1
-  src.opstree.snapshot.diff.snapshot_diff:
-    name: snapshot_diff
-    module: src.opstree.snapshot.diff
-    line: 18
-    cyclomatic_complexity: 4
-    calls_out: 10
+  src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr:
+    name: _backlight_chip_addr
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 59
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 1
+  src.opstree.drift.detector.DriftDetector.detect:
+    name: detect
+    module: src.opstree.drift.detector
+    line: 22
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 0
+  src.opstree.probes.registry.ProbeRegistry.all:
+    name: all
+    module: src.opstree.probes.registry
+    line: 40
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs:
+    name: _dsi_outputs
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 35
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 2
+  src.opstree.probes.builtin.rpi_diagnostics._i2c_buses:
+    name: _i2c_buses
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 51
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay:
+    name: _has_dsi_overlay
+    module: src.opstree.probes.builtin.rpi_diagnostics
+    line: 39
+    cyclomatic_complexity: 2
+    calls_out: 3
     calls_in: 1
 edges:
-- caller: src.opstree.drift.detector.DriftDetector.detect
-  callee: src.opstree.snapshot.diff.snapshot_diff
+- caller: src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+  callee: src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  callee: src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  callee: src.opstree.probes.builtin.rpi_diagnostics._backlights
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  callee: src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  callee: src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  callee: src.opstree.probes.registry.ProbeRegistry.all
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+  callee: src.opstree.probes.builtin.rpi_diagnostics._backlights
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+  callee: src.opstree.probes.builtin.rpi_diagnostics._backlights
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+  callee: src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+  callee: src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+  call_type: resolved
+- caller: src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+  callee: src.opstree.probes.builtin.rpi_diagnostics._all_ok
   call_type: resolved
 - caller: src.opstree.snapshot.diff.snapshot_diff
   callee: src.opstree.snapshot.diff._diff_layer_data
   call_type: resolved
+- caller: src.opstree.drift.detector.DriftDetector.detect
+  callee: src.opstree.snapshot.diff.snapshot_diff
+  call_type: resolved
 modules:
   src.opstree.drift.detector:
   - src.opstree.drift.detector.DriftDetector.detect
+  src.opstree.probes.builtin.rpi_diagnostics:
+  - src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  - src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+  - src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
+  - src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+  - src.opstree.probes.builtin.rpi_diagnostics._backlights
+  - src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
+  - src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
+  - src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
+  - src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
+  - src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+  src.opstree.probes.registry:
+  - src.opstree.probes.registry.ProbeRegistry.all
   src.opstree.snapshot.diff:
   - src.opstree.snapshot.diff._diff_layer_data
   - src.opstree.snapshot.diff.snapshot_diff
 entry_points:
+- src.opstree.cli.commands.convert.convert
+- src.opstree.cli.commands.drift.drift
+- src.opstree.cli.commands.scan.scan
 - src.opstree.cli.main.cli
-- src.opstree.cli.main.convert
-- src.opstree.cli.main.drift
-- src.opstree.cli.main.scan
+- src.opstree.diagnostics.rules.Diagnostic.to_dict
+- src.opstree.diagnostics.rules.Rule.__post_init__
+- src.opstree.diagnostics.rules.Rule.evaluate
+- src.opstree.diagnostics.rules.RuleEngine.__init__
+- src.opstree.diagnostics.rules.RuleEngine.any_error
+- src.opstree.diagnostics.rules.RuleEngine.evaluate
 - src.opstree.drift.detector.DriftDetector._summarize_changes
 - src.opstree.drift.detector.DriftDetector.detect
 - src.opstree.formats.less.LessAdapter._parse_block
@@ -91,13 +220,32 @@ entry_points:
 - src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe
 - src.opstree.probes.builtin.os_linux.OsKernelProbe.scan
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._check_kms
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._extract_dsi_overlays
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._get_kms_driver
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._merge_wlr_into_drm
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_board_model
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_compositor_processes
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_config_txt
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_dsi_dmesg
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_framebuffers
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_i2c_buses
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_kernel_modules
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_wayland_sockets
+- src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_wlr_randr
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_drm
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.can_probe
 - src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan
+- src.opstree.probes.builtin.physical_rpi._Exec.int_
+- src.opstree.probes.builtin.physical_rpi._Exec.lines
+- src.opstree.probes.builtin.physical_rpi._Exec.run
+- src.opstree.probes.builtin.physical_rpi._Exec.text
+- src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+- src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
+- src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
+- src.opstree.probes.builtin.rpi_diagnostics._kernel_modules
+- src.opstree.probes.builtin.rpi_diagnostics.diagnose_display_layer
 - src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.__init__
 - src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime
 - src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers
@@ -113,12 +261,15 @@ entry_points:
 - src.opstree.probes.context.MockContext.__init__
 - src.opstree.probes.context.ProbeContext.__init__
 - src.opstree.probes.context.SSHContext.__init__
-- src.opstree.probes.registry.ProbeRegistry.all
+- src.opstree.probes.registry.ProbeRegistry.__init__
+- src.opstree.probes.registry.ProbeRegistry.clear
 - src.opstree.probes.registry.ProbeRegistry.get
 - src.opstree.probes.registry.ProbeRegistry.register
+- src.opstree.probes.registry.get_default_registry
 - src.opstree.probes.registry.register_probe
 - src.opstree.scanner.linear.LinearScanner.__init__
 - src.opstree.scanner.linear.LinearScanner.scan
+- src.opstree.scanner.linear.scan_device
 - src.opstree.snapshot.model.Snapshot.layer
 - src.opstree.snapshot.model.Snapshot.load
 - src.opstree.snapshot.model.Snapshot.query
