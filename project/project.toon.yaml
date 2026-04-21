@@ -1,9 +1,9 @@
-# op3 | 121 func | 24f | 4952L | python | 2026-04-21
+# op3 | 352 func | 29f | 10371L | python | 2026-04-21
 
 HEALTH:
-  CC̄=3.7  critical=10 (limit:10)  dup=1  cycles=0
+  CC̄=1.3  critical=10 (limit:10)  dup=1  cycles=0
 
-ALERTS[14]:
+ALERTS[15]:
   !!! high_fan_out     scan = 26 (limit:10)
   !!! high_fan_out     RpiPhysicalDisplayProbe.scan = 21 (limit:10)
   !!  cc_exceeded      LessAdapter.render = 22 (limit:15)
@@ -12,40 +12,43 @@ ALERTS[14]:
   !   cc_exceeded      RpiPhysicalDisplayProbe._probe_wlr_randr = 17 (limit:15)
   !   cc_exceeded      MigrationYamlAdapter.render = 16 (limit:15)
   !   cc_exceeded      scan = 16 (limit:15)
-  !   high_fan_out     LessAdapter.render = 13 (limit:10)
+  !   high_fan_out     make_compat_helpers = 14 (limit:10)
   !   high_fan_out     drift = 13 (limit:10)
 
-MODULES[40] (top by size):
+MODULES[65] (top by size):
+  M[SUMD.md] 590L C:0 F:114 CC↑0 D:1 (md)
   M[src/opstree/probes/builtin/rpi_diagnostics.py] 528L C:0 F:12 CC↑10 D:0 (python)
+  M[project/context.md] 526L C:0 F:0 CC↑0 D:0 (md)
+  M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
+  M[SUMR.md] 509L C:0 F:0 CC↑0 D:0 (md)
   M[src/opstree/probes/builtin/physical_rpi.py] 401L C:2 F:22 CC↑17 D:0 (python)
+  M[op3_poc.md] 363L C:0 F:0 CC↑0 D:0 (md)
+  M[project/README.md] 339L C:0 F:0 CC↑0 D:0 (md)
+  M[project/map.toon.yaml] 318L C:0 F:114 CC↑0 D:0 (yaml)
+  M[project/calls.yaml] 276L C:0 F:0 CC↑0 D:0 (yaml)
+  M[docs/README.md] 264L C:0 F:1 CC↑0 D:0 (md)
   M[src/opstree/formats/less.py] 192L C:1 F:3 CC↑22 D:0 (python)
   M[src/opstree/layers/builtin.py] 179L C:14 F:0 CC↑0 D:0 (python)
   M[src/opstree/probes/builtin/runtime_container.py] 173L C:1 F:6 CC↑18 D:0 (python)
-  M[src/opstree/diagnostics/rules.py] 149L C:3 F:6 CC↑7 D:0 (python)
-  M[src/opstree/probes/builtin/os_linux.py] 142L C:2 F:12 CC↑7 D:0 (python)
-  M[src/opstree/formats/migration_yaml.py] 108L C:1 F:2 CC↑16 D:0 (python)
-  M[src/opstree/probes/builtin/endpoint_http.py] 107L C:1 F:5 CC↑6 D:0 (python)
-  M[src/opstree/probes/builtin/business_health.py] 98L C:1 F:5 CC↑6 D:0 (python)
-  M[src/opstree/probes/context.py] 97L C:5 F:4 CC↑2 D:0 (python)
-  M[src/opstree/probes/builtin/service_containers.py] 93L C:1 F:5 CC↑4 D:0 (python)
-  M[src/opstree/layers/tree.py] 88L C:2 F:6 CC↑11 D:0 (python)
-  M[src/opstree/snapshot/diff.py] 88L C:1 F:2 CC↑4 D:1 (python)
-  M[src/opstree/probes/registry.py] 80L C:1 F:7 CC↑2 D:1 (python)
-  LANGS: python:39/shell:1
+  M[CHANGELOG.md] 171L C:0 F:0 CC↑0 D:0 (md)
+  LANGS: python:41/yaml:12/md:8/shell:1/txt:1/toml:1/json:1
 
-HOTSPOTS[9]:
+HOTSPOTS[10]:
   ★ scan fan=26  // Scan a device and output snapshot.
   ★ RpiPhysicalDisplayProbe.scan fan=21  // Orchestrates 21 calls
   ★ convert fan=17  // Convert between configuration formats.
-  ★ LessAdapter.render fan=13  // Renderuj Snapshot → LESS.
+  ★ make_compat_helpers fan=14  // Build a :class:`CompatHelpers` bundle for a downstream project.
+
+Parameters
+----
   ★ drift fan=13  // Detect drift between intended and actual state.
 
-REFACTOR[9]:
+REFACTOR[13]:
   [1] H/H Split god module src/opstree/probes/builtin/rpi_diagnostics.py (528L, 0 classes)
-  [2] M/L Split MigrationYamlAdapter.render (CC=16)
-  [3] M/L Split RuntimeContainerProbe._list_containers (CC=18)
-  [4] M/L Split LessAdapter.render (CC=22)
-  [5] M/L Split RpiPhysicalDisplayProbe._probe_wlr_randr (CC=17)
+  [2] H/H Split god module SUMD.md (590L, 0 classes)
+  [3] H/H Split god module SUMR.md (509L, 0 classes)
+  [4] H/H Split god module goal.yaml (512L, 0 classes)
+  [5] H/H Split god module project/context.md (526L, 0 classes)
 
 EVOLUTION:
-  2026-04-21 CC̄=3.7 crit=10 4952L // Automated analysis
+  2026-04-21 CC̄=1.3 crit=10 10371L // Automated analysis

@@ -1,26 +1,26 @@
-# code2llm | 40f 3200L | python:39,shell:1 | 2026-04-21
-# CC̄=3.7 | critical:5/121 | dups:0 | cycles:0
+# code2llm | 65f 8022L | python:41,yaml:12,md:8,toml:1,shell:1,json:1,txt:1 | 2026-04-21
+# CC̄=1.3 | critical:5/352 | dups:0 | cycles:0
 
 HEALTH[5]:
-  🟡 CC    render CC=16 (limit:15)
   🟡 CC    _list_containers CC=18 (limit:15)
+  🟡 CC    render CC=16 (limit:15)
+  🟡 CC    scan CC=16 (limit:15)
   🟡 CC    render CC=22 (limit:15)
   🟡 CC    _probe_wlr_randr CC=17 (limit:15)
-  🟡 CC    scan CC=16 (limit:15)
 
 REFACTOR[1]:
   1. split 5 high-CC methods  (CC>15)
 
-PIPELINES[98]:
-  [1] Src [_kernel_modules]: _kernel_modules
+PIPELINES[100]:
+  [1] Src [can_probe]: can_probe
       PURITY: 100% pure
-  [2] Src [_backlight_power_off_rules]: _backlight_power_off_rules → _backlights
+  [2] Src [scan]: scan
       PURITY: 100% pure
-  [3] Src [_i2c_chip_missing_rules]: _i2c_chip_missing_rules → _backlights
+  [3] Src [_detect_runtime]: _detect_runtime
       PURITY: 100% pure
-  [4] Src [_all_ok_rule]: _all_ok_rule → _all_ok → _dsi_outputs
+  [4] Src [_list_containers]: _list_containers
       PURITY: 100% pure
-  [5] Src [diagnose_display_layer]: diagnose_display_layer
+  [5] Src [anomalies]: anomalies
       PURITY: 100% pure
 
 LAYERS:
@@ -32,12 +32,13 @@ LAYERS:
   │ !! runtime_container          173L  1C    6m  CC=18     ←0
   │ rules                      149L  3C    6m  CC=7      ←0
   │ os_linux                   142L  2C   12m  CC=7      ←0
+  │ compat                     119L  1C    1m  CC=1      ←0
   │ !! migration_yaml             108L  1C    2m  CC=16     ←0
   │ endpoint_http              107L  1C    5m  CC=6      ←0
   │ business_health             98L  1C    5m  CC=6      ←0
   │ context                     97L  5C    4m  CC=2      ←0
   │ service_containers          93L  1C    5m  CC=4      ←0
-  │ diff                        88L  1C    2m  CC=4      ←1
+  │ diff                        88L  1C    2m  CC=4      ←0
   │ tree                        88L  2C    6m  CC=11     ←0
   │ registry                    80L  1C    7m  CC=2      ←1
   │ detector                    77L  2C    2m  CC=4      ←0
@@ -51,6 +52,7 @@ LAYERS:
   │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ registry                    35L  1C    5m  CC=1      ←0
+  │ __init__                    24L  0C    0m  CC=0.0    ←0
   │ main                        22L  0C    1m  CC=1      ←0
   │ __init__                    12L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
@@ -66,10 +68,43 @@ LAYERS:
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
+  │ !! SUMD.md                    590L  0C  114m  CC=0.0    ←1
+  │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
+  │ !! SUMR.md                    509L  0C    0m  CC=0.0    ←0
+  │ op3_poc.md                 363L  0C    0m  CC=0.0    ←0
+  │ CHANGELOG.md               171L  0C    0m  CC=0.0    ←0
+  │ README.md                  127L  0C    1m  CC=0.0    ←0
+  │ sumd.json                  102L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              69L  0C    0m  CC=0.0    ←0
   │ project.sh                  36L  0C    0m  CC=0.0    ←0
   │
+  docs/                           CC̄=0.0    ←in:0  →out:0
+  │ README.md                  264L  0C    1m  CC=0.0    ←0
+  │
+  project/                        CC̄=0.0    ←in:0  →out:0
+  │ !! context.md                 526L  0C    0m  CC=0.0    ←0
+  │ README.md                  339L  0C    0m  CC=0.0    ←0
+  │ map.toon.yaml              318L  0C  114m  CC=0.0    ←0
+  │ calls.yaml                 276L  0C    0m  CC=0.0    ←0
+  │ analysis.toon.yaml          76L  0C    0m  CC=0.0    ←0
+  │ calls.toon.yaml             68L  0C    0m  CC=0.0    ←0
+  │ duplication.toon.yaml       65L  0C    0m  CC=0.0    ←0
+  │ evolution.toon.yaml         64L  0C    0m  CC=0.0    ←0
+  │ project.toon.yaml           51L  0C    0m  CC=0.0    ←0
+  │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
+  │
+  examples/                       CC̄=0.0    ←in:0  →out:0
+  │ snapshot.yaml               42L  0C    0m  CC=0.0    ←0
+  │ snapshot.yaml               41L  0C    0m  CC=0.0    ←0
+  │ snapshot.yaml               41L  0C    0m  CC=0.0    ←0
+  │ migration.yaml              18L  0C    0m  CC=0.0    ←0
+  │
 
-COUPLING: no cross-package imports detected
+COUPLING:
+                      SUMD  src.opstree
+         SUMD           ──           ←1
+  src.opstree            1           ──
+  CYCLES: none
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

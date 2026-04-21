@@ -4,14 +4,22 @@
 
 - **Project**: /home/tom/github/semcod/op3
 - **Primary Language**: python
-- **Languages**: python: 39, shell: 1
+- **Languages**: python: 41, yaml: 12, md: 8, toml: 1, shell: 1
 - **Analysis Mode**: static
-- **Total Functions**: 121
-- **Total Classes**: 47
-- **Modules**: 40
-- **Entry Points**: 111
+- **Total Functions**: 352
+- **Total Classes**: 48
+- **Modules**: 65
+- **Entry Points**: 342
 
 ## Architecture by Module
+
+### SUMD
+- **Functions**: 114
+- **File**: `SUMD.md`
+
+### project.map.toon
+- **Functions**: 114
+- **File**: `map.toon.yaml`
 
 ### src.opstree.probes.builtin.physical_rpi
 - **Functions**: 22
@@ -82,15 +90,15 @@
 - **Classes**: 3
 - **File**: `model.py`
 
-### src.opstree.formats.less
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `less.py`
-
 ### src.opstree.scanner.linear
 - **Functions**: 3
 - **Classes**: 1
 - **File**: `linear.py`
+
+### src.opstree.formats.less
+- **Functions**: 3
+- **Classes**: 1
+- **File**: `less.py`
 
 ### src.opstree.formats.migration_yaml
 - **Functions**: 2
@@ -102,16 +110,6 @@
 - **Classes**: 1
 - **File**: `snapshot_yaml.py`
 
-### src.opstree.snapshot.diff
-- **Functions**: 2
-- **Classes**: 1
-- **File**: `diff.py`
-
-### src.opstree.drift.detector
-- **Functions**: 2
-- **Classes**: 2
-- **File**: `detector.py`
-
 ## Key Entry Points
 
 Main execution flows into the system:
@@ -120,13 +118,13 @@ Main execution flows into the system:
 > Renderuj Snapshot → LESS.
 - **Calls**: snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, None.join, business_layer.data.get, business_layer.data.get
 
-### src.opstree.formats.less.LessAdapter.parse
-> Parsuj LESS → PartialSnapshot.
-- **Calls**: re.search, re.finditer, re.finditer, re.finditer, re.search, PartialSnapshot, None.strip, None.strip
-
 ### src.opstree.cli.commands.scan.scan
 > Scan a device and output snapshot.
 - **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, LayerTree, ProbeRegistry
+
+### src.opstree.formats.less.LessAdapter.parse
+> Parsuj LESS → PartialSnapshot.
+- **Calls**: re.search, re.finditer, re.finditer, re.finditer, re.search, PartialSnapshot, None.strip, None.strip
 
 ### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers
 > Lista kontenerów.
@@ -157,16 +155,25 @@ Main execution flows into the system:
 ### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_i2c_buses
 - **Calls**: _Exec.run, r.lines, _Exec.run, re.search, int, buses.append, r.stdout.strip, m.group
 
+### src.opstree.integrations.compat.make_compat_helpers
+> Build a :class:`CompatHelpers` bundle for a downstream project.
+
+Parameters
+----------
+env_var:
+    Environment variable name that toggles op3 usage, 
+- **Calls**: tuple, CompatHelpers, os.environ.get, op3_available, RuntimeError, SSHContext, MockContext, _build_scanner
+
 ### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_drm
 - **Calls**: _Exec.run, listing.lines, re.match, m.group, _Exec.run, _Exec.run, _Exec.run, _Exec.run
-
-### src.opstree.formats.migration_yaml.MigrationYamlAdapter.render
-> Renderuj Snapshot → migration.yaml.
-- **Calls**: snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, yaml.dump, endpoint_layer.data.get, business_layer.data.get, ep.get, runtime_layer.data.get
 
 ### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime
 > Wykryj runtime i wersję.
 - **Calls**: ctx.execute, hasattr, _exec, _exec, _exec, None.strip, None.strip, None.split
+
+### src.opstree.formats.migration_yaml.MigrationYamlAdapter.render
+> Renderuj Snapshot → migration.yaml.
+- **Calls**: snapshot.layers.get, snapshot.layers.get, snapshot.layers.get, yaml.dump, endpoint_layer.data.get, business_layer.data.get, ep.get, runtime_layer.data.get
 
 ### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._scan_backlights
 - **Calls**: _Exec.run, listing.lines, None.int_, None.int_, None.int_, out.append, listing.stdout.strip, None.text
@@ -177,6 +184,17 @@ Main execution flows into the system:
 ### src.opstree.diagnostics.rules.Rule.evaluate
 > Return zero or more diagnostics produced by this rule.
 - **Calls**: list, self.predicate, callable, self.message, callable, self.fix, self.evidence, Diagnostic
+
+### src.opstree.snapshot.diff.snapshot_diff
+> Compare two snapshots and return a list of changes.
+
+Args:
+    a: First snapshot (old state)
+    b: Second snapshot (new state)
+
+Returns:
+    List of 
+- **Calls**: set, set, a.layers.keys, b.layers.keys, changes.append, changes.append, src.opstree.snapshot.diff._diff_layer_data, changes.extend
 
 ### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.render
 > Renderuj Snapshot → snapshot.yaml.
@@ -212,20 +230,12 @@ Main execution flows into the system:
 ### src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
 - **Calls**: src.opstree.probes.builtin.rpi_diagnostics._backlights, bl.get, bl.get, bl.get, Diagnostic, Diagnostic, bl.get
 
-### src.opstree.probes.builtin.physical_rpi._Exec.run
-- **Calls**: ctx.execute, hasattr, cls, cls, cls, bool, getattr
-
 ### src.opstree.probes.builtin.os_linux.OsKernelProbe.scan
 > Zeskanuj warstwę.
 - **Calls**: ProbeResult, self._get_kernel_version, self._get_arch, self._get_hostname, self._get_uptime, LayerData, datetime.now
 
-### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan
-> Zeskanuj warstwę.
-- **Calls**: ProbeResult, endpoint.get, endpoint.get, self._check_endpoint, results.append, LayerData, datetime.now
-
-### src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe
-> Czy ten probe może pobiec w tym kontekście?
-- **Calls**: ctx.execute, hasattr, _check, _check, _check, _check
+### src.opstree.probes.builtin.physical_rpi._Exec.run
+- **Calls**: ctx.execute, hasattr, cls, cls, cls, bool, getattr
 
 ## Process Flows
 
@@ -236,14 +246,14 @@ Key execution flows identified:
 render [src.opstree.formats.less.LessAdapter]
 ```
 
-### Flow 2: parse
-```
-parse [src.opstree.formats.less.LessAdapter]
-```
-
-### Flow 3: scan
+### Flow 2: scan
 ```
 scan [src.opstree.cli.commands.scan]
+```
+
+### Flow 3: parse
+```
+parse [src.opstree.formats.less.LessAdapter]
 ```
 
 ### Flow 4: _list_containers
@@ -271,14 +281,14 @@ _probe_wlr_randr [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProb
 _probe_i2c_buses [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe]
 ```
 
-### Flow 9: _scan_drm
+### Flow 9: make_compat_helpers
 ```
-_scan_drm [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe]
+make_compat_helpers [src.opstree.integrations.compat]
 ```
 
-### Flow 10: _detect_runtime
+### Flow 10: _scan_drm
 ```
-_detect_runtime [src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe]
+_scan_drm [src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe]
 ```
 
 ## Key Classes
@@ -298,6 +308,11 @@ _detect_runtime [src.opstree.probes.builtin.runtime_container.RuntimeContainerPr
 - **Methods**: 6
 - **Key Methods**: src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.__init__, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._detect_runtime, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe._list_containers, src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies
 
+### src.opstree.probes.builtin.os_linux.OsConfigProbe
+> Skanuje konfigurację systemu.
+- **Methods**: 5
+- **Key Methods**: src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe, src.opstree.probes.builtin.os_linux.OsConfigProbe.scan, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline, src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies
+
 ### src.opstree.probes.builtin.service_containers.ServiceContainersProbe
 > Skanuje systemd services.
 - **Methods**: 5
@@ -314,11 +329,6 @@ _detect_runtime [src.opstree.probes.builtin.runtime_container.RuntimeContainerPr
 Each instance owns its own probe dict — create a fresh r
 - **Methods**: 5
 - **Key Methods**: src.opstree.probes.registry.ProbeRegistry.__init__, src.opstree.probes.registry.ProbeRegistry.register, src.opstree.probes.registry.ProbeRegistry.get, src.opstree.probes.registry.ProbeRegistry.all, src.opstree.probes.registry.ProbeRegistry.clear
-
-### src.opstree.probes.builtin.os_linux.OsConfigProbe
-> Skanuje konfigurację systemu.
-- **Methods**: 5
-- **Key Methods**: src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe, src.opstree.probes.builtin.os_linux.OsConfigProbe.scan, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_config_txt, src.opstree.probes.builtin.os_linux.OsConfigProbe._read_cmdline, src.opstree.probes.builtin.os_linux.OsConfigProbe.anomalies
 
 ### src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe
 > Skanuje HTTP endpoints.
@@ -348,7 +358,7 @@ Historically some probes retu
 Stateless and reusable; keep one per rule-s
 - **Methods**: 4
 - **Key Methods**: src.opstree.diagnostics.rules.RuleEngine.__init__, src.opstree.diagnostics.rules.RuleEngine.rules, src.opstree.diagnostics.rules.RuleEngine.evaluate, src.opstree.diagnostics.rules.RuleEngine.any_error
-- **Inherits**: <ast.Subscript object at 0x705c70c29010>
+- **Inherits**: <ast.Subscript object at 0x75d29502d310>
 
 ### src.opstree.snapshot.model.Snapshot
 > Pełna migawka urządzenia/systemu.
@@ -382,22 +392,36 @@ Stateless and reusable; keep one per rule-s
 - **Methods**: 2
 - **Key Methods**: src.opstree.scanner.linear.LinearScanner.__init__, src.opstree.scanner.linear.LinearScanner.scan
 
+### src.opstree.drift.detector.DriftDetector
+> Detect drift between intended state (from config) and actual state (from scan).
+- **Methods**: 2
+- **Key Methods**: src.opstree.drift.detector.DriftDetector.detect, src.opstree.drift.detector.DriftDetector._summarize_changes
+
 ### src.opstree.diagnostics.rules.Rule
 > Declarative diagnostic rule over subject ``T``.
 
 Exactly one of ``predicate`` (single-shot) or ``dyn
 - **Methods**: 2
 - **Key Methods**: src.opstree.diagnostics.rules.Rule.__post_init__, src.opstree.diagnostics.rules.Rule.evaluate
-- **Inherits**: <ast.Subscript object at 0x705c70c1cd90>
-
-### src.opstree.drift.detector.DriftDetector
-> Detect drift between intended state (from config) and actual state (from scan).
-- **Methods**: 2
-- **Key Methods**: src.opstree.drift.detector.DriftDetector.detect, src.opstree.drift.detector.DriftDetector._summarize_changes
+- **Inherits**: <ast.Subscript object at 0x75d295020f90>
 
 ## Data Transformation Functions
 
 Key functions that process and transform data:
+
+### SUMD.convert
+
+### SUMD.register_format
+
+### SUMD.test_cli_convert_help
+
+### SUMD.test_cli_convert_less_to_snapshot_yaml
+
+### SUMD.test_cli_convert_less_to_migration_yaml
+
+### SUMD.test_cli_convert_less_to_less
+
+### SUMD.test_less_adapter_parse
 
 ### src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse
 > Parsuj migration.yaml → PartialSnapshot.
@@ -411,14 +435,6 @@ Key functions that process and transform data:
 > Decorator to register a format adapter.
 - **Output to**: FormatRegistry.register
 
-### src.opstree.formats.less.LessAdapter.parse
-> Parsuj LESS → PartialSnapshot.
-- **Output to**: re.search, re.finditer, re.finditer, re.finditer, re.search
-
-### src.opstree.formats.less.LessAdapter._parse_block
-> Parse a LESS block into key-value pairs.
-- **Output to**: body.split, line.strip, line.split, None.strip, line.startswith
-
 ### src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse
 > Parsuj snapshot.yaml → Snapshot.
 - **Output to**: yaml.safe_load, None.items, Snapshot, LayerData, data.get
@@ -426,6 +442,28 @@ Key functions that process and transform data:
 ### src.opstree.cli.commands.convert.convert
 > Convert between configuration formats.
 - **Output to**: click.command, click.argument, click.argument, click.option, Path
+
+### project.map.toon.convert
+
+### project.map.toon.register_format
+
+### project.map.toon.test_cli_convert_help
+
+### project.map.toon.test_cli_convert_less_to_snapshot_yaml
+
+### project.map.toon.test_cli_convert_less_to_migration_yaml
+
+### project.map.toon.test_cli_convert_less_to_less
+
+### project.map.toon.test_less_adapter_parse
+
+### src.opstree.formats.less.LessAdapter.parse
+> Parsuj LESS → PartialSnapshot.
+- **Output to**: re.search, re.finditer, re.finditer, re.finditer, re.search
+
+### src.opstree.formats.less.LessAdapter._parse_block
+> Parse a LESS block into key-value pairs.
+- **Output to**: body.split, line.strip, line.split, None.strip, line.startswith
 
 ### src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe._probe_compositor_processes
 - **Output to**: _Exec.run, r.stdout.strip, int, None.split, x.strip
@@ -435,13 +473,14 @@ Key functions that process and transform data:
 Functions exposed as public API (no underscore prefix):
 
 - `src.opstree.formats.less.LessAdapter.render` - 38 calls
-- `src.opstree.formats.less.LessAdapter.parse` - 37 calls
 - `src.opstree.cli.commands.scan.scan` - 37 calls
+- `src.opstree.formats.less.LessAdapter.parse` - 37 calls
 - `src.opstree.cli.commands.convert.convert` - 26 calls
 - `src.opstree.cli.commands.drift.drift` - 26 calls
 - `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.scan` - 21 calls
 - `src.opstree.formats.snapshot_yaml.SnapshotYamlAdapter.parse` - 19 calls
 - `src.opstree.formats.migration_yaml.MigrationYamlAdapter.parse` - 18 calls
+- `src.opstree.integrations.compat.make_compat_helpers` - 16 calls
 - `src.opstree.formats.migration_yaml.MigrationYamlAdapter.render` - 13 calls
 - `src.opstree.diagnostics.rules.Rule.evaluate` - 10 calls
 - `src.opstree.snapshot.diff.snapshot_diff` - 10 calls
@@ -449,13 +488,13 @@ Functions exposed as public API (no underscore prefix):
 - `src.opstree.scanner.linear.LinearScanner.scan` - 9 calls
 - `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.anomalies` - 9 calls
 - `src.opstree.layers.tree.LayerTree.topological_order` - 9 calls
-- `src.opstree.probes.builtin.physical_rpi._Exec.run` - 7 calls
 - `src.opstree.probes.builtin.os_linux.OsKernelProbe.scan` - 7 calls
+- `src.opstree.probes.builtin.physical_rpi._Exec.run` - 7 calls
 - `src.opstree.probes.builtin.endpoint_http.EndpointHttpProbe.scan` - 7 calls
 - `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.can_probe` - 6 calls
 - `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.anomalies` - 6 calls
-- `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies` - 6 calls
 - `src.opstree.probes.builtin.business_health.BusinessHealthProbe.anomalies` - 6 calls
+- `src.opstree.probes.builtin.physical_rpi.RpiPhysicalDisplayProbe.anomalies` - 6 calls
 - `src.opstree.layers.tree.LayerDefinition.to_fraq_node` - 6 calls
 - `src.opstree.probes.builtin.runtime_container.RuntimeContainerProbe.scan` - 5 calls
 - `src.opstree.probes.builtin.os_linux.OsConfigProbe.scan` - 5 calls
@@ -468,12 +507,11 @@ Functions exposed as public API (no underscore prefix):
 - `src.opstree.layers.tree.LayerTree.to_fraq_node` - 3 calls
 - `src.opstree.probes.builtin.rpi_diagnostics.diagnose_display_layer` - 2 calls
 - `src.opstree.cli.main.cli` - 2 calls
-- `src.opstree.probes.builtin.physical_rpi._Exec.lines` - 2 calls
-- `src.opstree.probes.builtin.physical_rpi._Exec.int_` - 2 calls
 - `src.opstree.scanner.linear.scan_device` - 2 calls
+- `src.opstree.probes.builtin.os_linux.OsKernelProbe.can_probe` - 2 calls
+- `src.opstree.probes.builtin.os_linux.OsConfigProbe.can_probe` - 2 calls
 - `src.opstree.probes.builtin.service_containers.ServiceContainersProbe.can_probe` - 2 calls
 - `src.opstree.probes.registry.ProbeRegistry.register` - 2 calls
-- `src.opstree.probes.registry.ProbeRegistry.get` - 2 calls
 
 ## System Interactions
 
@@ -482,11 +520,11 @@ How components interact:
 ```mermaid
 graph TD
     render --> get
-    parse --> search
-    parse --> finditer
     scan --> command
     scan --> argument
     scan --> option
+    parse --> search
+    parse --> finditer
     _list_containers --> _exec
     _list_containers --> execute
     _list_containers --> hasattr

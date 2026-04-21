@@ -20,7 +20,7 @@ Layered operations tree — observe, diff, orchestrate infrastructure as data
 ## Metadata
 
 - **name**: `op3`
-- **version**: `0.1.11`
+- **version**: `0.1.13`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -41,7 +41,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: op3;
-  version: 0.1.4;
+  version: 0.1.13;
 }
 
 interface[type="cli"] {
@@ -110,7 +110,7 @@ environment[name="local"] {
 ```yaml
 project:
   name: op3
-  version: 0.1.11
+  version: 0.1.13
   env: local
 ```
 
@@ -177,13 +177,13 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# op3 | 58f 5327L | python:52,less:5,shell:1 | 2026-04-21
-# stats: 114 func | 48 cls | 58 mod | CC̄=3.3 | critical:6 | cycles:0
+# op3 | 61f 5573L | python:55,less:5,shell:1 | 2026-04-21
+# stats: 127 func | 49 cls | 61 mod | CC̄=3.2 | critical:6 | cycles:0
 # alerts[5]: CC test_probe_emits_full_hardware_dict=18; CC scan=16; CC test_full_scan_with_mock_context=16; CC test_builtin_layers_exist=13; CC convert=11
-# hotspots[5]: scan fan=24; convert fan=16; drift fan=12; test_full_scan_with_mock_context fan=12; test_snapshot_yaml_roundtrip fan=10
+# hotspots[5]: scan fan=24; convert fan=16; make_compat_helpers fan=14; drift fan=12; test_full_scan_with_mock_context fan=12
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[58]:
+M[61]:
   app.doql.less,60
   examples/doql/app.doql.less,110
   examples/fraq/app.doql.less,60
@@ -208,6 +208,8 @@ M[58]:
   src/opstree/formats/migration_yaml.py,109
   src/opstree/formats/registry.py,36
   src/opstree/formats/snapshot_yaml.py,58
+  src/opstree/integrations/__init__.py,25
+  src/opstree/integrations/compat.py,120
   src/opstree/layers/__init__.py,13
   src/opstree/layers/builtin.py,180
   src/opstree/layers/tree.py,89
@@ -238,6 +240,7 @@ M[58]:
   tests/unit/test_build_scanner.py,170
   tests/unit/test_diagnostics.py,177
   tests/unit/test_formats/test_less_adapter.py,87
+  tests/unit/test_integrations_compat.py,101
   tests/unit/test_layers.py,91
   tests/unit/test_probe_registry.py,154
   tests/unit/test_rpi_diagnostics.py,294
@@ -286,6 +289,11 @@ D:
   src/opstree/formats/snapshot_yaml.py:
     e: SnapshotYamlAdapter
     SnapshotYamlAdapter: parse(1),render(1)  # Native op3 snapshot format adapter.
+  src/opstree/integrations/__init__.py:
+  src/opstree/integrations/compat.py:
+    e: make_compat_helpers,CompatHelpers
+    CompatHelpers:  # Bundle of callables produced by :func:`make_compat_helpers`.
+    make_compat_helpers()
   src/opstree/layers/__init__.py:
   src/opstree/layers/builtin.py:
     e: PhysicalDisplayData,OsKernelData,OsConfigData,RuntimeContainerData,RuntimeCompositorData,ServiceContainersData,EndpointHttpData,BusinessHealthData,PhysicalLayer,OsLayer,RuntimeLayer,ServiceLayer,EndpointLayer,BusinessLayer
@@ -440,6 +448,20 @@ D:
     test_less_adapter_parse()
     test_less_adapter_render()
     test_less_adapter_roundtrip()
+  tests/unit/test_integrations_compat.py:
+    e: _make,test_op3_available_true,test_op3_enabled_truthy_values,test_op3_enabled_falsy_values,test_op3_enabled_env_absent,test_should_use_op3,test_require_op3_passes_when_available,test_make_mock_context_round_trip,test_make_ssh_context_factory,test_make_scanner_uses_defaults,test_make_scanner_respects_override,test_compat_helpers_frozen
+    _make(monkeypatch;env_value)
+    test_op3_available_true()
+    test_op3_enabled_truthy_values(monkeypatch)
+    test_op3_enabled_falsy_values(monkeypatch)
+    test_op3_enabled_env_absent(monkeypatch)
+    test_should_use_op3(monkeypatch)
+    test_require_op3_passes_when_available()
+    test_make_mock_context_round_trip()
+    test_make_ssh_context_factory()
+    test_make_scanner_uses_defaults()
+    test_make_scanner_respects_override()
+    test_compat_helpers_frozen()
   tests/unit/test_layers.py:
     e: test_layer_tree_registration,test_layer_tree_duplicate_registration,test_layer_tree_topological_order,test_layer_tree_cycle_detection,test_builtin_layers_exist,test_builtin_layer_dependencies
     test_layer_tree_registration()
@@ -499,33 +521,33 @@ D:
 
 ## Call Graph
 
-*14 nodes · 13 edges · 4 modules · CC̄=3.7*
+*15 nodes · 13 edges · 5 modules · CC̄=1.3*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
 | `_diff_layer_data` *(in src.opstree.snapshot.diff)* | 1 | 1 | 14 | **15** |
-| `snapshot_diff` *(in src.opstree.snapshot.diff)* | 4 | 1 | 10 | **11** |
 | `_all_ok` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 7 | 1 | 9 | **10** |
+| `snapshot_diff` *(in src.opstree.snapshot.diff)* | 4 | 0 | 10 | **10** |
 | `_i2c_chip_missing_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 10 ⚠ | 0 | 8 | **8** |
 | `_backlight_power_off_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 4 | 0 | 7 | **7** |
 | `_backlight_chip_addr` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 2 | 1 | 5 | **6** |
 | `detect` *(in src.opstree.drift.detector.DriftDetector)* | 2 | 0 | 5 | **5** |
-| `_all_ok_rule` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 1 | 0 | 4 | **4** |
+| `_dsi_connected` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 2 | 1 | 3 | **4** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 14 | edges: 13 | modules: 4
-# CC̄=3.7
+# nodes: 15 | edges: 13 | modules: 5
+# CC̄=1.3
 
 HUBS[20]:
   src.opstree.snapshot.diff._diff_layer_data
     CC=1  in:1  out:14  total:15
-  src.opstree.snapshot.diff.snapshot_diff
-    CC=4  in:1  out:10  total:11
   src.opstree.probes.builtin.rpi_diagnostics._all_ok
     CC=7  in:1  out:9  total:10
+  src.opstree.snapshot.diff.snapshot_diff
+    CC=4  in:0  out:10  total:10
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
     CC=10  in:0  out:8  total:8
   src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
@@ -534,22 +556,26 @@ HUBS[20]:
     CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
-  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
-    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
     CC=2  in:1  out:3  total:4
-  src.opstree.probes.builtin.rpi_diagnostics._backlights
-    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
     CC=3  in:2  out:2  total:4
   src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
     CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
   src.opstree.probes.registry.ProbeRegistry.all
     CC=2  in:1  out:2  total:3
   src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
     CC=2  in:1  out:1  total:2
+  SUMD.snapshot_diff
+    CC=0  in:1  out:0  total:1
 
 MODULES:
+  SUMD  [1 funcs]
+    snapshot_diff  CC=0  out:0
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
   src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
@@ -581,8 +607,8 @@ EDGES:
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
   src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  src.opstree.drift.detector.DriftDetector.detect → SUMD.snapshot_diff
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
 ```
 
 ## Intent

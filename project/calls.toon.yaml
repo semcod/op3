@@ -1,14 +1,14 @@
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 14 | edges: 13 | modules: 4
-# CC̄=3.7
+# nodes: 15 | edges: 13 | modules: 5
+# CC̄=1.3
 
 HUBS[20]:
   src.opstree.snapshot.diff._diff_layer_data
     CC=1  in:1  out:14  total:15
-  src.opstree.snapshot.diff.snapshot_diff
-    CC=4  in:1  out:10  total:11
   src.opstree.probes.builtin.rpi_diagnostics._all_ok
     CC=7  in:1  out:9  total:10
+  src.opstree.snapshot.diff.snapshot_diff
+    CC=4  in:0  out:10  total:10
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
     CC=10  in:0  out:8  total:8
   src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
@@ -17,22 +17,26 @@ HUBS[20]:
     CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
-  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
-    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
     CC=2  in:1  out:3  total:4
-  src.opstree.probes.builtin.rpi_diagnostics._backlights
-    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
     CC=3  in:2  out:2  total:4
   src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
     CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
   src.opstree.probes.registry.ProbeRegistry.all
     CC=2  in:1  out:2  total:3
   src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
     CC=2  in:1  out:1  total:2
+  SUMD.snapshot_diff
+    CC=0  in:1  out:0  total:1
 
 MODULES:
+  SUMD  [1 funcs]
+    snapshot_diff  CC=0  out:0
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
   src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
@@ -64,5 +68,5 @@ EDGES:
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
   src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  src.opstree.drift.detector.DriftDetector.detect → SUMD.snapshot_diff
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff

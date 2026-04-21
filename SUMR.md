@@ -15,7 +15,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `op3`
-- **version**: `0.1.11`
+- **version**: `0.1.13`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -36,7 +36,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: op3;
-  version: 0.1.4;
+  version: 0.1.13;
 }
 
 interface[type="cli"] {
@@ -121,33 +121,33 @@ pfix>=0.1.60
 
 ## Call Graph
 
-*14 nodes · 13 edges · 4 modules · CC̄=3.7*
+*15 nodes · 13 edges · 5 modules · CC̄=1.3*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
 | `_diff_layer_data` *(in src.opstree.snapshot.diff)* | 1 | 1 | 14 | **15** |
-| `snapshot_diff` *(in src.opstree.snapshot.diff)* | 4 | 1 | 10 | **11** |
 | `_all_ok` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 7 | 1 | 9 | **10** |
+| `snapshot_diff` *(in src.opstree.snapshot.diff)* | 4 | 0 | 10 | **10** |
 | `_i2c_chip_missing_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 10 ⚠ | 0 | 8 | **8** |
 | `_backlight_power_off_rules` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 4 | 0 | 7 | **7** |
 | `_backlight_chip_addr` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 2 | 1 | 5 | **6** |
 | `detect` *(in src.opstree.drift.detector.DriftDetector)* | 2 | 0 | 5 | **5** |
-| `_all_ok_rule` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 1 | 0 | 4 | **4** |
+| `_dsi_connected` *(in src.opstree.probes.builtin.rpi_diagnostics)* | 2 | 1 | 3 | **4** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 14 | edges: 13 | modules: 4
-# CC̄=3.7
+# nodes: 15 | edges: 13 | modules: 5
+# CC̄=1.3
 
 HUBS[20]:
   src.opstree.snapshot.diff._diff_layer_data
     CC=1  in:1  out:14  total:15
-  src.opstree.snapshot.diff.snapshot_diff
-    CC=4  in:1  out:10  total:11
   src.opstree.probes.builtin.rpi_diagnostics._all_ok
     CC=7  in:1  out:9  total:10
+  src.opstree.snapshot.diff.snapshot_diff
+    CC=4  in:0  out:10  total:10
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
     CC=10  in:0  out:8  total:8
   src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
@@ -156,22 +156,26 @@ HUBS[20]:
     CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
-  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
-    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
     CC=2  in:1  out:3  total:4
-  src.opstree.probes.builtin.rpi_diagnostics._backlights
-    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
     CC=3  in:2  out:2  total:4
   src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
     CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
   src.opstree.probes.registry.ProbeRegistry.all
     CC=2  in:1  out:2  total:3
   src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
     CC=2  in:1  out:1  total:2
+  SUMD.snapshot_diff
+    CC=0  in:1  out:0  total:1
 
 MODULES:
+  SUMD  [1 funcs]
+    snapshot_diff  CC=0  out:0
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
   src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
@@ -203,8 +207,8 @@ EDGES:
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
   src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  src.opstree.drift.detector.DriftDetector.detect → SUMD.snapshot_diff
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
 ```
 
 ## Refactoring Analysis
@@ -215,16 +219,16 @@ EDGES:
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/op3
-# nodes: 14 | edges: 13 | modules: 4
-# CC̄=3.7
+# nodes: 15 | edges: 13 | modules: 5
+# CC̄=1.3
 
 HUBS[20]:
   src.opstree.snapshot.diff._diff_layer_data
     CC=1  in:1  out:14  total:15
-  src.opstree.snapshot.diff.snapshot_diff
-    CC=4  in:1  out:10  total:11
   src.opstree.probes.builtin.rpi_diagnostics._all_ok
     CC=7  in:1  out:9  total:10
+  src.opstree.snapshot.diff.snapshot_diff
+    CC=4  in:0  out:10  total:10
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules
     CC=10  in:0  out:8  total:8
   src.opstree.probes.builtin.rpi_diagnostics._backlight_power_off_rules
@@ -233,22 +237,26 @@ HUBS[20]:
     CC=2  in:1  out:5  total:6
   src.opstree.drift.detector.DriftDetector.detect
     CC=2  in:0  out:5  total:5
-  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
-    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_connected
     CC=2  in:1  out:3  total:4
-  src.opstree.probes.builtin.rpi_diagnostics._backlights
-    CC=2  in:3  out:1  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule
+    CC=1  in:0  out:4  total:4
   src.opstree.probes.builtin.rpi_diagnostics._dsi_outputs
     CC=3  in:2  out:2  total:4
   src.opstree.probes.builtin.rpi_diagnostics._has_dsi_overlay
     CC=2  in:1  out:3  total:4
+  src.opstree.probes.builtin.rpi_diagnostics._backlights
+    CC=2  in:3  out:1  total:4
   src.opstree.probes.registry.ProbeRegistry.all
     CC=2  in:1  out:2  total:3
   src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
     CC=2  in:1  out:1  total:2
+  SUMD.snapshot_diff
+    CC=0  in:1  out:0  total:1
 
 MODULES:
+  SUMD  [1 funcs]
+    snapshot_diff  CC=0  out:0
   src.opstree.drift.detector  [1 funcs]
     detect  CC=2  out:5
   src.opstree.probes.builtin.rpi_diagnostics  [10 funcs]
@@ -280,36 +288,36 @@ EDGES:
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._backlight_chip_addr
   src.opstree.probes.builtin.rpi_diagnostics._i2c_chip_missing_rules → src.opstree.probes.builtin.rpi_diagnostics._i2c_buses
   src.opstree.probes.builtin.rpi_diagnostics._all_ok_rule → src.opstree.probes.builtin.rpi_diagnostics._all_ok
+  src.opstree.drift.detector.DriftDetector.detect → SUMD.snapshot_diff
   src.opstree.snapshot.diff.snapshot_diff → src.opstree.snapshot.diff._diff_layer_data
-  src.opstree.drift.detector.DriftDetector.detect → src.opstree.snapshot.diff.snapshot_diff
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 40f 3200L | python:39,shell:1 | 2026-04-21
-# CC̄=3.7 | critical:5/121 | dups:0 | cycles:0
+# code2llm | 65f 8022L | python:41,yaml:12,md:8,toml:1,shell:1,json:1,txt:1 | 2026-04-21
+# CC̄=1.3 | critical:5/352 | dups:0 | cycles:0
 
 HEALTH[5]:
-  🟡 CC    render CC=16 (limit:15)
   🟡 CC    _list_containers CC=18 (limit:15)
+  🟡 CC    render CC=16 (limit:15)
+  🟡 CC    scan CC=16 (limit:15)
   🟡 CC    render CC=22 (limit:15)
   🟡 CC    _probe_wlr_randr CC=17 (limit:15)
-  🟡 CC    scan CC=16 (limit:15)
 
 REFACTOR[1]:
   1. split 5 high-CC methods  (CC>15)
 
-PIPELINES[98]:
-  [1] Src [_kernel_modules]: _kernel_modules
+PIPELINES[100]:
+  [1] Src [can_probe]: can_probe
       PURITY: 100% pure
-  [2] Src [_backlight_power_off_rules]: _backlight_power_off_rules → _backlights
+  [2] Src [scan]: scan
       PURITY: 100% pure
-  [3] Src [_i2c_chip_missing_rules]: _i2c_chip_missing_rules → _backlights
+  [3] Src [_detect_runtime]: _detect_runtime
       PURITY: 100% pure
-  [4] Src [_all_ok_rule]: _all_ok_rule → _all_ok → _dsi_outputs
+  [4] Src [_list_containers]: _list_containers
       PURITY: 100% pure
-  [5] Src [diagnose_display_layer]: diagnose_display_layer
+  [5] Src [anomalies]: anomalies
       PURITY: 100% pure
 
 LAYERS:
@@ -321,12 +329,13 @@ LAYERS:
   │ !! runtime_container          173L  1C    6m  CC=18     ←0
   │ rules                      149L  3C    6m  CC=7      ←0
   │ os_linux                   142L  2C   12m  CC=7      ←0
+  │ compat                     119L  1C    1m  CC=1      ←0
   │ !! migration_yaml             108L  1C    2m  CC=16     ←0
   │ endpoint_http              107L  1C    5m  CC=6      ←0
   │ business_health             98L  1C    5m  CC=6      ←0
   │ context                     97L  5C    4m  CC=2      ←0
   │ service_containers          93L  1C    5m  CC=4      ←0
-  │ diff                        88L  1C    2m  CC=4      ←1
+  │ diff                        88L  1C    2m  CC=4      ←0
   │ tree                        88L  2C    6m  CC=11     ←0
   │ registry                    80L  1C    7m  CC=2      ←1
   │ detector                    77L  2C    2m  CC=4      ←0
@@ -340,6 +349,7 @@ LAYERS:
   │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ registry                    35L  1C    5m  CC=1      ←0
+  │ __init__                    24L  0C    0m  CC=0.0    ←0
   │ main                        22L  0C    1m  CC=1      ←0
   │ __init__                    12L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
@@ -355,10 +365,43 @@ LAYERS:
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
+  │ !! SUMD.md                    590L  0C  114m  CC=0.0    ←1
+  │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
+  │ !! SUMR.md                    509L  0C    0m  CC=0.0    ←0
+  │ op3_poc.md                 363L  0C    0m  CC=0.0    ←0
+  │ CHANGELOG.md               171L  0C    0m  CC=0.0    ←0
+  │ README.md                  127L  0C    1m  CC=0.0    ←0
+  │ sumd.json                  102L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              69L  0C    0m  CC=0.0    ←0
   │ project.sh                  36L  0C    0m  CC=0.0    ←0
   │
+  docs/                           CC̄=0.0    ←in:0  →out:0
+  │ README.md                  264L  0C    1m  CC=0.0    ←0
+  │
+  project/                        CC̄=0.0    ←in:0  →out:0
+  │ !! context.md                 526L  0C    0m  CC=0.0    ←0
+  │ README.md                  339L  0C    0m  CC=0.0    ←0
+  │ map.toon.yaml              318L  0C  114m  CC=0.0    ←0
+  │ calls.yaml                 276L  0C    0m  CC=0.0    ←0
+  │ analysis.toon.yaml          76L  0C    0m  CC=0.0    ←0
+  │ calls.toon.yaml             68L  0C    0m  CC=0.0    ←0
+  │ duplication.toon.yaml       65L  0C    0m  CC=0.0    ←0
+  │ evolution.toon.yaml         64L  0C    0m  CC=0.0    ←0
+  │ project.toon.yaml           51L  0C    0m  CC=0.0    ←0
+  │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
+  │
+  examples/                       CC̄=0.0    ←in:0  →out:0
+  │ snapshot.yaml               42L  0C    0m  CC=0.0    ←0
+  │ snapshot.yaml               41L  0C    0m  CC=0.0    ←0
+  │ snapshot.yaml               41L  0C    0m  CC=0.0    ←0
+  │ migration.yaml              18L  0C    0m  CC=0.0    ←0
+  │
 
-COUPLING: no cross-package imports detected
+COUPLING:
+                      SUMD  src.opstree
+         SUMD           ──           ←1
+  src.opstree            1           ──
+  CYCLES: none
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon
@@ -368,22 +411,22 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 4 groups | 40f 3322L | 2026-04-21
+# redup/duplication | 4 groups | 42f 3465L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 40
-  total_lines:   3322
+  files_scanned: 42
+  total_lines:   3465
   dup_groups:    4
   dup_fragments: 11
   saved_lines:   37
-  scan_ms:       5266
+  scan_ms:       4414
 
 HOTSPOTS[5] (files with most duplication):
   src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.6%)
-  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.4%)
-  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.4%)
+  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.3%)
+  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.3%)
   src/opstree/probes/builtin/runtime_container.py  dup=10L  groups=1  frags=2  (0.3%)
-  src/opstree/probes/builtin/business_health.py  dup=5L  groups=1  frags=1  (0.2%)
+  src/opstree/probes/builtin/business_health.py  dup=5L  groups=1  frags=1  (0.1%)
 
 DUPLICATES[4] (ranked by impact):
   [7def61619c58cc79]   EXAC  _exec  L=5 N=5 saved=20 sim=1.00
@@ -438,7 +481,7 @@ METRICS-TARGET:
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 121 func | 24f | 2026-04-21
+# code2llm/evolution | 352 func | 29f | 2026-04-21
 
 NEXT[6] (ranked by impact):
   [1] !! SPLIT           src/opstree/probes/builtin/rpi_diagnostics.py
@@ -470,7 +513,7 @@ RISKS[1]:
   ⚠ Splitting src/opstree/probes/builtin/rpi_diagnostics.py may break 12 import paths
 
 METRICS-TARGET:
-  CC̄:          3.7 → ≤2.6
+  CC̄:          1.3 → ≤0.9
   max-CC:      22 → ≤11
   god-modules: 1 → 0
   high-CC(≥15): 5 → ≤2
@@ -501,7 +544,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.7 → now CC̄=3.7
+  prev CC̄=3.7 → now CC̄=1.3
 ```
 
 ## Intent

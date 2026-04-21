@@ -1,7 +1,7 @@
 <!-- code2docs:start --># op3
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-121-green)
-> **121** functions | **47** classes | **40** files | CC̄ = 3.7
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-355-green)
+> **355** functions | **48** classes | **65** files | CC̄ = 3.7
 
 > Auto-generated project documentation from source code analysis.
 
@@ -74,84 +74,105 @@ docs = generate_docs("./my-project", config=config)
 
 ```
 op3/
+├── SUMR
+├── goal
+├── op3_poc
+├── SUMD
+├── sumd
+├── pyproject
+├── CHANGELOG
 ├── project
-            ├── builtin/
+├── README
+    ├── README
+        ├── snapshot
+        ├── snapshot
+        ├── migration
+        ├── snapshot
+        ├── _version
+    ├── opstree/
+            ├── detector
         ├── drift/
+        ├── diagnostics/
+            ├── rules
+            ├── base
+            ├── registry
         ├── probes/
+            ├── context
+                ├── business_health
+                ├── os_linux
+                ├── runtime_container
+                ├── endpoint_http
+            ├── builtin/
+                ├── service_containers
                 ├── rpi_diagnostics
+                ├── physical_rpi
             ├── migration_yaml
+            ├── less
             ├── registry
         ├── formats/
             ├── snapshot_yaml
-            ├── less
         ├── config_apply/
         ├── cli/
             ├── main
                 ├── convert
-            ├── commands/
                 ├── drift
-        ├── scanner/
-        ├── _version
+            ├── commands/
                 ├── scan
-    ├── opstree/
+        ├── scanner/
             ├── linear
         ├── layers/
-        ├── snapshot/
-                ├── business_health
-    ├── op3/
-                ├── physical_rpi
-            ├── context
-        ├── diagnostics/
-                ├── service_containers
-                ├── runtime_container
-                ├── endpoint_http
-            ├── registry
-                ├── os_linux
-            ├── base
-            ├── detector
             ├── tree
-            ├── diff
-            ├── rules
-            ├── model
             ├── builtin
+        ├── snapshot/
+            ├── diff
+            ├── model
+        ├── integrations/
+            ├── compat
+    ├── op3/
+        ├── toon
+    ├── context
+        ├── toon
+    ├── prompt
+    ├── calls
+        ├── toon
+        ├── toon
+        ├── toon
+    ├── README
+        ├── toon
 ```
 
 ## API Overview
 
 ### Classes
 
-- **`MigrationYamlAdapter`** — Parsuj i emituj migration.yaml (redeploy-compatible).
-- **`FormatRegistry`** — Registry for format adapters (wraps fraq's FormatRegistry).
-- **`SnapshotYamlAdapter`** — Native op3 snapshot format adapter.
-- **`LessAdapter`** — Parsuj i emituj .doql.less.
-- **`LinearScanner`** — Simple scanner that processes layers in topological order.
-- **`BusinessHealthProbe`** — Skanuje zdrowie aplikacji.
-- **`RpiPhysicalDisplayProbe`** — Full hardware probe for a Raspberry Pi-class board.
+- **`DriftReport`** — Report of drift between intended and actual state.
+- **`DriftDetector`** — Detect drift between intended state (from config) and actual state (from scan).
+- **`Diagnostic`** — A single finding emitted by a rule.
+- **`Rule`** — Declarative diagnostic rule over subject ``T``.
+- **`RuleEngine`** — Runs a list of :class:`Rule` objects against a subject.
+- **`ProbeContext`** — Kontekst dla probe — nie wie o SSH, click, nic konkretnego.
+- **`ProbeResult`** — Wynik probe'a.
+- **`Probe`** — Kontrakt probe'a.
+- **`ProbeRegistry`** — Registry for probes keyed by ``layer_id``.
 - **`ExecuteResult`** — Result of command execution.
 - **`ProbeContext`** — Base context for probe execution.
 - **`LocalContext`** — Local execution context (runs commands on localhost).
 - **`MockContext`** — Mock context for testing with predefined responses.
 - **`SSHContext`** — SSH execution context for remote scanning.
-- **`ServiceContainersProbe`** — Skanuje systemd services.
-- **`RuntimeContainerProbe`** — Skanuje runtime kontenerów (docker/podman).
-- **`EndpointHttpProbe`** — Skanuje HTTP endpoints.
-- **`ProbeRegistry`** — Registry for probes keyed by ``layer_id``.
+- **`BusinessHealthProbe`** — Skanuje zdrowie aplikacji.
 - **`OsKernelProbe`** — Skanuje jądro Linux.
 - **`OsConfigProbe`** — Skanuje konfigurację systemu.
-- **`ProbeContext`** — Kontekst dla probe — nie wie o SSH, click, nic konkretnego.
-- **`ProbeResult`** — Wynik probe'a.
-- **`Probe`** — Kontrakt probe'a.
-- **`DriftReport`** — Report of drift between intended and actual state.
-- **`DriftDetector`** — Detect drift between intended state (from config) and actual state (from scan).
+- **`RuntimeContainerProbe`** — Skanuje runtime kontenerów (docker/podman).
+- **`EndpointHttpProbe`** — Skanuje HTTP endpoints.
+- **`ServiceContainersProbe`** — Skanuje systemd services.
+- **`RpiPhysicalDisplayProbe`** — Full hardware probe for a Raspberry Pi-class board.
+- **`MigrationYamlAdapter`** — Parsuj i emituj migration.yaml (redeploy-compatible).
+- **`LessAdapter`** — Parsuj i emituj .doql.less.
+- **`FormatRegistry`** — Registry for format adapters (wraps fraq's FormatRegistry).
+- **`SnapshotYamlAdapter`** — Native op3 snapshot format adapter.
+- **`LinearScanner`** — Simple scanner that processes layers in topological order.
 - **`LayerDefinition`** — Definicja jednej warstwy w drzewie.
 - **`LayerTree`** — Drzewo warstw — topological ordering, dependency resolution.
-- **`Change`** — Represents a single change between two snapshots.
-- **`Diagnostic`** — A single finding emitted by a rule.
-- **`Rule`** — Declarative diagnostic rule over subject ``T``.
-- **`RuleEngine`** — Runs a list of :class:`Rule` objects against a subject.
-- **`LayerData`** — Dane jednej warstwy.
-- **`Snapshot`** — Pełna migawka urządzenia/systemu.
-- **`PartialSnapshot`** — Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszystkich warstw.
 - **`PhysicalDisplayData`** — —
 - **`OsKernelData`** — —
 - **`OsConfigData`** — —
@@ -166,9 +187,115 @@ op3/
 - **`ServiceLayer`** — Services layer.
 - **`EndpointLayer`** — Network endpoints layer.
 - **`BusinessLayer`** — Business logic layer.
+- **`Change`** — Represents a single change between two snapshots.
+- **`LayerData`** — Dane jednej warstwy.
+- **`Snapshot`** — Pełna migawka urządzenia/systemu.
+- **`PartialSnapshot`** — Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszystkich warstw.
+- **`CompatHelpers`** — Bundle of callables produced by :func:`make_compat_helpers`.
 
 ### Functions
 
+- `convert()` — —
+- `drift()` — —
+- `scan()` — —
+- `cli()` — —
+- `register_format()` — —
+- `diagnose_display_layer()` — —
+- `get_default_registry()` — —
+- `register_probe()` — —
+- `build_layer_tree()` — —
+- `build_scanner()` — —
+- `scan_device()` — —
+- `snapshot_diff()` — —
+- `layer_tree()` — —
+- `runner()` — —
+- `test_cli_help()` — —
+- `test_cli_scan_help()` — —
+- `test_cli_convert_help()` — —
+- `test_cli_convert_less_to_snapshot_yaml()` — —
+- `test_cli_convert_less_to_migration_yaml()` — —
+- `test_cli_convert_less_to_less()` — —
+- `test_full_scan_with_mock_context()` — —
+- `test_rpi_probe_anomaly_detection()` — —
+- `test_probe_emits_full_hardware_dict()` — —
+- `test_probe_output_feeds_diagnostics_to_clean_system()` — —
+- `test_probe_output_feeds_diagnostics_to_broken_system()` — —
+- `test_placeholder()` — —
+- `test_import()` — —
+- `test_build_layer_tree_registers_requested_leaf()` — —
+- `test_build_layer_tree_pulls_transitive_dependencies()` — —
+- `test_build_layer_tree_orders_deps_before_dependents()` — —
+- `test_build_layer_tree_rejects_unknown_layer()` — —
+- `test_build_layer_tree_deduplicates_shared_dependencies()` — —
+- `test_build_scanner_uses_isolated_registry()` — —
+- `test_build_scanner_registry_not_shared_with_default()` — —
+- `test_build_scanner_populates_probes_for_requested_layers()` — —
+- `test_build_scanner_include_default_probes_false_leaves_registry_empty()` — —
+- `test_build_scanner_extra_probes_are_appended()` — —
+- `test_build_scanner_end_to_end_scan()` — —
+- `test_build_scanner_does_not_leak_into_subsequent_calls()` — —
+- `test_rule_requires_exactly_one_of_predicate_or_dynamic()` — —
+- `test_predicate_rule_requires_message()` — —
+- `test_predicate_rule_fires_and_returns_diagnostic()` — —
+- `test_predicate_rule_does_not_fire_returns_empty()` — —
+- `test_dynamic_rule_fans_out_multiple_diagnostics()` — —
+- `test_static_message_and_fix_strings()` — —
+- `test_rule_evidence_callable()` — —
+- `test_engine_aggregates_all_rules()` — —
+- `test_engine_any_error_detects_firing_error_rule()` — —
+- `test_engine_any_error_respects_exclude()` — —
+- `test_diagnostic_to_dict_is_plain()` — —
+- `test_less_adapter_parse()` — —
+- `test_less_adapter_render()` — —
+- `test_less_adapter_roundtrip()` — —
+- `test_layer_tree_registration()` — —
+- `test_layer_tree_duplicate_registration()` — —
+- `test_layer_tree_topological_order()` — —
+- `test_layer_tree_cycle_detection()` — —
+- `test_builtin_layers_exist()` — —
+- `test_builtin_layer_dependencies()` — —
+- `test_registry_instances_are_isolated()` — —
+- `test_register_appends_multiple_probes_for_same_layer()` — —
+- `test_get_returns_empty_list_for_unknown_layer()` — —
+- `test_get_returns_copy_so_mutation_doesnt_leak()` — —
+- `test_all_returns_deep_copy()` — —
+- `test_clear_empties_registry()` — —
+- `test_get_default_registry_returns_module_singleton()` — —
+- `test_register_probe_decorator_uses_default_registry()` — —
+- `test_decorator_does_not_pollute_user_registries()` — —
+- `test_healthy_system_emits_only_all_ok()` — —
+- `test_no_dsi_overlay_fires_when_overlay_missing()` — —
+- `test_display_auto_detect_conflict()` — —
+- `test_dsi_overlay_no_drm_connector()` — —
+- `test_dsi_no_edid_panel_missing()` — —
+- `test_dsi_connector_not_connected()` — —
+- `test_dsi_connected_no_backlight()` — —
+- `test_dsi_backlight_init_failed_extracts_error_code()` — —
+- `test_no_drm_kernel_driver()` — —
+- `test_dsi_driver_not_loaded()` — —
+- `test_i2c_arm_not_enabled()` — —
+- `test_i2c_backlight_bus_empty()` — —
+- `test_compositor_not_running()` — —
+- `test_wayland_socket_missing()` — —
+- `test_chromium_not_running_info_only()` — —
+- `test_dpms_off()` — —
+- `test_no_wayland_output()` — —
+- `test_all_ok_no_wayland()` — —
+- `test_backlight_power_off_dynamic_rule()` — —
+- `test_backlight_brightness_zero_dynamic_rule()` — —
+- `test_i2c_chip_missing_dynamic_rule()` — —
+- `test_rule_names_are_unique()` — —
+- `test_layer_data_creation()` — —
+- `test_snapshot_creation()` — —
+- `test_snapshot_layer_accessor()` — —
+- `test_snapshot_yaml_roundtrip()` — —
+- `test_snapshot_diff_added_layer()` — —
+- `test_snapshot_diff_removed_layer()` — —
+- `test_snapshot_diff_modified_data()` — —
+- `execute()` — —
+- `generate_readme()` — —
+- `get_default_registry()` — Return the process-global default registry.
+- `register_probe(probe_class)` — Decorator: instantiate ``probe_class`` and register it on the
 - `diagnose_display_layer(layer_data)` — Run the full RPi display rule-set against a layer data dict.
 - `register_format(name, adapter)` — Decorator to register a format adapter.
 - `cli()` — op3 — Layered operations tree for infrastructure observation.
@@ -176,14 +303,135 @@ op3/
 - `drift(intended, actual)` — Detect drift between intended and actual state.
 - `scan(target, ssh, output, format)` — Scan a device and output snapshot.
 - `scan_device(target, execute, layer_tree)` — Convenience function to scan a device.
-- `get_default_registry()` — Return the process-global default registry.
-- `register_probe(probe_class)` — Decorator: instantiate ``probe_class`` and register it on the
 - `snapshot_diff(a, b)` — Compare two snapshots and return a list of changes.
+- `make_compat_helpers()` — Build a :class:`CompatHelpers` bundle for a downstream project.
+- `scan()` — —
+- `convert()` — —
+- `diagnose_display_layer()` — —
+- `scan_device()` — —
+- `drift()` — —
+- `snapshot_diff()` — —
+- `get_default_registry()` — —
+- `register_probe()` — —
+- `register_format()` — —
+- `cli()` — —
+- `make_compat_helpers()` — —
+- `execute()` — —
+- `generate_readme()` — —
+- `build_layer_tree()` — —
+- `build_scanner()` — —
+- `layer_tree()` — —
+- `runner()` — —
+- `test_cli_help()` — —
+- `test_cli_scan_help()` — —
+- `test_cli_convert_help()` — —
+- `test_cli_convert_less_to_snapshot_yaml()` — —
+- `test_cli_convert_less_to_migration_yaml()` — —
+- `test_cli_convert_less_to_less()` — —
+- `test_full_scan_with_mock_context()` — —
+- `test_rpi_probe_anomaly_detection()` — —
+- `test_probe_emits_full_hardware_dict()` — —
+- `test_probe_output_feeds_diagnostics_to_clean_system()` — —
+- `test_probe_output_feeds_diagnostics_to_broken_system()` — —
+- `test_placeholder()` — —
+- `test_import()` — —
+- `test_build_layer_tree_registers_requested_leaf()` — —
+- `test_build_layer_tree_pulls_transitive_dependencies()` — —
+- `test_build_layer_tree_orders_deps_before_dependents()` — —
+- `test_build_layer_tree_rejects_unknown_layer()` — —
+- `test_build_layer_tree_deduplicates_shared_dependencies()` — —
+- `test_build_scanner_uses_isolated_registry()` — —
+- `test_build_scanner_registry_not_shared_with_default()` — —
+- `test_build_scanner_populates_probes_for_requested_layers()` — —
+- `test_build_scanner_include_default_probes_false_leaves_registry_empty()` — —
+- `test_build_scanner_extra_probes_are_appended()` — —
+- `test_build_scanner_end_to_end_scan()` — —
+- `test_build_scanner_does_not_leak_into_subsequent_calls()` — —
+- `test_rule_requires_exactly_one_of_predicate_or_dynamic()` — —
+- `test_predicate_rule_requires_message()` — —
+- `test_predicate_rule_fires_and_returns_diagnostic()` — —
+- `test_predicate_rule_does_not_fire_returns_empty()` — —
+- `test_dynamic_rule_fans_out_multiple_diagnostics()` — —
+- `test_static_message_and_fix_strings()` — —
+- `test_rule_evidence_callable()` — —
+- `test_engine_aggregates_all_rules()` — —
+- `test_engine_any_error_detects_firing_error_rule()` — —
+- `test_engine_any_error_respects_exclude()` — —
+- `test_diagnostic_to_dict_is_plain()` — —
+- `test_less_adapter_parse()` — —
+- `test_less_adapter_render()` — —
+- `test_less_adapter_roundtrip()` — —
+- `test_layer_tree_registration()` — —
+- `test_layer_tree_duplicate_registration()` — —
+- `test_layer_tree_topological_order()` — —
+- `test_layer_tree_cycle_detection()` — —
+- `test_builtin_layers_exist()` — —
+- `test_builtin_layer_dependencies()` — —
+- `test_registry_instances_are_isolated()` — —
+- `test_register_appends_multiple_probes_for_same_layer()` — —
+- `test_get_returns_empty_list_for_unknown_layer()` — —
+- `test_get_returns_copy_so_mutation_doesnt_leak()` — —
+- `test_all_returns_deep_copy()` — —
+- `test_clear_empties_registry()` — —
+- `test_get_default_registry_returns_module_singleton()` — —
+- `test_register_probe_decorator_uses_default_registry()` — —
+- `test_decorator_does_not_pollute_user_registries()` — —
+- `test_healthy_system_emits_only_all_ok()` — —
+- `test_no_dsi_overlay_fires_when_overlay_missing()` — —
+- `test_display_auto_detect_conflict()` — —
+- `test_dsi_overlay_no_drm_connector()` — —
+- `test_dsi_no_edid_panel_missing()` — —
+- `test_dsi_connector_not_connected()` — —
+- `test_dsi_connected_no_backlight()` — —
+- `test_dsi_backlight_init_failed_extracts_error_code()` — —
+- `test_no_drm_kernel_driver()` — —
+- `test_dsi_driver_not_loaded()` — —
+- `test_i2c_arm_not_enabled()` — —
+- `test_i2c_backlight_bus_empty()` — —
+- `test_compositor_not_running()` — —
+- `test_wayland_socket_missing()` — —
+- `test_chromium_not_running_info_only()` — —
+- `test_dpms_off()` — —
+- `test_no_wayland_output()` — —
+- `test_all_ok_no_wayland()` — —
+- `test_backlight_power_off_dynamic_rule()` — —
+- `test_backlight_brightness_zero_dynamic_rule()` — —
+- `test_i2c_chip_missing_dynamic_rule()` — —
+- `test_rule_names_are_unique()` — —
+- `test_layer_data_creation()` — —
+- `test_snapshot_creation()` — —
+- `test_snapshot_layer_accessor()` — —
+- `test_snapshot_yaml_roundtrip()` — —
+- `test_snapshot_diff_added_layer()` — —
+- `test_snapshot_diff_removed_layer()` — —
+- `test_snapshot_diff_modified_data()` — —
 
 
 ## Project Structure
 
+📄 `CHANGELOG`
+📄 `README` (1 functions)
+📄 `SUMD` (114 functions)
+📄 `SUMR`
+📄 `docs.README` (1 functions)
+📄 `examples.doql.snapshot`
+📄 `examples.fraq.snapshot`
+📄 `examples.redeploy.migration`
+📄 `examples.redeploy.snapshot`
+📄 `goal`
+📄 `op3_poc`
 📄 `project`
+📄 `project.README`
+📄 `project.analysis.toon`
+📄 `project.calls`
+📄 `project.calls.toon`
+📄 `project.context`
+📄 `project.duplication.toon`
+📄 `project.evolution.toon`
+📄 `project.map.toon` (253 functions)
+📄 `project.project.toon`
+📄 `project.prompt`
+📄 `pyproject`
 📦 `src.op3`
 📦 `src.opstree`
 📄 `src.opstree._version`
@@ -203,6 +451,8 @@ op3/
 📄 `src.opstree.formats.migration_yaml` (2 functions, 1 classes)
 📄 `src.opstree.formats.registry` (5 functions, 1 classes)
 📄 `src.opstree.formats.snapshot_yaml` (2 functions, 1 classes)
+📦 `src.opstree.integrations`
+📄 `src.opstree.integrations.compat` (1 functions, 1 classes)
 📦 `src.opstree.layers`
 📄 `src.opstree.layers.builtin` (14 classes)
 📄 `src.opstree.layers.tree` (6 functions, 2 classes)
@@ -223,6 +473,7 @@ op3/
 📦 `src.opstree.snapshot`
 📄 `src.opstree.snapshot.diff` (2 functions, 1 classes)
 📄 `src.opstree.snapshot.model` (4 functions, 3 classes)
+📄 `sumd`
 
 ## Requirements
 

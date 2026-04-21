@@ -1,19 +1,19 @@
-# redup/duplication | 4 groups | 40f 3322L | 2026-04-21
+# redup/duplication | 4 groups | 42f 3465L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 40
-  total_lines:   3322
+  files_scanned: 42
+  total_lines:   3465
   dup_groups:    4
   dup_fragments: 11
   saved_lines:   37
-  scan_ms:       5266
+  scan_ms:       4414
 
 HOTSPOTS[5] (files with most duplication):
   src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.6%)
-  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.4%)
-  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.4%)
+  src/opstree/probes/builtin/endpoint_http.py  dup=12L  groups=2  frags=2  (0.3%)
+  src/opstree/probes/builtin/service_containers.py  dup=12L  groups=2  frags=2  (0.3%)
   src/opstree/probes/builtin/runtime_container.py  dup=10L  groups=1  frags=2  (0.3%)
-  src/opstree/probes/builtin/business_health.py  dup=5L  groups=1  frags=1  (0.2%)
+  src/opstree/probes/builtin/business_health.py  dup=5L  groups=1  frags=1  (0.1%)
 
 DUPLICATES[4] (ranked by impact):
   [7def61619c58cc79]   EXAC  _exec  L=5 N=5 saved=20 sim=1.00
