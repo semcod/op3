@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-21
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_op3.py
+
+### Other
+- Update .env
+- Update .env.example
+- Update VERSION
+
 ## [0.0.1] - 2026-04-21
 
 ### Other
