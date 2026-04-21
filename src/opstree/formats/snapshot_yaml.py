@@ -28,7 +28,7 @@ class SnapshotYamlAdapter:
         return Snapshot(
             target=data.get("target", "unknown"),
             scanned_at=datetime.fromisoformat(data.get("scanned_at", datetime.now(timezone.utc).isoformat())),
-            scanner_version=data.get("scanner_version", "0.1.5"),
+            scanner_version=data.get("scanner_version", "0.1.7"),
             layers=layers,
             anomalies=data.get("anomalies", []),
         )
@@ -38,7 +38,7 @@ class SnapshotYamlAdapter:
         data = {
             "target": snapshot.target,
             "scanned_at": snapshot.scanned_at.isoformat() if hasattr(snapshot, "scanned_at") else datetime.now(timezone.utc).isoformat(),
-            "scanner_version": snapshot.scanner_version if hasattr(snapshot, "scanner_version") else "0.1.5",
+            "scanner_version": snapshot.scanner_version if hasattr(snapshot, "scanner_version") else "0.1.7",
             "layers": {},
         }
         

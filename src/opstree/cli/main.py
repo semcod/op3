@@ -7,7 +7,7 @@ from opstree.cli.commands.convert import convert
 
 
 @click.group()
-@click.version_option(version="0.1.5")
+@click.version_option(version="0.1.7")
 def cli():
     """op3 — Layered operations tree for infrastructure observation."""
     pass

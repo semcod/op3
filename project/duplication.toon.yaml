@@ -1,12 +1,12 @@
-# redup/duplication | 4 groups | 33f 2178L | 2026-04-21
+# redup/duplication | 4 groups | 36f 2181L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 33
-  total_lines:   2178
+  files_scanned: 36
+  total_lines:   2181
   dup_groups:    4
   dup_fragments: 12
   saved_lines:   44
-  scan_ms:       4095
+  scan_ms:       5265
 
 HOTSPOTS[6] (files with most duplication):
   src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.9%)

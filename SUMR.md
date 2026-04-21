@@ -15,7 +15,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `op3`
-- **version**: `0.1.4`
+- **version**: `0.1.7`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -264,15 +264,15 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 4 groups | 33f 2178L | 2026-04-21
+# redup/duplication | 4 groups | 36f 2181L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 33
-  total_lines:   2178
+  files_scanned: 36
+  total_lines:   2181
   dup_groups:    4
   dup_fragments: 12
   saved_lines:   44
-  scan_ms:       4095
+  scan_ms:       5265
 
 HOTSPOTS[6] (files with most duplication):
   src/opstree/probes/builtin/os_linux.py  dup=20L  groups=2  frags=4  (0.9%)

@@ -1,7 +1,7 @@
 <!-- code2docs:start --># op3
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-86-green)
-> **86** functions | **43** classes | **34** files | CC̄ = 3.7
+> **86** functions | **43** classes | **37** files | CC̄ = 3.7
 
 > Auto-generated project documentation from source code analysis.
 
@@ -75,74 +75,74 @@ docs = generate_docs("./my-project", config=config)
 ```
 op3/
 ├── project
-            ├── builtin/
+                ├── service_containers
             ├── less
             ├── registry
         ├── formats/
             ├── snapshot_yaml
         ├── config_apply/
         ├── cli/
-    ├── opstree/
-                ├── endpoint_http
-            ├── commands/
-        ├── _version
-        ├── scanner/
-        ├── layers/
-            ├── linear
-        ├── snapshot/
-                ├── business_health
-                ├── os_linux
-    ├── op3/
-                ├── service_containers
             ├── main
+                ├── convert
+                ├── drift
+            ├── commands/
+                ├── scan
+        ├── scanner/
+            ├── linear
+        ├── layers/
                 ├── runtime_container
+                ├── business_health
+        ├── snapshot/
+                ├── os_linux
+        ├── probes/
+    ├── op3/
+            ├── migration_yaml
+                ├── endpoint_http
+    ├── opstree/
             ├── registry
         ├── drift/
-            ├── migration_yaml
-        ├── probes/
+            ├── builtin/
+        ├── _version
                 ├── physical_rpi
             ├── context
-            ├── base
-            ├── detector
             ├── diff
+            ├── base
             ├── tree
-            ├── model
+            ├── detector
             ├── builtin
+            ├── model
 ```
 
 ## API Overview
 
 ### Classes
 
+- **`ServiceContainersProbe`** — Skanuje systemd services.
 - **`LessAdapter`** — Parsuj i emituj .doql.less.
 - **`FormatRegistry`** — Registry for format adapters (wraps fraq's FormatRegistry).
 - **`SnapshotYamlAdapter`** — Native op3 snapshot format adapter.
-- **`EndpointHttpProbe`** — Skanuje HTTP endpoints.
 - **`LinearScanner`** — Simple scanner that processes layers in topological order.
+- **`RuntimeContainerProbe`** — Skanuje runtime kontenerów (docker/podman).
 - **`BusinessHealthProbe`** — Skanuje zdrowie aplikacji.
 - **`OsKernelProbe`** — Skanuje jądro Linux.
 - **`OsConfigProbe`** — Skanuje konfigurację systemu.
-- **`ServiceContainersProbe`** — Skanuje systemd services.
-- **`RuntimeContainerProbe`** — Skanuje runtime kontenerów (docker/podman).
-- **`ProbeRegistry`** — Registry for probes by layer_id.
 - **`MigrationYamlAdapter`** — Parsuj i emituj migration.yaml (redeploy-compatible).
+- **`EndpointHttpProbe`** — Skanuje HTTP endpoints.
+- **`ProbeRegistry`** — Registry for probes by layer_id.
 - **`RpiPhysicalDisplayProbe`** — Skanuje DSI/HDMI/backlight na Raspberry Pi.
 - **`ExecuteResult`** — Result of command execution.
 - **`ProbeContext`** — Base context for probe execution.
 - **`LocalContext`** — Local execution context (runs commands on localhost).
 - **`MockContext`** — Mock context for testing with predefined responses.
 - **`SSHContext`** — SSH execution context for remote scanning.
+- **`Change`** — Represents a single change between two snapshots.
 - **`ProbeContext`** — Kontekst dla probe — nie wie o SSH, click, nic konkretnego.
 - **`ProbeResult`** — Wynik probe'a.
 - **`Probe`** — Kontrakt probe'a.
-- **`DriftReport`** — Report of drift between intended and actual state.
-- **`DriftDetector`** — Detect drift between intended state (from config) and actual state (from scan).
-- **`Change`** — Represents a single change between two snapshots.
 - **`LayerDefinition`** — Definicja jednej warstwy w drzewie.
 - **`LayerTree`** — Drzewo warstw — topological ordering, dependency resolution.
-- **`LayerData`** — Dane jednej warstwy.
-- **`Snapshot`** — Pełna migawka urządzenia/systemu.
-- **`PartialSnapshot`** — Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszystkich warstw.
+- **`DriftReport`** — Report of drift between intended and actual state.
+- **`DriftDetector`** — Detect drift between intended state (from config) and actual state (from scan).
 - **`PhysicalDisplayData`** — —
 - **`OsKernelData`** — —
 - **`OsConfigData`** — —
@@ -157,15 +157,18 @@ op3/
 - **`ServiceLayer`** — Services layer.
 - **`EndpointLayer`** — Network endpoints layer.
 - **`BusinessLayer`** — Business logic layer.
+- **`LayerData`** — Dane jednej warstwy.
+- **`Snapshot`** — Pełna migawka urządzenia/systemu.
+- **`PartialSnapshot`** — Niepełna migawka — np. z parsowania LESS-a gdzie nie ma wszystkich warstw.
 
 ### Functions
 
 - `register_format(name, adapter)` — Decorator to register a format adapter.
-- `scan_device(target, execute, layer_tree)` — Convenience function to scan a device.
 - `cli()` — op3 — Layered operations tree for infrastructure observation.
-- `scan(target, ssh, output, format)` — Scan a device and output snapshot.
-- `drift(intended, actual)` — Detect drift between intended and actual state.
 - `convert(input_file, output_file, format)` — Convert between configuration formats.
+- `drift(intended, actual)` — Detect drift between intended and actual state.
+- `scan(target, ssh, output, format)` — Scan a device and output snapshot.
+- `scan_device(target, execute, layer_tree)` — Convenience function to scan a device.
 - `register_probe(probe_class)` — Decorator to register a probe class.
 - `snapshot_diff(a, b)` — Compare two snapshots and return a list of changes.
 
@@ -178,7 +181,10 @@ op3/
 📄 `src.opstree._version`
 📦 `src.opstree.cli`
 📦 `src.opstree.cli.commands`
-📄 `src.opstree.cli.main` (4 functions)
+📄 `src.opstree.cli.commands.convert` (1 functions)
+📄 `src.opstree.cli.commands.drift` (1 functions)
+📄 `src.opstree.cli.commands.scan` (1 functions)
+📄 `src.opstree.cli.main` (1 functions)
 📦 `src.opstree.config_apply`
 📦 `src.opstree.drift`
 📄 `src.opstree.drift.detector` (2 functions, 2 classes)

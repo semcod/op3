@@ -31,7 +31,7 @@ def convert(input_file: str, output_file: str, format: str):
             snapshot = Snapshot(
                 target="unknown",
                 scanned_at=datetime.now(timezone.utc),
-                scanner_version="0.1.5",
+                scanner_version="0.1.7",
                 layers=partial.layers,
                 anomalies=[],
             )

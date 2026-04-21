@@ -39,7 +39,7 @@ def test_less_adapter_render():
     snapshot = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
-        scanner_version="0.1.5",
+        scanner_version="0.1.7",
         layers={
             "business.health": LayerData(
                 layer_id="business.health",

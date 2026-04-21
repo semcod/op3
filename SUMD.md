@@ -20,7 +20,7 @@ Layered operations tree — observe, diff, orchestrate infrastructure as data
 ## Metadata
 
 - **name**: `op3`
-- **version**: `0.1.4`
+- **version**: `0.1.7`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -110,7 +110,7 @@ environment[name="local"] {
 ```yaml
 project:
   name: op3
-  version: 0.1.4
+  version: 0.1.7
   env: local
 ```
 
@@ -170,20 +170,20 @@ pip install -e .[dev]
 - **commits**: `conventional` scope=`op3`
 - **changelog**: `keep-a-changelog`
 - **build strategies**: `python`, `nodejs`, `rust`
-- **version files**: `VERSION`, `pyproject.toml:version`, `.venv/lib/python3.13/site-packages/httpcore/__init__.py:__version__`
+- **version files**: `VERSION`, `pyproject.toml:version`, `venv/lib/python3.13/site-packages/matplotlib/__init__.py:__version__`
 
 ## Code Analysis
 
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# op3 | 46f 3236L | python:40,less:5,shell:1 | 2026-04-21
-# stats: 37 func | 43 cls | 46 mod | CC̄=4.4 | critical:4 | cycles:0
+# op3 | 49f 3242L | python:43,less:5,shell:1 | 2026-04-21
+# stats: 37 func | 43 cls | 49 mod | CC̄=4.4 | critical:4 | cycles:0
 # alerts[5]: CC scan=16; CC test_full_scan_with_mock_context=16; CC test_builtin_layers_exist=13; CC convert=11; CC test_cli_help=6
-# hotspots[5]: scan fan=26; convert fan=16; drift fan=12; test_full_scan_with_mock_context fan=12; test_snapshot_yaml_roundtrip fan=10
+# hotspots[5]: scan fan=24; convert fan=16; drift fan=12; test_full_scan_with_mock_context fan=12; test_snapshot_yaml_roundtrip fan=10
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[46]:
+M[49]:
   app.doql.less,60
   examples/doql/app.doql.less,110
   examples/fraq/app.doql.less,60
@@ -194,7 +194,10 @@ M[46]:
   src/opstree/_version.py,3
   src/opstree/cli/__init__.py,2
   src/opstree/cli/commands/__init__.py,2
-  src/opstree/cli/main.py,181
+  src/opstree/cli/commands/convert.py,53
+  src/opstree/cli/commands/drift.py,41
+  src/opstree/cli/commands/scan.py,70
+  src/opstree/cli/main.py,23
   src/opstree/config_apply/__init__.py,2
   src/opstree/drift/__init__.py,7
   src/opstree/drift/detector.py,78
@@ -236,12 +239,18 @@ D:
   src/opstree/_version.py:
   src/opstree/cli/__init__.py:
   src/opstree/cli/commands/__init__.py:
-  src/opstree/cli/main.py:
-    e: cli,scan,drift,convert
-    cli()
-    scan(target;ssh;output;format;layers)
-    drift(intended;actual)
+  src/opstree/cli/commands/convert.py:
+    e: convert
     convert(input_file;output_file;format)
+  src/opstree/cli/commands/drift.py:
+    e: drift
+    drift(intended;actual)
+  src/opstree/cli/commands/scan.py:
+    e: scan
+    scan(target;ssh;output;format;layers)
+  src/opstree/cli/main.py:
+    e: cli
+    cli()
   src/opstree/config_apply/__init__.py:
   src/opstree/drift/__init__.py:
   src/opstree/drift/detector.py:

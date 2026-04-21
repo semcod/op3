@@ -13,7 +13,7 @@ from opstree.scanner.linear import LinearScanner, scan_device
 from opstree.formats import FormatRegistry, register_format
 from opstree.drift.detector import DriftDetector, DriftReport
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 __all__ = [
     # Layers
