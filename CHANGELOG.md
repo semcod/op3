@@ -70,6 +70,12 @@ merging semantics. A native implementation based on
 `opstree.snapshot` primitives is simpler, transport-agnostic, and keeps
 `fraq` as a dependency for what it actually does well.
 
+## [0.2.5] - 2026-04-21
+
+### Docs
+- Update README.md
+- Update docs/API.md
+
 ## [0.2.4] - 2026-04-21
 
 ### Docs

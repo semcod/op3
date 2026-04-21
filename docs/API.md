@@ -163,6 +163,16 @@ Instantiates the decorated class and registers it on the module-global
 default registry. Application code should usually create its own
 `ProbeRegistry` instead.
 
+### Builtin follow-up probes (new in Sprint 4)
+
+- `CompositorProbe` (`runtime.compositor`) — detects Wayland compositor
+  and kanshi state. Flags anomaly when kanshi is installed but has no
+  active profile.
+- `KanshiReconcileProbe` (`runtime.compositor.kanshi`) — follow-up
+  probe that suggests a dual-output kanshi profile when DSI + HDMI are
+  both connected. Intended to be wired into `AdaptiveScanner` via
+  `register_followup("physical.display", kanshi_reconcile_probe)`.
+
 ---
 
 ## Scanner
