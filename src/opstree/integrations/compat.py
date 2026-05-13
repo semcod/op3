@@ -6,6 +6,7 @@ factory helpers.  :func:`make_compat_helpers` returns a single
 :class:`CompatHelpers` bundle parameterised by project-specific values
 (env var name, default layer set, install hint).
 """
+
 from __future__ import annotations
 
 import os
@@ -65,6 +66,7 @@ def make_compat_helpers(
     def op3_available() -> bool:
         try:
             import opstree  # noqa: F401
+
             return True
         except ImportError:
             return False

@@ -16,6 +16,7 @@ every consumer (doql, redeploy, …) used to duplicate:
 After the fix that boilerplate collapses to a single ``build_scanner(...)``
 call with automatic dependency resolution.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -39,11 +40,14 @@ def test_build_layer_tree_pulls_transitive_dependencies():
     os.kernel depends on physical.compute — all must be present."""
     tree = build_layer_tree(["service.containers"])
     order = tree.topological_order()
-    for required in ("physical.compute", "os.kernel", "runtime.container",
-                     "service.containers"):
+    for required in (
+        "physical.compute",
+        "os.kernel",
+        "runtime.container",
+        "service.containers",
+    ):
         assert required in order, (
-            f"Expected transitive dep {required!r} to be registered, "
-            f"got order={order}"
+            f"Expected transitive dep {required!r} to be registered, got order={order}"
         )
 
 
@@ -109,6 +113,7 @@ def test_build_scanner_extra_probes_are_appended():
 
     class _ExtraProbe:
         """Minimal structural probe matching the ``Probe`` Protocol."""
+
         layer_id = "os.kernel"
         probe_name = "custom"
 
@@ -142,10 +147,12 @@ def test_build_scanner_end_to_end_scan():
         "docker ps -a --format json 2>/dev/null": ExecuteResult("[]", "", 0),
         "podman ps -a --format json 2>/dev/null": ExecuteResult("", "", 1),
         "which systemctl": ExecuteResult("/bin/systemctl", "", 0),
-        "systemctl list-units --type=service --all --no-legend 2>/dev/null":
-            ExecuteResult("nginx.service loaded active running nginx\n", "", 0),
-        "systemctl is-enabled nginx.service 2>/dev/null":
-            ExecuteResult("enabled", "", 0),
+        "systemctl list-units --type=service --all --no-legend 2>/dev/null": ExecuteResult(
+            "nginx.service loaded active running nginx\n", "", 0
+        ),
+        "systemctl is-enabled nginx.service 2>/dev/null": ExecuteResult(
+            "enabled", "", 0
+        ),
     }
 
     ctx = MockContext(responses=responses)

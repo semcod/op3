@@ -1,4 +1,5 @@
 """op3 convert command."""
+
 from __future__ import annotations
 import click
 from pathlib import Path
@@ -13,7 +14,13 @@ from opstree.snapshot.model import Snapshot
 @click.command()
 @click.argument("input_file", type=click.Path(exists=True))
 @click.argument("output_file", type=click.Path())
-@click.option("--format", "-f", type=click.Choice(["less", "migration_yaml", "snapshot_yaml"]), required=True, help="Target format")
+@click.option(
+    "--format",
+    "-f",
+    type=click.Choice(["less", "migration_yaml", "snapshot_yaml"]),
+    required=True,
+    help="Target format",
+)
 def convert(input_file: str, output_file: str, format: str):
     """Convert between configuration formats."""
     input_path = Path(input_file)
@@ -27,7 +34,9 @@ def convert(input_file: str, output_file: str, format: str):
     else:
         snapshot = Snapshot.load(input_path)
 
-    if input_path.suffix == ".less" or (input_path.name == "migration.yaml" or input_path.suffix == ".migration.yaml"):
+    if input_path.suffix == ".less" or (
+        input_path.name == "migration.yaml" or input_path.suffix == ".migration.yaml"
+    ):
         if format == "snapshot_yaml":
             snapshot = Snapshot(
                 target="unknown",

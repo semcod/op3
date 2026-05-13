@@ -18,11 +18,12 @@ The caller is responsible for building a wired ``LinearScanner`` (via
 :class:`opstree.probes.context.SSHContext` with each target). This
 keeps fleet scanning transport-agnostic.
 """
+
 from __future__ import annotations
 
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Mapping
 
 from opstree.fleet.model import FleetSnapshot, FleetVariance
 from opstree.scanner.linear import LinearScanner
@@ -129,16 +130,14 @@ def compute_variance(snapshots: Mapping[str, Snapshot]) -> FleetVariance:
 
     for path in sorted(all_paths):
         per_target = {
-            tgt: flat.get(path, _MISSING)
-            for tgt, flat in flat_per_target.items()
+            tgt: flat.get(path, _MISSING) for tgt, flat in flat_per_target.items()
         }
         unique = {_canonicalise(v) for v in per_target.values()}
         if len(unique) <= 1:
             continue
 
         fields[path] = {
-            tgt: (None if v is _MISSING else v)
-            for tgt, v in per_target.items()
+            tgt: (None if v is _MISSING else v) for tgt, v in per_target.items()
         }
         layer = _layer_of(path)
         if layer is not None:

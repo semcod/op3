@@ -1,9 +1,14 @@
 """Pytest configuration for op3 tests."""
+
 import pytest
 from opstree.layers.tree import LayerTree
 from opstree.layers.builtin import (
-    PhysicalLayer, OsLayer, RuntimeLayer,
-    ServiceLayer, EndpointLayer, BusinessLayer,
+    PhysicalLayer,
+    OsLayer,
+    RuntimeLayer,
+    ServiceLayer,
+    EndpointLayer,
+    BusinessLayer,
 )
 
 
@@ -11,7 +16,7 @@ from opstree.layers.builtin import (
 def layer_tree() -> LayerTree:
     """Fixture providing a LayerTree with all builtin layers registered."""
     tree = LayerTree()
-    
+
     # Register all builtin layers
     tree.register(PhysicalLayer.display)
     tree.register(PhysicalLayer.network)
@@ -25,5 +30,5 @@ def layer_tree() -> LayerTree:
     tree.register(EndpointLayer.http)
     tree.register(EndpointLayer.tcp)
     tree.register(BusinessLayer.health)
-    
+
     return tree

@@ -1,13 +1,15 @@
 """LESS format adapter — read/write doql-compatible .doql.less files."""
+
 from __future__ import annotations
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from opstree.snapshot.model import Snapshot, PartialSnapshot, LayerData
 from datetime import datetime, timezone
 
 
 class LessAdapter:
     """Parsuj i emituj .doql.less."""
+
     format_name = "less"
 
     # ── helpers ─────────────────────────────────────────────────────────────
@@ -59,10 +61,17 @@ class LessAdapter:
     def _unescape_value(value: str) -> str:
         r"""Reverse of :meth:`_escape_value` plus ``\n`` → newline."""
         # Order matters: unescape backslashes last.
-        return value.replace("\\;", ";").replace('\\"', '"').replace("\\n", "\n").replace("\\\\", "\\")
+        return (
+            value.replace("\\;", ";")
+            .replace('\\"', '"')
+            .replace("\\n", "\n")
+            .replace("\\\\", "\\")
+        )
 
     @staticmethod
-    def _render_key_value(key: str, value: Any, lines: list[str], indent: str = "  ") -> None:
+    def _render_key_value(
+        key: str, value: Any, lines: list[str], indent: str = "  "
+    ) -> None:
         """Append ``key: value;`` (or multi-line continuation) to *lines*."""
         str_val = str(value)
         if "\n" in str_val:
@@ -84,7 +93,7 @@ class LessAdapter:
 
         # Parse app metadata — extract block body so _parse_block handles
         # inline comments, multi-line values, and escapes uniformly.
-        app_match = re.search(r'app\s*\{([^}]*)\}', text, re.MULTILINE | re.DOTALL)
+        app_match = re.search(r"app\s*\{([^}]*)\}", text, re.MULTILINE | re.DOTALL)
         if app_match:
             app_data = self._parse_block(app_match.group(1))
             layers["business.health"] = LayerData(
@@ -98,12 +107,10 @@ class LessAdapter:
                     "alerts": [],
                 },
             )
-        
+
         # Parse interface
         interface_matches = re.finditer(
-            r'interface\[type="([^"]+)"\]\s*\{([^}]+)\}',
-            text,
-            re.MULTILINE | re.DOTALL
+            r'interface\[type="([^"]+)"\]\s*\{([^}]+)\}', text, re.MULTILINE | re.DOTALL
         )
         for match in interface_matches:
             iface_type = match.group(1).strip()
@@ -117,22 +124,22 @@ class LessAdapter:
                     "config": self._parse_block(body),
                 },
             )
-        
+
         # Parse services
         service_matches = re.finditer(
-            r'service\[name="([^"]+)"\]\s*\{([^}]+)\}',
-            text,
-            re.MULTILINE | re.DOTALL
+            r'service\[name="([^"]+)"\]\s*\{([^}]+)\}', text, re.MULTILINE | re.DOTALL
         )
         services = []
         for match in service_matches:
             service_name = match.group(1).strip()
             body = match.group(2)
-            services.append({
-                "name": service_name,
-                **self._parse_block(body),
-            })
-        
+            services.append(
+                {
+                    "name": service_name,
+                    **self._parse_block(body),
+                }
+            )
+
         if services:
             layers["service.containers"] = LayerData(
                 layer_id="service.containers",
@@ -140,12 +147,12 @@ class LessAdapter:
                 probed_by="less_parser",
                 data={"systemd_services": services},
             )
-        
+
         # Parse environment
         env_matches = re.finditer(
             r'environment\[name="([^"]+)"\]\s*\{([^}]+)\}',
             text,
-            re.MULTILINE | re.DOTALL
+            re.MULTILINE | re.DOTALL,
         )
         for match in env_matches:
             env_name = match.group(1).strip()
@@ -159,9 +166,11 @@ class LessAdapter:
                     **self._parse_block(body),
                 },
             )
-        
+
         # Parse deploy
-        deploy_match = re.search(r'deploy\s*\{([^}]+)\}', text, re.MULTILINE | re.DOTALL)
+        deploy_match = re.search(
+            r"deploy\s*\{([^}]+)\}", text, re.MULTILINE | re.DOTALL
+        )
         if deploy_match:
             body = deploy_match.group(1)
             deploy_config = self._parse_block(body)
@@ -170,85 +179,89 @@ class LessAdapter:
                 probed_at=datetime.now(timezone.utc),
                 probed_by="less_parser",
                 data={
-                    "endpoints": [{
-                        "url": f"http://{deploy_config.get('domain', 'localhost')}",
-                        "target": deploy_config.get("target", "unknown"),
-                    }],
+                    "endpoints": [
+                        {
+                            "url": f"http://{deploy_config.get('domain', 'localhost')}",
+                            "target": deploy_config.get("target", "unknown"),
+                        }
+                    ],
                 },
             )
-        
+
         return PartialSnapshot(
             layers=layers,
             source_format="less",
             source_path=None,
         )
-    
-    def render(self, snapshot: Snapshot | PartialSnapshot, scope: List[str] | None = None) -> str:
+
+    def render(
+        self, snapshot: Snapshot | PartialSnapshot, scope: List[str] | None = None
+    ) -> str:
         """Renderuj Snapshot → LESS."""
         scope = scope or ["service", "runtime"]
         lines = []
-        
+
         # Render app metadata
         business_layer = snapshot.layers.get("business.health")
         if business_layer:
             app_name = business_layer.data.get("app_name", "unknown")
             app_version = business_layer.data.get("app_version", "0.0.0")
-            lines.append(f"app {{")
+            lines.append("app {")
             self._render_key_value("name", app_name, lines)
             self._render_key_value("version", app_version, lines)
-            lines.append(f"}}")
+            lines.append("}")
             lines.append("")
-        
+
         # Render physical display
         display_layer = snapshot.layers.get("physical.display")
         if display_layer and "physical" in scope:
-            lines.append(f"interface[type=\"display\"] {{")
+            lines.append('interface[type="display"] {')
             for key, value in display_layer.data.items():
                 if key != "interface_type":
                     self._render_key_value(key, value, lines)
-            lines.append(f"}}")
+            lines.append("}")
             lines.append("")
-        
+
         # Render services
         service_layer = snapshot.layers.get("service.containers")
         if service_layer and "service" in scope:
             services = service_layer.data.get("systemd_services", [])
             for svc in services:
                 name = svc.get("name", "unknown")
-                lines.append(f"service[name=\"{name}\"] {{")
+                lines.append(f'service[name="{name}"] {{')
                 for key, value in svc.items():
                     if key != "name":
                         self._render_key_value(key, value, lines)
-                lines.append(f"}}")
+                lines.append("}")
                 lines.append("")
-        
+
         # Render runtime
         runtime_layer = snapshot.layers.get("runtime.container")
         if runtime_layer and "runtime" in scope:
             env_name = runtime_layer.data.get("environment_name", "production")
-            lines.append(f"environment[name=\"{env_name}\"] {{")
+            lines.append(f'environment[name="{env_name}"] {{')
             for key, value in runtime_layer.data.items():
                 if key != "environment_name":
                     self._render_key_value(key, value, lines)
-            lines.append(f"}}")
+            lines.append("}")
             lines.append("")
-        
+
         # Render deploy
         endpoint_layer = snapshot.layers.get("endpoint.http")
         if endpoint_layer and "endpoint" in scope:
             endpoints = endpoint_layer.data.get("endpoints", [])
             if endpoints:
-                lines.append(f"deploy {{")
+                lines.append("deploy {")
                 for ep in endpoints:
                     if "target" in ep:
                         self._render_key_value("target", ep["target"], lines)
                     if "url" in ep:
                         domain = ep["url"].replace("http://", "").split("/")[0]
                         self._render_key_value("domain", domain, lines)
-                lines.append(f"}}")
-        
+                lines.append("}")
+
         return "\n".join(lines)
-    
+
     def _parse_block(self, body: str) -> Dict[str, str]:
         """Parse a LESS block into key-value pairs.
 

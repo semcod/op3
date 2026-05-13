@@ -1,4 +1,5 @@
 """End-to-end: MockContext → RpiPhysicalDisplayProbe → RPI_DISPLAY_RULES."""
+
 from __future__ import annotations
 
 from opstree.probes.builtin.physical_rpi import RpiPhysicalDisplayProbe
@@ -25,9 +26,15 @@ def _common_responses(extra: dict | None = None) -> dict:
         ),
         "cat /boot/config.txt 2>/dev/null": ExecuteResult("", "", 1),
         "ls /sys/class/drm/ 2>/dev/null": ExecuteResult("card1-DSI-2", "", 0),
-        "cat /sys/class/drm/card1-DSI-2/status 2>/dev/null": ExecuteResult("connected", "", 0),
-        "cat /sys/class/drm/card1-DSI-2/enabled 2>/dev/null": ExecuteResult("enabled", "", 0),
-        "wc -c < /sys/class/drm/card1-DSI-2/edid 2>/dev/null": ExecuteResult("128", "", 0),
+        "cat /sys/class/drm/card1-DSI-2/status 2>/dev/null": ExecuteResult(
+            "connected", "", 0
+        ),
+        "cat /sys/class/drm/card1-DSI-2/enabled 2>/dev/null": ExecuteResult(
+            "enabled", "", 0
+        ),
+        "wc -c < /sys/class/drm/card1-DSI-2/edid 2>/dev/null": ExecuteResult(
+            "128", "", 0
+        ),
         "cat /sys/class/drm/card1-DSI-2/dpms 2>/dev/null": ExecuteResult("On", "", 0),
         "WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/$(id -u) wlr-randr 2>/dev/null": ExecuteResult(
             'DSI-2 "Waveshare"\n'
@@ -40,10 +47,18 @@ def _common_responses(extra: dict | None = None) -> dict:
             0,
         ),
         "ls /sys/class/backlight/ 2>/dev/null": ExecuteResult("11-0045", "", 0),
-        "cat /sys/class/backlight/11-0045/brightness 2>/dev/null": ExecuteResult("255", "", 0),
-        "cat /sys/class/backlight/11-0045/max_brightness 2>/dev/null": ExecuteResult("255", "", 0),
-        "cat /sys/class/backlight/11-0045/bl_power 2>/dev/null": ExecuteResult("0", "", 0),
-        "cat /sys/class/backlight/11-0045/display_name 2>/dev/null": ExecuteResult("DSI-2", "", 0),
+        "cat /sys/class/backlight/11-0045/brightness 2>/dev/null": ExecuteResult(
+            "255", "", 0
+        ),
+        "cat /sys/class/backlight/11-0045/max_brightness 2>/dev/null": ExecuteResult(
+            "255", "", 0
+        ),
+        "cat /sys/class/backlight/11-0045/bl_power 2>/dev/null": ExecuteResult(
+            "0", "", 0
+        ),
+        "cat /sys/class/backlight/11-0045/display_name 2>/dev/null": ExecuteResult(
+            "DSI-2", "", 0
+        ),
         "ls /dev/fb* 2>/dev/null": ExecuteResult("/dev/fb0", "", 0),
         "ls /dev/i2c-* 2>/dev/null": ExecuteResult("/dev/i2c-1\n/dev/i2c-11", "", 0),
         "which i2cdetect 2>/dev/null": ExecuteResult("/usr/sbin/i2cdetect", "", 0),
@@ -60,7 +75,9 @@ def _common_responses(extra: dict | None = None) -> dict:
             0,
         ),
         "dmesg 2>/dev/null | grep -iE 'dsi|panel|backlight|waveshare|drm.*rp1' "
-        "| grep -v 'cycle\\|bluetooth\\|brcm\\|Broad' | tail -30": ExecuteResult("", "", 0),
+        "| grep -v 'cycle\\|bluetooth\\|brcm\\|Broad' | tail -30": ExecuteResult(
+            "", "", 0
+        ),
         "lsmod 2>/dev/null | awk '{print $1}' "
         "| grep -Ei 'vc4|v3d|drm|panel_waveshare|dw_mipi_dsi|gpu_sched|videobuf2|rp1'": ExecuteResult(
             "vc4\ndrm\ndrm_kms_helper\npanel_waveshare_dsi\n", "", 0
@@ -77,8 +94,9 @@ def _common_responses(extra: dict | None = None) -> dict:
             "yes", "", 0
         ),
         "grep -E 'dtoverlay=vc4' /boot/firmware/config.txt 2>/dev/null": ExecuteResult(
-            "dtoverlay=vc4-kms-v3d\n"
-            "dtoverlay=vc4-kms-dsi-waveshare-panel,8_0_inch", "", 0
+            "dtoverlay=vc4-kms-v3d\ndtoverlay=vc4-kms-dsi-waveshare-panel,8_0_inch",
+            "",
+            0,
         ),
         "WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/$(id -u) wlr-randr 2>/dev/null": ExecuteResult(
             "", "", 1
@@ -100,9 +118,7 @@ def test_probe_emits_full_hardware_dict():
     assert data["board_model"] == "Raspberry Pi 5 Model B Rev 1.0"
     assert data["kernel"] == "6.6.20+rpt-rpi-v8"
     assert "dtoverlay=vc4-kms-v3d" in data["config_txt"]
-    assert data["dsi_overlays"] == [
-        "dtoverlay=vc4-kms-dsi-waveshare-panel,8_0_inch"
-    ]
+    assert data["dsi_overlays"] == ["dtoverlay=vc4-kms-dsi-waveshare-panel,8_0_inch"]
     assert len(data["drm_outputs"]) == 1
     assert data["drm_outputs"][0]["connector"] == "DSI-2"
     assert data["drm_outputs"][0]["modes"] == ["1280x800@60"]
@@ -128,10 +144,14 @@ def test_probe_output_feeds_diagnostics_to_clean_system():
 
 def test_probe_output_feeds_diagnostics_to_broken_system():
     """Simulate a broken rig and verify the right rules fire end-to-end."""
-    responses = _common_responses({
-        "wc -c < /sys/class/drm/card1-DSI-2/edid 2>/dev/null": ExecuteResult("0", "", 0),
-        "ls /sys/class/backlight/ 2>/dev/null": ExecuteResult("", "", 0),
-    })
+    responses = _common_responses(
+        {
+            "wc -c < /sys/class/drm/card1-DSI-2/edid 2>/dev/null": ExecuteResult(
+                "0", "", 0
+            ),
+            "ls /sys/class/backlight/ 2>/dev/null": ExecuteResult("", "", 0),
+        }
+    )
     ctx = MockContext(responses=responses)
     result = RpiPhysicalDisplayProbe().scan(ctx)
     diags = diagnose_display_layer(result.layer_data.data)

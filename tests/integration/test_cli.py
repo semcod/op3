@@ -1,4 +1,5 @@
 """Integration tests for CLI commands."""
+
 import pytest
 from click.testing import CliRunner
 from pathlib import Path
@@ -41,19 +42,17 @@ def test_cli_convert_less_to_snapshot_yaml(runner, tmp_path):
     """Test converting LESS to snapshot.yaml."""
     input_file = Path(__file__).parent.parent / "fixtures" / "sample.doql.less"
     output_file = tmp_path / "converted.yaml"
-    
-    result = runner.invoke(cli, [
-        "convert",
-        str(input_file),
-        str(output_file),
-        "--format", "snapshot_yaml"
-    ])
-    
+
+    result = runner.invoke(
+        cli, ["convert", str(input_file), str(output_file), "--format", "snapshot_yaml"]
+    )
+
     assert result.exit_code == 0
     assert output_file.exists()
-    
+
     # Verify output is valid YAML
     import yaml
+
     data = yaml.safe_load(output_file.read_text())
     assert "target" in data
     assert "layers" in data
@@ -64,19 +63,18 @@ def test_cli_convert_less_to_migration_yaml(runner, tmp_path):
     """Test converting LESS to migration.yaml."""
     input_file = Path(__file__).parent.parent / "fixtures" / "sample.doql.less"
     output_file = tmp_path / "converted.yaml"
-    
-    result = runner.invoke(cli, [
-        "convert",
-        str(input_file),
-        str(output_file),
-        "--format", "migration_yaml"
-    ])
-    
+
+    result = runner.invoke(
+        cli,
+        ["convert", str(input_file), str(output_file), "--format", "migration_yaml"],
+    )
+
     assert result.exit_code == 0
     assert output_file.exists()
-    
+
     # Verify output is valid YAML with migration structure
     import yaml
+
     data = yaml.safe_load(output_file.read_text())
     assert "source" in data or "target" in data
 
@@ -85,17 +83,14 @@ def test_cli_convert_less_to_less(runner, tmp_path):
     """Test converting LESS to LESS (round-trip)."""
     input_file = Path(__file__).parent.parent / "fixtures" / "sample.doql.less"
     output_file = tmp_path / "converted.less"
-    
-    result = runner.invoke(cli, [
-        "convert",
-        str(input_file),
-        str(output_file),
-        "--format", "less"
-    ])
-    
+
+    result = runner.invoke(
+        cli, ["convert", str(input_file), str(output_file), "--format", "less"]
+    )
+
     assert result.exit_code == 0
     assert output_file.exists()
-    
+
     # Verify output contains app block
     content = output_file.read_text()
     assert "app {" in content

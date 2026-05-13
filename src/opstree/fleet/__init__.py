@@ -11,6 +11,7 @@ This is the op3 primitive underneath downstream features such as
 ``doql adopt --from-fleet`` (derive a shared LESS from many devices)
 and ``redeploy drift --fleet`` (check a whole tag cohort at once).
 """
+
 from opstree.fleet.model import FleetSnapshot, FleetVariance
 from opstree.fleet.scanner import compute_variance, scan_fleet
 from opstree.fleet.formats import render_common_as_snapshot, render_variant_matrix

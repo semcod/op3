@@ -13,6 +13,7 @@ The tests below exercise both with synthetic snapshots and with a real
 end-to-end coverage of the thread pool + per-target ``execute``
 plumbing.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -20,7 +21,7 @@ from datetime import datetime, timezone
 import pytest
 
 from opstree import __version__, build_scanner, compute_variance, scan_fleet
-from opstree.fleet import FleetSnapshot, FleetVariance
+from opstree.fleet import FleetSnapshot
 from opstree.probes.context import ExecuteResult, MockContext
 from opstree.snapshot.model import LayerData, Snapshot
 
@@ -244,8 +245,7 @@ def test_scan_fleet_detects_drifted_kernel():
 def test_scan_fleet_uniform_when_all_hosts_identical():
     scanner = build_scanner(["os.kernel"])
     target_execute = {
-        f"pi{i}": MockContext(_kernel_responses("6.1.0")).execute
-        for i in range(1, 5)
+        f"pi{i}": MockContext(_kernel_responses("6.1.0")).execute for i in range(1, 5)
     }
     fleet = scan_fleet(scanner, target_execute)
     assert fleet.variance.is_uniform

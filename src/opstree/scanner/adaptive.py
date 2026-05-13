@@ -1,4 +1,5 @@
 """Adaptive scanner — follows up on anomalies with secondary probes."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -6,8 +7,7 @@ from typing import Dict, List
 
 from opstree._version import __version__
 from opstree.layers.tree import LayerTree
-from opstree.probes.base import Probe, ProbeContext, ProbeResult
-from opstree.probes.registry import ProbeRegistry
+from opstree.probes.base import Probe, ProbeContext
 from opstree.scanner.linear import LinearScanner
 from opstree.snapshot.model import Snapshot, LayerData
 
@@ -57,15 +57,11 @@ class AdaptiveScanner(LinearScanner):
 
                         # ── follow-up probes ─────────────────────────
                         if layer_anomalies:
-                            for followup in self.followup_registry.get(
-                                layer_id, []
-                            ):
+                            for followup in self.followup_registry.get(layer_id, []):
                                 if followup.can_probe(ctx):
                                     fu_result = followup.scan(ctx)
                                     if fu_result.success:
-                                        layers[followup.layer_id] = (
-                                            fu_result.layer_data
-                                        )
+                                        layers[followup.layer_id] = fu_result.layer_data
                                         fu_anomalies = followup.anomalies(
                                             fu_result.layer_data
                                         )

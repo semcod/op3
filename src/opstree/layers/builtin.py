@@ -1,9 +1,9 @@
 """Built-in layer definitions for common infrastructure."""
+
 from __future__ import annotations
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
-from datetime import datetime
-from opstree.layers.tree import LayerDefinition, LayerType
+from opstree.layers.tree import LayerDefinition
 
 
 # Pydantic models for layer data
@@ -145,6 +145,7 @@ BUSINESS_HEALTH = LayerDefinition(
 # Convenience classes for grouping layers
 class PhysicalLayer:
     """Physical infrastructure layer."""
+
     display = PHYSICAL_DISPLAY
     network = PHYSICAL_NETWORK
     compute = PHYSICAL_COMPUTE
@@ -152,28 +153,33 @@ class PhysicalLayer:
 
 class OsLayer:
     """Operating system layer."""
+
     kernel = OS_KERNEL
     config = OS_CONFIG
 
 
 class RuntimeLayer:
     """Runtime environment layer."""
+
     container = RUNTIME_CONTAINER
     compositor = RUNTIME_COMPOSITOR
 
 
 class ServiceLayer:
     """Services layer."""
+
     containers = SERVICE_CONTAINERS
     systemd = SERVICE_SYSTEMD
 
 
 class EndpointLayer:
     """Network endpoints layer."""
+
     http = ENDPOINT_HTTP
     tcp = ENDPOINT_TCP
 
 
 class BusinessLayer:
     """Business logic layer."""
+
     health = BUSINESS_HEALTH

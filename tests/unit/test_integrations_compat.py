@@ -1,7 +1,7 @@
 """Tests for :mod:`opstree.integrations.compat`."""
+
 from __future__ import annotations
 
-import os
 
 import pytest
 
@@ -20,9 +20,7 @@ def _make(monkeypatch, env_value=None):
 
 
 def test_op3_available_true():
-    h = make_compat_helpers(
-        env_var="NOPE", default_layers=(), install_hint="nope"
-    )
+    h = make_compat_helpers(env_var="NOPE", default_layers=(), install_hint="nope")
     # opstree is always importable from within its own tests.
     assert h.op3_available() is True
 

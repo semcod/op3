@@ -19,6 +19,7 @@ Usage::
 Adding a new rule: append one :class:`Rule` to :data:`RPI_DISPLAY_RULES`.
 No other file needs to change.
 """
+
 from __future__ import annotations
 
 import re
@@ -31,6 +32,7 @@ HardwareData = dict[str, Any]
 
 
 # ── helpers ───────────────────────────────────────────────────────────
+
 
 def _dsi_outputs(hw: HardwareData) -> list[dict]:
     return [o for o in hw.get("drm_outputs", []) if "DSI" in o.get("name", "")]
@@ -78,6 +80,7 @@ def _all_ok(hw: HardwareData) -> bool:
 
 # ── dynamic (per-device) rules ────────────────────────────────────────
 
+
 def _backlight_power_off_rules(hw: HardwareData) -> Iterable[Diagnostic]:
     for bl in _backlights(hw):
         name = bl.get("name", "?")
@@ -87,8 +90,7 @@ def _backlight_power_off_rules(hw: HardwareData) -> Iterable[Diagnostic]:
                 severity="error",
                 rule_name="backlight_power_off",
                 message=(
-                    f"Backlight {name} power is OFF "
-                    f"(bl_power={bl.get('bl_power', 0)})"
+                    f"Backlight {name} power is OFF (bl_power={bl.get('bl_power', 0)})"
                 ),
                 fix=f"echo 0 | sudo tee /sys/class/backlight/{name}/bl_power",
             )
@@ -148,8 +150,7 @@ _STATIC_RULES: list[Rule[HardwareData]] = [
         component="overlay",
         severity="warning",
         predicate=lambda hw: (
-            _has_dsi_overlay(hw)
-            and "display_auto_detect=1" in hw.get("config_txt", "")
+            _has_dsi_overlay(hw) and "display_auto_detect=1" in hw.get("config_txt", "")
         ),
         message="display_auto_detect=1 may conflict with manual DSI overlay",
         fix=(
@@ -165,7 +166,7 @@ _STATIC_RULES: list[Rule[HardwareData]] = [
         predicate=lambda hw: _has_dsi_overlay(hw) and not _dsi_outputs(hw),
         message="DSI overlay loaded but no DRM DSI connector found in /sys/class/drm/",
         fix=(
-            "Check physical connection: For RPi5 the Waveshare 8\" (C) requires:\n"
+            'Check physical connection: For RPi5 the Waveshare 8" (C) requires:\n'
             "  1. DSI-Cable-12cm → DISP1 (22-pin connector)\n"
             "  2. 4-pin header → RPi GPIO (5V + GND + SDA + SCL)\n"
             "Reseat the FPC ribbon cable and reboot."
@@ -196,9 +197,7 @@ _STATIC_RULES: list[Rule[HardwareData]] = [
         component="dsi",
         severity="error",
         predicate=lambda hw: (
-            _has_dsi_overlay(hw)
-            and bool(_dsi_outputs(hw))
-            and not _dsi_connected(hw)
+            _has_dsi_overlay(hw) and bool(_dsi_outputs(hw)) and not _dsi_connected(hw)
         ),
         message=lambda hw: (
             f"DSI connector status: {_dsi_outputs(hw)[0].get('status', 'unknown')} "
@@ -230,8 +229,7 @@ _STATIC_RULES: list[Rule[HardwareData]] = [
         component="backlight",
         severity="error",
         predicate=lambda hw: any(
-            "failed to enable backlight" in l
-            for l in hw.get("dsi_dmesg_errors", [])
+            "failed to enable backlight" in l for l in hw.get("dsi_dmesg_errors", [])
         ),
         message=lambda hw: (
             "Backlight controller failed to initialise "
@@ -334,8 +332,7 @@ _STATIC_RULES: list[Rule[HardwareData]] = [
                 for b in _backlights(hw)
             )
             and any(
-                b.get("bus") in (1, 11) and not b.get("devices")
-                for b in _i2c_buses(hw)
+                b.get("bus") in (1, 11) and not b.get("devices") for b in _i2c_buses(hw)
             )
         ),
         message=lambda hw: (
@@ -445,9 +442,7 @@ _STATIC_RULES: list[Rule[HardwareData]] = [
         name="no_wayland_output",
         component="compositor",
         severity="warning",
-        predicate=lambda hw: (
-            bool(_dsi_outputs(hw)) and not hw.get("wlr_outputs")
-        ),
+        predicate=lambda hw: bool(_dsi_outputs(hw)) and not hw.get("wlr_outputs"),
         message="wlr-randr returned no outputs — labwc/wayland may not be running",
         fix=(
             "Check: systemctl --user status labwc\n"

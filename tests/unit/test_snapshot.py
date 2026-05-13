@@ -1,8 +1,8 @@
 """Unit tests for snapshot model and diff."""
-import pytest
+
 from datetime import datetime, timezone
-from opstree.snapshot.model import Snapshot, LayerData, PartialSnapshot
-from opstree.snapshot.diff import snapshot_diff, Change
+from opstree.snapshot.model import Snapshot, LayerData
+from opstree.snapshot.diff import snapshot_diff
 
 
 def test_layer_data_creation():
@@ -56,10 +56,9 @@ def test_snapshot_layer_accessor():
 
 def test_snapshot_yaml_roundtrip():
     """Test YAML serialization and deserialization."""
-    import yaml
     from pathlib import Path
     import tempfile
-    
+
     snapshot = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
@@ -73,16 +72,16 @@ def test_snapshot_yaml_roundtrip():
             )
         },
     )
-    
+
     yaml_str = snapshot.to_yaml()
     assert "test@localhost" in yaml_str
     assert "layer1" in yaml_str
-    
+
     # Write and read back
     with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
         f.write(yaml_str)
         temp_path = f.name
-    
+
     try:
         loaded = Snapshot.load(temp_path)
         assert loaded.target == snapshot.target
@@ -99,7 +98,7 @@ def test_snapshot_diff_added_layer():
         scanner_version="0.1.7",
         layers={},
     )
-    
+
     snapshot_b = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
@@ -113,7 +112,7 @@ def test_snapshot_diff_added_layer():
             )
         },
     )
-    
+
     changes = snapshot_diff(snapshot_a, snapshot_b)
     assert len(changes) == 1
     assert changes[0].type == "added"
@@ -135,14 +134,14 @@ def test_snapshot_diff_removed_layer():
             )
         },
     )
-    
+
     snapshot_b = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
         scanner_version="0.1.7",
         layers={},
     )
-    
+
     changes = snapshot_diff(snapshot_a, snapshot_b)
     assert len(changes) == 1
     assert changes[0].type == "removed"
@@ -164,7 +163,7 @@ def test_snapshot_diff_modified_data():
             )
         },
     )
-    
+
     snapshot_b = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
@@ -178,7 +177,7 @@ def test_snapshot_diff_modified_data():
             )
         },
     )
-    
+
     changes = snapshot_diff(snapshot_a, snapshot_b)
     assert len(changes) == 1
     assert changes[0].type == "modified"

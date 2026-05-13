@@ -70,6 +70,14 @@ merging semantics. A native implementation based on
 `opstree.snapshot` primitives is simpler, transport-agnostic, and keeps
 `fraq` as a dependency for what it actually does well.
 
+- feat(docs): add changelog generation
+- feat(docs): configuration management system
+- feat(docs): add markdown output and output formatting
+- feat(docs): code analysis engine and code relationship mapping
+- fix(tests): update docs and improve CLI interface
+- refactor: assorted codebase refactorings
+- feat(goal): update docs / configuration management integration
+
 ## [0.2.5] - 2026-04-21
 
 ### Docs

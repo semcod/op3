@@ -5,6 +5,7 @@ Follow-up probe: :class:`KanshiReconcileProbe` (``runtime.compositor.kanshi``)
 run by :class:`AdaptiveScanner` when the physical display layer reports
 both DSI and HDMI connected simultaneously.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -91,12 +92,14 @@ class CompositorProbe:
         anomalies: list = []
         d = data.data
         if d.get("kanshi_enabled") and not d.get("active_profile"):
-            anomalies.append({
-                "severity": "warning",
-                "layer": self.layer_id,
-                "message": "kanshi installed but no active profile — output routing may drift",
-                "evidence": {"profiles": d.get("kanshi_profiles", [])},
-            })
+            anomalies.append(
+                {
+                    "severity": "warning",
+                    "layer": self.layer_id,
+                    "message": "kanshi installed but no active profile — output routing may drift",
+                    "evidence": {"profiles": d.get("kanshi_profiles", [])},
+                }
+            )
         return anomalies
 
     # ── helpers ───────────────────────────────────────────────────────
@@ -208,15 +211,17 @@ class KanshiReconcileProbe:
         """Report when a new profile is suggested."""
         d = data.data
         if d.get("reconcile_needed"):
-            return [{
-                "severity": "info",
-                "layer": self.layer_id,
-                "message": "Suggested kanshi profile for dual-output configuration",
-                "evidence": {
-                    "connectors": d.get("drm_connectors", []),
-                    "profile": d.get("suggested_profile"),
-                },
-            }]
+            return [
+                {
+                    "severity": "info",
+                    "layer": self.layer_id,
+                    "message": "Suggested kanshi profile for dual-output configuration",
+                    "evidence": {
+                        "connectors": d.get("drm_connectors", []),
+                        "profile": d.get("suggested_profile"),
+                    },
+                }
+            ]
         return []
 
     # ── helpers ───────────────────────────────────────────────────────

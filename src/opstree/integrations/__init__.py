@@ -19,6 +19,7 @@ The most common pattern is:
 
 This replaces ~50 lines of duplicated code per project.
 """
+
 from .compat import CompatHelpers, make_compat_helpers
 
 __all__ = ["CompatHelpers", "make_compat_helpers"]

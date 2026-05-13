@@ -5,16 +5,24 @@ used to replicate by hand (``LayerTree`` + ``ProbeRegistry`` + built-in
 probes + transitive dependency resolution). Callers still needing
 fine-grained control can instantiate :class:`LinearScanner` directly.
 """
+
 from __future__ import annotations
 
 from typing import Dict, Iterable, List, Optional, Sequence
 
 from opstree.layers.builtin import (
-    BUSINESS_HEALTH, ENDPOINT_HTTP, ENDPOINT_TCP,
-    OS_CONFIG, OS_KERNEL,
-    PHYSICAL_COMPUTE, PHYSICAL_DISPLAY, PHYSICAL_NETWORK,
-    RUNTIME_COMPOSITOR, RUNTIME_CONTAINER,
-    SERVICE_CONTAINERS, SERVICE_SYSTEMD,
+    BUSINESS_HEALTH,
+    ENDPOINT_HTTP,
+    ENDPOINT_TCP,
+    OS_CONFIG,
+    OS_KERNEL,
+    PHYSICAL_COMPUTE,
+    PHYSICAL_DISPLAY,
+    PHYSICAL_NETWORK,
+    RUNTIME_COMPOSITOR,
+    RUNTIME_CONTAINER,
+    SERVICE_CONTAINERS,
+    SERVICE_SYSTEMD,
 )
 from opstree.layers.tree import LayerDefinition, LayerTree
 from opstree.probes.base import Probe
@@ -31,18 +39,18 @@ from opstree.scanner.linear import LinearScanner
 # ── layer + probe tables ──────────────────────────────────────────────────
 
 _BUILTIN_LAYERS: Dict[str, LayerDefinition] = {
-    "physical.display":   PHYSICAL_DISPLAY,
-    "physical.network":   PHYSICAL_NETWORK,
-    "physical.compute":   PHYSICAL_COMPUTE,
-    "os.kernel":          OS_KERNEL,
-    "os.config":          OS_CONFIG,
-    "runtime.container":  RUNTIME_CONTAINER,
+    "physical.display": PHYSICAL_DISPLAY,
+    "physical.network": PHYSICAL_NETWORK,
+    "physical.compute": PHYSICAL_COMPUTE,
+    "os.kernel": OS_KERNEL,
+    "os.config": OS_CONFIG,
+    "runtime.container": RUNTIME_CONTAINER,
     "runtime.compositor": RUNTIME_COMPOSITOR,
     "service.containers": SERVICE_CONTAINERS,
-    "service.systemd":    SERVICE_SYSTEMD,
-    "endpoint.http":      ENDPOINT_HTTP,
-    "endpoint.tcp":       ENDPOINT_TCP,
-    "business.health":    BUSINESS_HEALTH,
+    "service.systemd": SERVICE_SYSTEMD,
+    "endpoint.http": ENDPOINT_HTTP,
+    "endpoint.tcp": ENDPOINT_TCP,
+    "business.health": BUSINESS_HEALTH,
 }
 
 
@@ -53,13 +61,13 @@ def _default_probe_factory(layer_id: str) -> List[Probe]:
     scanners end up sharing a stateful probe.
     """
     return {
-        "physical.display":   [RpiPhysicalDisplayProbe()],
-        "os.kernel":          [OsKernelProbe()],
-        "os.config":          [OsConfigProbe()],
-        "runtime.container":  [RuntimeContainerProbe()],
+        "physical.display": [RpiPhysicalDisplayProbe()],
+        "os.kernel": [OsKernelProbe()],
+        "os.config": [OsConfigProbe()],
+        "runtime.container": [RuntimeContainerProbe()],
         "service.containers": [ServiceContainersProbe()],
-        "endpoint.http":      [EndpointHttpProbe()],
-        "business.health":    [BusinessHealthProbe()],
+        "endpoint.http": [EndpointHttpProbe()],
+        "business.health": [BusinessHealthProbe()],
     }.get(layer_id, [])
 
 

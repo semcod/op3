@@ -1,9 +1,9 @@
 """Tests for :mod:`opstree.fleet.formats` (A1)."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import pytest
 
 from opstree import __version__, render_common_as_snapshot, render_variant_matrix
 from opstree.fleet import FleetSnapshot, FleetVariance
@@ -48,7 +48,9 @@ class TestRenderCommonAsSnapshot:
             "pi2": _snapshot("pi2", kernel="6.1.0"),
         }
         variance = compute_variance(snaps)
-        fleet = FleetSnapshot(targets=["pi1", "pi2"], snapshots=snaps, variance=variance)
+        fleet = FleetSnapshot(
+            targets=["pi1", "pi2"], snapshots=snaps, variance=variance
+        )
         common = render_common_as_snapshot(fleet)
         assert "os.kernel" in common.layers
         assert common.layers["os.kernel"].data["version"] == "6.1.0"
@@ -60,7 +62,9 @@ class TestRenderCommonAsSnapshot:
             "pi2": _snapshot("pi2", kernel="6.6.20", resolution="1280x720"),
         }
         variance = compute_variance(snaps)
-        fleet = FleetSnapshot(targets=["pi1", "pi2"], snapshots=snaps, variance=variance)
+        fleet = FleetSnapshot(
+            targets=["pi1", "pi2"], snapshots=snaps, variance=variance
+        )
         common = render_common_as_snapshot(fleet)
         # version diverges → omitted
         assert "version" not in common.layers.get("os.kernel", {}).data
@@ -84,9 +88,14 @@ class TestRenderVariantMatrix:
             "pi2": _snapshot("pi2", kernel="6.6.20"),
         }
         variance = compute_variance(snaps)
-        fleet = FleetSnapshot(targets=["pi1", "pi2"], snapshots=snaps, variance=variance)
+        fleet = FleetSnapshot(
+            targets=["pi1", "pi2"], snapshots=snaps, variance=variance
+        )
         matrix = render_variant_matrix(fleet)
         assert "os.kernel.data.version" in matrix["variants"]
-        assert matrix["variants"]["os.kernel.data.version"] == {"pi1": "6.1.0", "pi2": "6.6.20"}
+        assert matrix["variants"]["os.kernel.data.version"] == {
+            "pi1": "6.1.0",
+            "pi2": "6.6.20",
+        }
         # arch is common
         assert "os.kernel.data.arch" in matrix["common"]

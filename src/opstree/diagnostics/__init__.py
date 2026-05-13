@@ -25,6 +25,7 @@ Usage::
 The engine is generic over the subject type — any ``T`` works, because
 predicates / messages / fixes are plain callables.
 """
+
 from opstree.diagnostics.rules import (
     Diagnostic,
     Rule,

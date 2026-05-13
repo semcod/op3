@@ -1,4 +1,5 @@
 """Drift detection between intended and actual state."""
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
@@ -10,6 +11,7 @@ from opstree.snapshot.diff import snapshot_diff, Change
 @dataclass
 class DriftReport:
     """Report of drift between intended and actual state."""
+
     intended_source: str
     actual_target: str
     has_drift: bool
@@ -19,18 +21,18 @@ class DriftReport:
 
 class DriftDetector:
     """Detect drift between intended state (from config) and actual state (from scan)."""
-    
+
     def detect(
         self,
         intended: PartialSnapshot,
         actual: Snapshot,
     ) -> DriftReport:
         """Detect drift between intended and actual state.
-        
+
         Args:
             intended: Partial snapshot from config file (LESS, migration.yaml, etc.)
             actual: Full snapshot from scanning the device
-        
+
         Returns:
             DriftReport with changes and summary
         """
@@ -41,13 +43,13 @@ class DriftDetector:
             scanner_version=__version__,
             layers=intended.layers,
         )
-        
+
         changes = snapshot_diff(intended_snapshot, actual)
-        
+
         has_drift = len(changes) > 0
-        
+
         summary = self._summarize_changes(changes)
-        
+
         return DriftReport(
             intended_source=intended.source_format,
             actual_target=actual.target,
@@ -55,7 +57,7 @@ class DriftDetector:
             changes=changes,
             summary=summary,
         )
-    
+
     def _summarize_changes(self, changes: List[Change]) -> Dict[str, Any]:
         """Summarize changes by type and layer."""
         summary = {
@@ -63,16 +65,16 @@ class DriftDetector:
             "by_type": {},
             "by_layer": {},
         }
-        
+
         for change in changes:
             # Count by type
             if change.type not in summary["by_type"]:
                 summary["by_type"][change.type] = 0
             summary["by_type"][change.type] += 1
-            
+
             # Count by layer
             if change.layer_id not in summary["by_layer"]:
                 summary["by_layer"][change.layer_id] = 0
             summary["by_layer"][change.layer_id] += 1
-        
+
         return summary

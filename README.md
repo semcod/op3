@@ -125,3 +125,20 @@ less_output = adapter.render(snapshot)
 ## License
 
 Licensed under Apache-2.0.
+
+<!-- taskill:status:start -->
+
+## Status
+
+_Last updated by [taskill](https://github.com/oqlos/taskill) at 2026-04-25 13:41 UTC_
+
+| Metric | Value |
+|---|---|
+| HEAD | `c33adc1` |
+| Coverage | — |
+| Failing tests | — |
+| Commits in last cycle | 20 |
+
+> Documentation and tooling were expanded: changelog generation, markdown output and formatting, a configuration management system, and a code analysis/relationship mapping engine were added. Tests and CLI were adjusted and some refactorings performed.
+
+<!-- taskill:status:end -->

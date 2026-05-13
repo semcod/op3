@@ -1,4 +1,5 @@
 """CLI entry point for op3."""
+
 from __future__ import annotations
 import click
 from opstree import __version__

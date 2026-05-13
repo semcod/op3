@@ -1,15 +1,14 @@
 """Tests for :class:`AdaptiveScanner` and follow-up probes."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import pytest
 
 from opstree.layers.tree import LayerTree
-from opstree.layers.builtin import PhysicalLayer, RuntimeLayer
+from opstree.layers.builtin import PhysicalLayer
 from opstree.probes.base import ProbeContext, ProbeResult
 from opstree.probes.builtin.compositor import CompositorProbe, KanshiReconcileProbe
-from opstree.probes.registry import ProbeRegistry
 from opstree.scanner.adaptive import AdaptiveScanner
 from opstree.snapshot.model import LayerData
 
@@ -39,12 +38,14 @@ class DummyProbe:
 
     def anomalies(self, data: LayerData) -> list:
         if self._anomaly:
-            return [{
-                "severity": "warning",
-                "layer": self.layer_id,
-                "message": "Both DSI and HDMI connected",
-                "evidence": {},
-            }]
+            return [
+                {
+                    "severity": "warning",
+                    "layer": self.layer_id,
+                    "message": "Both DSI and HDMI connected",
+                    "evidence": {},
+                }
+            ]
         return []
 
 
@@ -110,9 +111,7 @@ class TestAdaptiveScanner:
 
         assert "physical.display" in snapshot.layers
         assert "runtime.compositor.kanshi" in snapshot.layers
-        assert any(
-            a["layer"] == "physical.display" for a in snapshot.anomalies
-        )
+        assert any(a["layer"] == "physical.display" for a in snapshot.anomalies)
 
     def test_followup_skipped_when_can_probe_false(self):
         tree = LayerTree()
@@ -154,19 +153,20 @@ class TestAdaptiveScanner:
                 )
 
             def anomalies(self, data: LayerData) -> list:
-                return [{
-                    "severity": "info",
-                    "layer": self.layer_id,
-                    "message": "follow-up anomaly",
-                    "evidence": {},
-                }]
+                return [
+                    {
+                        "severity": "info",
+                        "layer": self.layer_id,
+                        "message": "follow-up anomaly",
+                        "evidence": {},
+                    }
+                ]
 
         scanner.register_followup("physical.display", AnomalyFollowUp())
         snapshot = scanner.scan("t1", _noop_execute)
 
         assert any(
-            a["layer"] == "runtime.compositor.kanshi"
-            for a in snapshot.anomalies
+            a["layer"] == "runtime.compositor.kanshi" for a in snapshot.anomalies
         )
 
 
@@ -192,11 +192,17 @@ class TestCompositorProbe:
 
         responses = {
             "which kanshi 2>/dev/null": ("/usr/bin/kanshi", "", 0),
-            "ls /run/user/$(id -u)/ 2>/dev/null | grep '^wayland-'": ("wayland-0", "", 0),
+            "ls /run/user/$(id -u)/ 2>/dev/null | grep '^wayland-'": (
+                "wayland-0",
+                "",
+                0,
+            ),
             "pgrep -x 'labwc' 2>/dev/null": ("1234", "", 0),
             "labwc --version 2>/dev/null": ("labwc 0.7.0", "", 0),
             "cat ~/.config/kanshi/config 2>/dev/null": (
-                "dual-display {\noutput card0-DSI-1 enable\n}", "", 0
+                "dual-display {\noutput card0-DSI-1 enable\n}",
+                "",
+                0,
             ),
             "ps -o args= -p $(pgrep -x kanshi) 2>/dev/null": ("", "", 1),
         }
@@ -239,7 +245,9 @@ class TestKanshiReconcileProbe:
         responses = {
             "which kanshi 2>/dev/null": ("/usr/bin/kanshi", "", 0),
             "ls /sys/class/drm/ 2>/dev/null | grep '^card[0-9]-'": (
-                "card0-DSI-1\ncard1-HDMI-A-1", "", 0
+                "card0-DSI-1\ncard1-HDMI-A-1",
+                "",
+                0,
             ),
         }
 
@@ -263,7 +271,9 @@ class TestKanshiReconcileProbe:
         responses = {
             "which kanshi 2>/dev/null": ("/usr/bin/kanshi", "", 0),
             "ls /sys/class/drm/ 2>/dev/null | grep '^card[0-9]-'": (
-                "card0-DSI-1", "", 0
+                "card0-DSI-1",
+                "",
+                0,
             ),
         }
 

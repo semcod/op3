@@ -6,11 +6,11 @@ which silently shared state across all :class:`ProbeRegistry` instances.
 Callers that set ``scanner.probe_registry = my_registry`` were getting
 the global registry regardless.
 """
+
 from __future__ import annotations
 
-import pytest
 
-from opstree.probes.base import Probe, ProbeContext, ProbeResult
+from opstree.probes.base import ProbeResult
 from opstree.probes.registry import (
     ProbeRegistry,
     _default_registry,
@@ -35,6 +35,7 @@ class _DummyProbe:
 
     def scan(self, ctx):  # pragma: no cover — not used here
         from datetime import datetime, timezone
+
         return ProbeResult(
             layer_data=LayerData(
                 layer_id=self.layer_id,

@@ -5,6 +5,7 @@ These tests are the canonical spec for the rules ported from
 :data:`opstree.probes.builtin.rpi_diagnostics.RPI_DISPLAY_RULES`, add a
 test here — do not edit the engine.
 """
+
 from __future__ import annotations
 
 from opstree.probes.builtin.rpi_diagnostics import (
@@ -85,8 +86,7 @@ def test_no_dsi_overlay_fires_when_overlay_missing():
 def test_display_auto_detect_conflict():
     hw = _hw(
         config_txt=(
-            "dtoverlay=vc4-kms-dsi-waveshare-panel,8_0_inch\n"
-            "display_auto_detect=1\n"
+            "dtoverlay=vc4-kms-dsi-waveshare-panel,8_0_inch\ndisplay_auto_detect=1\n"
         )
     )
     assert "display_auto_detect_conflict" in _names(diagnose_display_layer(hw))

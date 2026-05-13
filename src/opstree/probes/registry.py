@@ -14,8 +14,9 @@ and concurrent / repeated scans accumulated probes unpredictably.
 ``_default_registry`` keeps the :func:`register_probe` decorator's
 implicit "register on import" semantics working for existing users.
 """
+
 from __future__ import annotations
-from typing import Dict, List, Type, Callable, Optional
+from typing import Dict, List, Type, Callable
 from opstree.probes.base import Probe
 
 

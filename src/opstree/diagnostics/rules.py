@@ -14,6 +14,7 @@ Design goals
   zero-or-more diagnostics, which is what redeploy needed for
   per-backlight / per-i2c-chip checks.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

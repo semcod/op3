@@ -1,34 +1,35 @@
 """Linear scanner — simple sequential layer scanning."""
+
 from __future__ import annotations
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Dict
 from opstree._version import __version__
 from opstree.layers.tree import LayerTree
-from opstree.probes.base import Probe, ProbeContext, ProbeResult
+from opstree.probes.base import ProbeContext
 from opstree.probes.registry import ProbeRegistry
 from opstree.snapshot.model import Snapshot, LayerData
 
 
 class LinearScanner:
     """Simple scanner that processes layers in topological order."""
-    
+
     def __init__(self, layer_tree: LayerTree):
         self.layer_tree = layer_tree
         self.probe_registry = ProbeRegistry()
-    
+
     def scan(self, target: str, execute: callable) -> Snapshot:
         """Scan all layers and return a complete snapshot."""
         ctx = ProbeContext(target=target, execute=execute)
-        
+
         layers: Dict[str, LayerData] = {}
         anomalies = []
-        
+
         for layer_id in self.layer_tree.topological_order():
             probes = self.probe_registry.get(layer_id)
-            
+
             if not probes:
                 continue  # No probes for this layer
-            
+
             # Use the first available probe that can probe
             for probe in probes:
                 if probe.can_probe(ctx):
@@ -38,7 +39,7 @@ class LinearScanner:
                         layer_anomalies = probe.anomalies(result.layer_data)
                         anomalies.extend(layer_anomalies)
                     break
-        
+
         return Snapshot(
             target=target,
             scanned_at=datetime.now(timezone.utc),

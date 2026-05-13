@@ -1,4 +1,5 @@
 """Contract: every symbol in API.md must be in ``opstree.__all__`` and vice versa."""
+
 from __future__ import annotations
 
 import ast
@@ -19,7 +20,11 @@ def _parse_all_from_init() -> set[str]:
         if isinstance(node, ast.Assign):
             for target in node.targets:
                 if isinstance(target, ast.Name) and target.id == "__all__":
-                    return {elt.value for elt in node.value.elts if isinstance(elt, ast.Constant)}
+                    return {
+                        elt.value
+                        for elt in node.value.elts
+                        if isinstance(elt, ast.Constant)
+                    }
     return set()
 
 

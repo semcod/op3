@@ -1,4 +1,5 @@
 """Fleet snapshot exporters."""
+
 from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
@@ -26,8 +27,12 @@ def _unflatten(paths: dict[str, Any]) -> dict[str, Any]:
 
 def render_common_as_snapshot(fleet: FleetSnapshot) -> Snapshot:
     if not fleet.snapshots:
-        return Snapshot(target="fleet:common", scanned_at=datetime.now(timezone.utc),
-                      scanner_version="opstree.fleet.formats", layers={})
+        return Snapshot(
+            target="fleet:common",
+            scanned_at=datetime.now(timezone.utc),
+            scanner_version="opstree.fleet.formats",
+            layers={},
+        )
     ref_target = fleet.targets[0]
     ref_flat = _flatten_snapshot(fleet.snapshots[ref_target])
     divergent = set(fleet.variance.fields.keys())
@@ -37,10 +42,18 @@ def render_common_as_snapshot(fleet: FleetSnapshot) -> Snapshot:
     for layer_id, data in layers_data.items():
         if not data:
             continue
-        layers[layer_id] = LayerData(layer_id=layer_id, probed_at=datetime.now(timezone.utc),
-                                      probed_by="fleet.formats", data=data)
-    return Snapshot(target="fleet:common", scanned_at=datetime.now(timezone.utc),
-                    scanner_version="opstree.fleet.formats", layers=layers)
+        layers[layer_id] = LayerData(
+            layer_id=layer_id,
+            probed_at=datetime.now(timezone.utc),
+            probed_by="fleet.formats",
+            data=data,
+        )
+    return Snapshot(
+        target="fleet:common",
+        scanned_at=datetime.now(timezone.utc),
+        scanner_version="opstree.fleet.formats",
+        layers=layers,
+    )
 
 
 def render_variant_matrix(fleet: FleetSnapshot) -> dict[str, Any]:
@@ -51,6 +64,8 @@ def render_variant_matrix(fleet: FleetSnapshot) -> dict[str, Any]:
     common_flat = {p: v for p, v in ref_flat.items() if p not in divergent}
     return {
         "common": common_flat,
-        "variants": {path: {tgt: values.get(tgt) for tgt in fleet.targets}
-                     for path, values in divergent.items()},
+        "variants": {
+            path: {tgt: values.get(tgt) for tgt in fleet.targets}
+            for path, values in divergent.items()
+        },
     }

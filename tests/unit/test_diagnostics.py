@@ -1,4 +1,5 @@
 """Unit tests for the generic diagnostic rule engine."""
+
 from __future__ import annotations
 
 import pytest

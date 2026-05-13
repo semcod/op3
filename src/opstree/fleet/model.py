@@ -14,6 +14,7 @@ Design notes
   be wasteful. Keep :func:`opstree.fleet.compute_variance` pure and let
   :func:`scan_fleet` call it once at construction time.
 """
+
 from __future__ import annotations
 
 from typing import Any

@@ -1,6 +1,6 @@
 """Unit tests for LESS format adapter."""
+
 from datetime import datetime, timezone
-import pytest
 from pathlib import Path
 from opstree.formats.less import LessAdapter
 from opstree.snapshot.model import Snapshot, PartialSnapshot, LayerData
@@ -23,7 +23,7 @@ service[name="kiosk-browser"] {
   restart: always;
 }
 """
-    
+
     result = adapter.parse(less_text)
     assert isinstance(result, PartialSnapshot)
     assert result.source_format == "less"
@@ -35,7 +35,7 @@ service[name="kiosk-browser"] {
 def test_less_adapter_render():
     """Test rendering Snapshot to LESS."""
     adapter = LessAdapter()
-    
+
     snapshot = Snapshot(
         target="test@localhost",
         scanned_at=datetime.now(timezone.utc),
@@ -50,11 +50,11 @@ def test_less_adapter_render():
                     "app_version": "1.0.0",
                     "overall_health": "healthy",
                     "alerts": [],
-                }
+                },
             ),
         },
     )
-    
+
     result = adapter.render(snapshot)
     assert "app {" in result
     assert "name: test-app;" in result
@@ -64,26 +64,28 @@ def test_less_adapter_render():
 def test_less_adapter_roundtrip():
     """Test round-trip: parse → render → parse."""
     adapter = LessAdapter()
-    
+
     # Load original from fixture
     original_less = (FIXTURES / "sample.doql.less").read_text()
-    
+
     # Parse
     parsed = adapter.parse(original_less)
-    
+
     # Render
     rendered = adapter.render(parsed)
-    
+
     # Parse again
     reparsed = adapter.parse(rendered)
-    
+
     # Check that business layer is preserved
     assert "business.health" in parsed.layers
     assert "business.health" in reparsed.layers
-    
+
     # Check app name is preserved
-    assert parsed.layers["business.health"].data["app_name"] == \
-           reparsed.layers["business.health"].data["app_name"]
+    assert (
+        parsed.layers["business.health"].data["app_name"]
+        == reparsed.layers["business.health"].data["app_name"]
+    )
 
 
 # ── Sprint 3: inline comments, multi-line values, escape sequences ───────
@@ -128,7 +130,7 @@ service[name="x"] {
 """
     result = adapter.parse(less_text)
     svc = result.layers["service.containers"].data["systemd_services"][0]
-    assert svc["cmd"] == 'if true; then\n    echo ok'
+    assert svc["cmd"] == "if true; then\n    echo ok"
 
 
 def test_less_adapter_escape_newline():
@@ -169,7 +171,12 @@ def test_less_adapter_render_escapes_semicolon():
                 layer_id="business.health",
                 probed_at=datetime.now(timezone.utc),
                 probed_by="test",
-                data={"app_name": "a;b", "app_version": "1.0.0", "overall_health": "ok", "alerts": []},
+                data={
+                    "app_name": "a;b",
+                    "app_version": "1.0.0",
+                    "overall_health": "ok",
+                    "alerts": [],
+                },
             ),
         },
     )

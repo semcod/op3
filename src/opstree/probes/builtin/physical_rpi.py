@@ -29,6 +29,7 @@ Output ``LayerData.data`` keys (all stable; rules rely on them):
     kms_enabled              bool
     kms_driver               str
 """
+
 from __future__ import annotations
 
 import re
@@ -150,12 +151,16 @@ class RpiPhysicalDisplayProbe:
             dsi = [o for o in connected if "DSI" in o.get("name", "")]
             hdmi = [o for o in connected if "HDMI" in o.get("name", "")]
             if dsi and hdmi:
-                anomalies.append({
-                    "severity": "warning",
-                    "layer": self.layer_id,
-                    "message": "Both DSI and HDMI displays connected — output routing ambiguous",
-                    "evidence": {"connected_outputs": [o["name"] for o in connected]},
-                })
+                anomalies.append(
+                    {
+                        "severity": "warning",
+                        "layer": self.layer_id,
+                        "message": "Both DSI and HDMI displays connected — output routing ambiguous",
+                        "evidence": {
+                            "connected_outputs": [o["name"] for o in connected]
+                        },
+                    }
+                )
         return anomalies
 
     # ── individual probes ─────────────────────────────────────────────
@@ -202,21 +207,23 @@ class RpiPhysicalDisplayProbe:
             dpms = _Exec.run(ctx, f"cat /sys/class/drm/{entry}/dpms 2>/dev/null")
 
             dpms_text = dpms.text("")
-            outputs.append({
-                "name": entry,
-                "connector": connector,
-                "status": status.text("unknown"),
-                "enabled": enabled.text("unknown"),
-                "edid_bytes": edid.int_(0),
-                # keep historic field and new, redeploy-compatible field
-                "dpms": dpms_text or "unknown",
-                "power_state": dpms_text or None,
-                "sysfs_path": f"/sys/class/drm/{entry}",
-                "modes": [],
-                "transform": "normal",
-                "scale": "1.0",
-                "position": "0,0",
-            })
+            outputs.append(
+                {
+                    "name": entry,
+                    "connector": connector,
+                    "status": status.text("unknown"),
+                    "enabled": enabled.text("unknown"),
+                    "edid_bytes": edid.int_(0),
+                    # keep historic field and new, redeploy-compatible field
+                    "dpms": dpms_text or "unknown",
+                    "power_state": dpms_text or None,
+                    "sysfs_path": f"/sys/class/drm/{entry}",
+                    "modes": [],
+                    "transform": "normal",
+                    "scale": "1.0",
+                    "position": "0,0",
+                }
+            )
         return outputs
 
     def _probe_wlr_randr(self, ctx: ProbeContext) -> list[dict]:
@@ -290,18 +297,23 @@ class RpiPhysicalDisplayProbe:
             bl_power = _Exec.run(
                 ctx, f"cat /sys/class/backlight/{name}/bl_power 2>/dev/null"
             ).int_(0)
-            display_name = _Exec.run(
-                ctx, f"cat /sys/class/backlight/{name}/display_name 2>/dev/null"
-            ).text("") or None
+            display_name = (
+                _Exec.run(
+                    ctx, f"cat /sys/class/backlight/{name}/display_name 2>/dev/null"
+                ).text("")
+                or None
+            )
 
-            out.append({
-                "name": name,
-                "brightness": brightness,
-                "max_brightness": max_brightness,
-                "bl_power": bl_power,
-                "display_name": display_name,
-                "sysfs_path": f"/sys/class/backlight/{name}",
-            })
+            out.append(
+                {
+                    "name": name,
+                    "brightness": brightness,
+                    "max_brightness": max_brightness,
+                    "bl_power": bl_power,
+                    "display_name": display_name,
+                    "sysfs_path": f"/sys/class/backlight/{name}",
+                }
+            )
         return out
 
     def _probe_framebuffers(self, ctx: ProbeContext) -> list[str]:
@@ -338,11 +350,13 @@ class RpiPhysicalDisplayProbe:
                             if val not in ("--", "UU"):
                                 devices.append(f"0x{row_base + i:02x}")
 
-            buses.append({
-                "bus": bus_num,
-                "devices": devices,
-                "sysfs_path": entry,
-            })
+            buses.append(
+                {
+                    "bus": bus_num,
+                    "devices": devices,
+                    "sysfs_path": entry,
+                }
+            )
         return buses
 
     def _probe_dsi_dmesg(self, ctx: ProbeContext) -> list[str]:
@@ -362,9 +376,7 @@ class RpiPhysicalDisplayProbe:
         return sorted(set(r.lines())) if r.ok else []
 
     def _probe_wayland_sockets(self, ctx: ProbeContext) -> list[str]:
-        r = _Exec.run(
-            ctx, "ls /run/user/$(id -u)/ 2>/dev/null | grep '^wayland-'"
-        )
+        r = _Exec.run(ctx, "ls /run/user/$(id -u)/ 2>/dev/null | grep '^wayland-'")
         return r.lines() if r.ok and r.stdout.strip() else []
 
     def _probe_compositor_processes(self, ctx: ProbeContext) -> dict[str, list[int]]:

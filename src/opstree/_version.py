@@ -5,4 +5,5 @@ by release tooling. All runtime code importing a version string MUST
 import ``__version__`` from this module (or from ``opstree``) rather
 than hardcoding a literal.
 """
+
 __version__ = "0.2.0"
