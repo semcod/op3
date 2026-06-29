@@ -78,6 +78,14 @@ merging semantics. A native implementation based on
 - refactor: assorted codebase refactorings
 - feat(goal): update docs / configuration management integration
 
+## [0.2.6] - 2026-06-29
+
+### Docs
+- Update README.md
+
+### Other
+- Update uv.lock
+
 ## [0.2.5] - 2026-04-21
 
 ### Docs
