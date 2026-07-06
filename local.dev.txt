@@ -1,0 +1,12 @@
+# local.dev.txt — locally developed dependencies of this project (generated 2026-07-04)
+# by ~/github/local.dev.sh — DO NOT EDIT; see ~/github/local.dev.md
+# project: op3 0.2.6 (python) at /home/tom/github/semcod/op3
+# deps declared: 15 | with local source: 4
+
+## LOCAL DEPS  (dep | required | local source (version) | installed | status)
+costs | >=0.1.20 | /home/tom/github/semcod/costs (0.1.53) | 0.1.50 non-editable | STALE-INSTALL (local 0.1.53) -> fix: pip install -e /home/tom/github/semcod/costs  [pyproject.toml[dev]]
+fraq | >=0.2.15 | /home/tom/github/wronai/fraq (0.2.16) | 0.2.16 non-editable | NON-EDITABLE -> fix: pip install -e /home/tom/github/wronai/fraq  [pyproject.toml]
+goal | >=2.1.218 | /home/tom/github/semcod/goal (2.1.266) | 2.1.190 non-editable | STALE-INSTALL (local 2.1.266) -> fix: pip install -e /home/tom/github/semcod/goal  [pyproject.toml[dev]]
+pfix | >=0.1.60 | /home/tom/github/semcod/pfix (0.1.76) | 0.1.72 non-editable | STALE-INSTALL (local 0.1.76) -> fix: pip install -e /home/tom/github/semcod/pfix  [pyproject.toml[dev]]
+
+## EXTERNAL DEPS (no local source, 11): click, httpx, jmespath, mypy, paramiko, pydantic, pytest, pytest-cov, pyyaml, rich, ruff
