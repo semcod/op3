@@ -33,56 +33,18 @@ Output ``LayerData.data`` keys (all stable; rules rely on them):
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
 from opstree.probes.base import ProbeContext, ProbeResult
+from opstree.probes.builtin.exec_adapter import ProbeExec
 from opstree.snapshot.model import LayerData
 
+_Exec = ProbeExec  # backward-compatible alias for tests and internal callers
 
 _DMESG_ERR_RE = re.compile(
     r"fail|error|unable|timeout|ERORR|cannot|denied|-\d+\]", re.IGNORECASE
 )
-
-
-@dataclass(frozen=True)
-class _Exec:
-    """Uniform adapter over the two shapes ``ProbeContext.execute`` returns.
-
-    Historically some probes returned an ``ExecuteResult`` object (with
-    ``.ok`` / ``.stdout``) while others returned a plain 3-tuple.  This
-    adapter hides that so helpers can stay tidy.
-    """
-
-    ok: bool
-    stdout: str
-
-    @classmethod
-    def run(cls, ctx: ProbeContext, cmd: str) -> "_Exec":
-        r = ctx.execute(cmd)
-        if hasattr(r, "ok"):
-            return cls(ok=bool(r.ok), stdout=getattr(r, "stdout", "") or "")
-        # tuple: (stdout, stderr, rc)
-        try:
-            stdout, _stderr, rc = r
-        except Exception:
-            return cls(ok=False, stdout="")
-        return cls(ok=(rc == 0), stdout=stdout or "")
-
-    def lines(self) -> list[str]:
-        return [l for l in self.stdout.splitlines() if l.strip()]
-
-    def text(self, default: str = "") -> str:
-        return self.stdout.strip() if self.ok else default
-
-    def int_(self, default: int = 0) -> int:
-        if not self.ok:
-            return default
-        try:
-            return int(self.stdout.strip())
-        except (TypeError, ValueError):
-            return default
 
 
 class RpiPhysicalDisplayProbe:

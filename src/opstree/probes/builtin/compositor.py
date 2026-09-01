@@ -8,40 +8,14 @@ both DSI and HDMI connected simultaneously.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
 from opstree.probes.base import ProbeContext, ProbeResult
+from opstree.probes.builtin.exec_adapter import ProbeExec
 from opstree.snapshot.model import LayerData
 
-
-@dataclass(frozen=True)
-class _Exec:
-    """Uniform adapter over ``ProbeContext.execute`` return shapes."""
-
-    ok: bool
-    stdout: str
-
-    @classmethod
-    def run(cls, ctx: ProbeContext, cmd: str) -> "_Exec":
-        r = ctx.execute(cmd)
-        if hasattr(r, "ok"):
-            return cls(ok=bool(r.ok), stdout=getattr(r, "stdout", "") or "")
-        # Handle string return (simple mock)
-        if isinstance(r, str):
-            return cls(ok=True, stdout=r)
-        try:
-            stdout, _stderr, rc = r
-        except Exception:
-            return cls(ok=False, stdout="")
-        return cls(ok=(rc == 0), stdout=stdout or "")
-
-    def text(self, default: str = "") -> str:
-        return self.stdout.strip() if self.ok else default
-
-    def lines(self) -> list[str]:
-        return [l for l in self.stdout.splitlines() if l.strip()]
+_Exec = ProbeExec  # backward-compatible alias for tests and internal callers
 
 
 class CompositorProbe:
