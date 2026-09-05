@@ -139,3 +139,7 @@ _Last updated by [taskill](https://github.com/oqlos/taskill) at 2026-04-25 13:41
 > Documentation and tooling were expanded: changelog generation, markdown output and formatting, a configuration management system, and a code analysis/relationship mapping engine were added. Tests and CLI were adjusted and some refactorings performed.
 
 <!-- taskill:status:end -->
+
+## Dependency maintenance
+
+See [internal dependency updates](docs/dependencies.md) for daily updates, locked tests and Python support.
