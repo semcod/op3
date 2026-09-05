@@ -586,3 +586,7 @@ pytest
 | `examples` | Usage examples and code samples | [View](./examples) |
 
 <!-- code2docs:end -->
+
+## Automatyzacja repozytorium
+
+- [Synchronizacja metadanych](information/org-metadata-sync.md) — koordynator, harmonogram i diagnostyka.
